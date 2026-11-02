@@ -22,7 +22,7 @@ Claude Desktop ── ดึง feed / ทำ PDF / Artifact (ออกเน็
 
 **หลักที่ server บังคับ และผู้เรียนต้องเข้าใจก่อนเริ่ม**
 
-1. Claude ไม่ได้เขียน PySpark เอง (ยกเว้น lab 2b) แต่ render จาก template ที่เชื่อถือได้ แล้วตรวจ sha256 ว่าตรง
+1. Claude ไม่ได้เขียน PySpark เอง แต่ render จาก template ที่เชื่อถือได้ แล้วตรวจ sha256 ว่าตรง (lab 2b จงใจกลับด้าน: Claude เขียนเองและคนต้องอ่านโค้ดแทน)
 2. skill code อ่านได้อย่างเดียว ไม่รัน (`log_skill_read_resource` คืน text เฉย ๆ)
 3. job ที่ submit มี snapshot โค้ด, sha256, idempotency key เก็บไว้ audit ย้อนหลังได้
 4. parser ใหม่เป็น draft เสมอ ต้องมีคน promote ผ่าน Git
@@ -54,8 +54,8 @@ Claude Desktop ── ดึง feed / ทำ PDF / Artifact (ออกเน็
 | [3 correlate](lab3-correlate.md) | G2 | จับคู่ alert กับ Zeek conn และยืนยันด้วย PCAP | ✅ รันจริง |
 | [4 enrich](lab4-enrich.md) | G3 | ดึง Feodo/KEV/EPSS แล้วเช็ค IP ใน alert | ⏳ ร่าง รันตอนเช้า (ต้องขออนุญาตดาวน์โหลด) |
 | [5 รายงาน](lab5-report.md) | G4 | ทำ dashboard และ PDF จาก report | ⏳ ร่าง |
-| 2b dedupe/score | G2 | เขียน PySpark ตามตัวอย่าง 7.2 ด้วย skill author-debug | ⏳ ยังไม่ได้ร่าง |
-| 3b investigation handoff | — | สรุปผล correlate เป็น handoff-v1 | ⏳ ยังไม่ได้ร่าง |
+| [2b dedupe/score](lab2b-dedupe-score.md) | G2 | เขียน PySpark เองตามตัวอย่าง 7.2 (ไม่มี template) แล้วคนตรวจโค้ด | ✅ รันจริง job 291d645c: 340 → 39 offense, score ชน 100 ทุกตัว |
+| [3b investigation handoff](lab3b-handoff.md) | — | สร้าง handoff-v2 จาก correlation report แล้วพิสูจน์ determinism | ✅ รันจริง job 2b6283c3: sha256 ตรงกับรอบ 20 ส.ค. |
 
 ทุก lab มี 5 ส่วน: โจทย์ → prompt → ลำดับ tool ที่ควรเห็น → เฉลย → จุดที่คนต้องทำ และปิดท้ายด้วย "Claude ผิดตรงไหนได้บ้าง"
 
@@ -74,6 +74,10 @@ Claude Desktop ── ดึง feed / ทำ PDF / Artifact (ออกเน็
 | M6.1 Workflow Automation | 3b | ◐ handoff | TheHive, SOAR |
 
 **ยังไม่บรรลุ** M5.3 (TLS, Nmap, schedule, secrets), M5.4 auth flow, M5.5 STIX/MISP, M6.1 SOAR จริง, M6.4 metrics จาก ticket, G5 Sigma, G6 ML — สี่ข้อหลังเพราะไม่มี ticket export, label และ rule engine ในระบบ เสนอเป็นคาบถัดไปเมื่อมี Elastic (ดู [codex-queue](../codex-queue/README.md) ใบงาน 002–016)
+
+## ลำดับสอนที่แนะนำ (ครึ่งวัน)
+
+0 (20 นาที) → 1 (30) → 2 (45) → พัก → 3 (45) → 3b (40) → 2b (60) → 4/5 ถ้าเหลือเวลา เหตุผล: 3b ต่อจาก 3 โดยตรงและเร็ว (9 วินาที) ส่วน 2b ต้องการให้ผู้เรียนอ่านโค้ดจึงวางท้าย
 
 ## ก่อนสอน
 
