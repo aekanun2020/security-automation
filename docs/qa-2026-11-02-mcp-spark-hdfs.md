@@ -179,3 +179,33 @@ gap: G1 ✔, G2 ◐, G3 ✔, G4 ✔, G5 ✗, G6 ✗ วัตถุประส�
 ## Q11 — ทำไมตั้งเป็น Module 7 ใน course outline มีหรือ
 
 ไม่มี outline มีแค่ Module 1–6 "Module 7" เป็นชื่อที่ Claude ตั้งเองตอนเสนอโครงและไม่ได้ย้ำว่าเป็นชื่อสมมติ ปัญหาคือไม่ตรงการแบ่งผู้สอนตาม outline และทำให้ดูเป็นเนื้อหาใหม่ทั้งที่ lab ทั้ง 8 ตัวคือวิธีสอน M5–M6 เดิมด้วยเครื่องมืออื่น เจ้าของเลือกทางเลือก A: ย้ายเป็นแทร็ก lab ของ Module 6 ที่ `module6/10-claude-mcp-labs/` (M6.10) เพราะโครง M6 คือ pipeline 7.1 → 7.2 → 6.1 → 8.1 ซึ่งตรงกับ lab 2 → 2b → 3b → 5 ชื่อใน HDFS/ชื่อไฟล์ job/idempotency key ที่มีคำว่า module7 คงไว้เพราะเป็นบันทึกจริงบน server
+
+## Q12 — lab ข้อไหนรันและพิสูจน์แล้ว
+
+6 จาก 8 lab รันจริงในเซสชัน 2026-11-02: lab 0, 1 (ขั้น 1–2), 2, 3, 2b, 3b ช่องว่างที่เหลือ: lab 1 ขั้น 3 (`save_draft` parser ใหม่) ไม่ได้รัน, lab 3b ไม่ได้เทียบ sha256 ของ 5 ไฟล์ evidence ต้นทาง (เป็นแบบฝึกหัดผู้เรียน), lab 4 และ 5 เป็นร่างทั้งคู่ (lab 5 รันได้ทันทีจาก report ของ lab 2; lab 4 ต้องขออนุญาตดาวน์โหลด feed)
+
+## Q13 — ยังมีคำว่า module7 เหลือที่ไหน
+
+หลังย้ายโฟลเดอร์ เหลือ 3 กลุ่ม: (1) ประวัติที่ตั้งใจเก็บใน QA log Q9/Q11 และหมายเหตุใน README ของแทร็ก (2) บันทึกจริงบน server ที่แก้ไม่ได้: physical path `/mcp/module7/...`, ชื่อไฟล์ job `module7_lab*.py`, idempotency key ใน `outputs/*/hashes.json` และเฉลย (3) prompt ของผู้เรียน 5 จุดใน lab 2, 3b, 4 และ README ซึ่งแก้เป็น namespace `/m6-10/<ชื่อ>/` แล้ว (commit 25af8da)
+
+## Q14 — ตรวจคำตอบ /mcp/m6-10/aekanun/lab2-ids/
+
+**ผ่านเต็ม** job `609509dd-a341-4ddc-ad89-ebf3ef8cd7e9` SUCCEEDED exit 0 (15:51:16 → 15:51:42Z, 26 วินาที), code sha256 `000a3147…` ตรง template ที่เชื่อถือได้, idempotency key `m6-10-aekanun-lab2-ids-20261102`, curated parquet 31,051 byte + `_SUCCESS`, report 2,175 byte part เดียว + `_SUCCESS`, **report sha256 `08e4e229…` เท่ากับเฉลยทุกไบต์** และผ่าน `validate_report` (report_sha256 `538c5ef1…`)
+
+ข้อสังเกตใช้สอน: รอบนี้เร็วกว่ารอบเฉลย (26 วินาที เทียบ 2 นาที 43 วินาที) เพราะ cluster อุ่นแล้ว ไม่ใช่โค้ดต่างกัน และชื่อ part file ต่างกันแต่เนื้อหาเท่ากัน ดังนั้นหลักฐานความถูกต้องคือ sha256 ของเนื้อหา ไม่ใช่เวลาหรือชื่อไฟล์
+
+## Q15 — ตรงไหนของ output ที่แสดงถึง alert
+
+สองที่คนละระดับ: `curated/part-*.snappy.parquet` เก็บ alert รายตัว 340 แถว (คอลัมน์ `raw_event` ต้นฉบับทั้งบรรทัด, `event_time`, ฟิลด์ normalize 16 ตัว, ค่าคงที่จาก parser vendor/product/firmware/log_type/event_category, และ provenance `parser_id`/`parser_version`/`parse_status`) ส่วน `report/part-*.txt` เป็นสรุป 1 บรรทัดตาม contract ไม่มี alert รายตัว ข้อจำกัด: tool ของ MCP อ่าน parquet ตรงไม่ได้ (`hdfs_read_text` ได้ binary, `hdfs_query_records` รับ JSONL/key=value) ดู alert รายตัวได้จาก input JSONL ต้นทางด้วย `hdfs_read_lines`/`hdfs_query_records` หรือ submit Spark job เล็กที่อ่าน parquet แล้วเขียน JSONL (แบบฝึกหัดเสริมที่เป็นไปได้ของ lab 2)
+
+## Q16 — alert เรื่องอะไร
+
+ทั้ง 340 รายการมาจาก host `10.70.0.66` rule ของ Suricata 3 ตัว (LAB13 Coherent = rule ที่เขียนสำหรับ lab) severity 1 ทั้งหมด และ `alert_action` = allowed (ตรวจจับอย่างเดียว ไม่ block)
+
+| ลำดับ | signature (sid) | category | จำนวน | ไปที่ | ช่วงเวลา 2026-08-24 UTC | พฤติกรรม |
+| --- | --- | --- | --- | --- | --- | --- |
+| 1 | LAB13 Coherent C2 DNS (1300101) | A Network Trojan was detected | 120 | 10.70.0.53:53 udp/dns | 00:00 → 01:59 | DNS query ทุก 60 s เป๊ะ (stddev 0) = C2 beacon ผ่าน DNS |
+| 2 | LAB13 Coherent Outbound Transfer (1300102) | Potential Corporate Privacy Violation | 120 | 203.0.113.66:443 tcp/http | 02:10 → 02:29 | ส่งออกทุก 10 s รวม 6.0 MB ออก / 240 byte กลับ = exfiltration |
+| 3 | LAB13 Coherent East-West Remote Service (1300103) | Attempted Administrator Privilege Gain | 100 | 10.70.1.1–25 :22 tcp/ssh | 02:40 → 02:44 | SSH ไป 25 เครื่อง เครื่องละ 4 ครั้ง = lateral movement |
+
+เรื่องราวคือ kill chain C2 → exfiltration → lateral movement ตรงกับ profile host-threat-sequence ของ skill correlate ข้อย้ำ: ข้อมูล synthetic (203.0.113.66 อยู่ใน TEST-NET-3) และ alert คือ rule ตรง ไม่ใช่ข้อพิสูจน์ incident
