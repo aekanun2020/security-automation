@@ -50,6 +50,7 @@ codex-queue/                               # ใบงานสั่ง Codex, 
 - ELK เป็น SIEM ใกล้ QRadar ได้แค่ไหน และ blueprint ให้ Codex สร้าง: [docs/elastic-siem-vs-qradar.md](docs/elastic-siem-vs-qradar.md) (โน้ตต้นทางใน docs/research_notes/elastic-siem/)
 - Lab design ตาม gap G1–G6: [docs/lab-design-by-gap.md](docs/lab-design-by-gap.md) (6 lab พร้อมชุดข้อมูล ตัวเลขก่อน/หลัง และแบบสอบถาม gap)
 - ชุดข้อมูลจริงสำหรับ lab ตาม gap G1–G6: [docs/datasets-for-gap-labs.md](docs/datasets-for-gap-labs.md) (โน้ตต้นทางใน docs/research_notes/datasets-for-gap-labs/)
+- บันทึกถาม-ตอบ 2026-11-02 เรื่อง MCP server Spark/HDFS, security skill server และความเหมาะสมทำ lab: [docs/qa-2026-11-02-mcp-spark-hdfs.md](docs/qa-2026-11-02-mcp-spark-hdfs.md)
 - บริบทผู้เรียน: [docs/nt-siem-landscape.md](docs/nt-siem-landscape.md) ข้อมูลสาธารณะเรื่อง SIEM ที่ NT cyfence ใช้ (IBM QRadar, McAfee/Trellix ESM) และสิ่งที่ต้องยืนยันกับผู้เรียน
 
 หมายเหตุ: ตัวอย่างโค้ดในรายงานยังไม่ได้รันทดสอบ ควร smoke-test ก่อนนำไปใช้ในชั้นเรียน ข้อมูลและจำนวนดาว GitHub เป็นค่า ณ 2026-11-01
