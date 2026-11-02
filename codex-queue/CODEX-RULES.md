@@ -5,7 +5,7 @@
 ## กติกา
 
 1. `git fetch origin main` แล้ว checkout commit ที่ระบุใน `commit:` ของใบงาน (ต้องอยู่บน branch `main`) ทำงานใน clone แยกบน branch `codex/NNN-<slug>` ที่แตกจาก commit นั้น **interpreter**: ให้ `run_smoke_tests.sh` ของหัวข้อเป็นผู้เลือก interpreter (ลำดับ: ตัวแปร `PYTHON` > `python3.12` > `python3.11` > `python3` และ M5.2 ต้องได้ ≥ 3.11) script จะสร้าง `.venv` ของหัวข้อจาก `requirements.txt` ให้เอง และตั้ง `PYTHONDONTWRITEBYTECODE=1 PIP_NO_COMPILE=1` เพื่อไม่เขียน bytecode cache บนเครื่องของเจ้าของ `python3` ใน login shell คือ Python 3.9.6 ของ Xcode ซึ่งชี้ cache ไปที่ `~/Library/Caches/com.apple.python` ที่ sandbox ห้ามเขียน (บทเรียนใบงาน 001 รอบ 1) ถ้าต้องเรียก Python เองนอก script ให้ใช้ `PYTHON=/opt/anaconda3/bin/python3.12` หรือ `.venv/bin/python` ของหัวข้อ ห้ามเรียก `python3` เปล่า ๆ และห้ามรัน `py_compile`
-2. **network** ตามส่วนหัว `network:` ของใบงาน: `none` = ห้ามเรียกเครือข่ายใดนอกจาก git origin; `downloads` = ดาวน์โหลดได้เฉพาะ URL ในรายการ `downloads:` ของใบงาน ครั้งเดียว เก็บใต้ `<topic>/data/` หรือ `<report_dir>/artifacts/` (ทั้งสองอยู่ใน `.gitignore`) บันทึก sha256 และขนาดของทุกไฟล์ที่ดาวน์โหลดใน `hashes.json` ห้ามสมัครบริการ ห้ามใช้ API key ใด ห้าม commit ชุดข้อมูลที่ดาวน์โหลด
+2. **network** ตามส่วนหัว `network:` ของใบงาน: `none` = ห้ามเรียกเครือข่ายใดนอกจาก git origin; `downloads` = ดาวน์โหลดได้เฉพาะ URL ในรายการ `downloads:` ของใบงาน; `local` = เหมือน `downloads` บวกการเรียก REST API ของ lab stack ที่ `http://localhost:9200` (Elasticsearch), `http://localhost:5601` (Kibana) และ `http://localhost:8220` (Fleet Server) ที่เจ้าของ start ไว้ และ `https://epr.elastic.co` (Elastic Package Registry) รวมถึง PyPI สำหรับ venv ครั้งเดียว เก็บใต้ `<topic>/data/` หรือ `<report_dir>/artifacts/` (ทั้งสองอยู่ใน `.gitignore`) บันทึก sha256 และขนาดของทุกไฟล์ที่ดาวน์โหลดใน `hashes.json` ห้ามสมัครบริการ ห้ามใช้ API key ใด ห้าม commit ชุดข้อมูลที่ดาวน์โหลด
 3. ห้ามรันซ้ำเพื่อแทนผลที่ตก ทุกการรัน smoke-test อยู่ในรายงาน ถ้าตกให้รายงาน FAIL ที่ข้อนั้นพร้อมค่าที่ได้จริง **ไม่แก้เกณฑ์หรือ test เพื่อให้ผ่าน**
 4. `budget_usd` ของทุกใบงานในชุดนี้คือ 0: ห้ามเรียกโมเดลภายนอกหรือบริการที่เสียเงิน
 5. **โค้ดจากรายงาน research ห้ามแก้ตรรกะ** ไฟล์ `module*/0*/[0-9]_*.py` ที่มี header "คัดจาก docs/python-security-automation-research.md" ถ้าพบว่ารันไม่ได้ ให้แก้เท่าที่จำเป็นหนึ่งจุด ระบุใน header ว่า "แก้ไขจากรายงาน: ..." และรายงานในข้อเสนอ ตามแบบที่ทำกับ `2_2b_evtx_rs_eventid_counts.py`
@@ -21,6 +21,11 @@
 15. ทุกไฟล์ใหม่มี header docstring ระบุ: ชื่อใบงาน, ว่าเป็น "ส่วนขยาย ไม่ได้มาจากรายงาน research", แหล่งอ้างอิง API ที่ใช้, วิธีใช้ และ dependency ตามแบบ header ของ `module5/02-log-analysis-automation/2_1_authlog_bruteforce.py`
 16. ข้อมูลตัวอย่างที่สร้างใหม่ต้องเป็นข้อมูลสังเคราะห์ ใช้ IP ในช่วง TEST-NET (192.0.2.0/24, 198.51.100.0/24, 203.0.113.0/24) และไม่มีข้อมูลบุคคลจริง
 
+17. **Docker เป็นของเจ้าของ** ห้าม Codex รัน `docker compose up/down/restart/rm`, `docker run` ที่สร้าง container ค้าง, `docker exec`, หรือแก้ Docker Desktop อนุญาตเฉพาะคำสั่งอ่านอย่างเดียว: `docker info`, `docker ps`, `docker compose config`, `docker compose ps`, `docker compose logs --tail`, `docker image inspect` และ `docker run --rm` ของ image `alpine` เพื่ออ่าน `sysctl` ใน preflight เท่านั้น ใบงานที่ต้องมี stack ทำงานอยู่จะระบุคำสั่ง `docker compose` ให้เจ้าของรันก่อน ถ้า API ที่ `localhost:9200`/`5601` ไม่ตอบ ให้เขียน `results/NNN-blocked-stack-not-running.md` แล้วจบ ไม่พยายาม start เอง
+18. **secret ของ lab stack** รหัสผ่านและ API key อยู่ใน `elk-siem/.env` (สร้างจาก `elk-siem/.env.example` โดย script ที่สุ่มค่าในเครื่อง) และ `elk-siem/.secrets/` ทั้งสองอยู่ใน `.gitignore` ห้าม commit ห้ามพิมพ์ค่าใน report/results/LOG (แสดงได้แค่ชื่อตัวแปรและความยาว) ห้ามใช้รหัสผ่าน `changeme` หรือค่าคงที่ที่เดาได้ และห้ามใช้ key/บัญชีใดของเจ้าของนอก lab
+19. **โครงของ `elk-siem/`** ทุกใบงาน ELK เขียนเฉพาะใต้ `elk-siem/` ตามรายการ `files:`; `elk-siem/.env.example` pin `STACK_VERSION=9.5.5`; ทุกใบงานมี `elk-siem/tests/verify-T<n>.sh` ที่ exit 0 เมื่อผ่านทุกเกณฑ์และ exit 1 พร้อมบอกข้อที่ตก โดยใช้ `curl` กับ REST API เท่านั้น (ไม่ใช้ UI, ไม่ใช้ screenshot) และ output ของ verify ต้องอยู่ใน `<report_dir>/verify-T<n>.txt`; ใบงานที่เพิ่ม service ใหม่ต้องให้ `docker compose config` ผ่านก่อนส่งมอบ
+20. **ลำดับและการพึ่งพา** ใบงาน ELK ต้องรันตามลำดับที่ระบุในแต่ละใบ (เช่น 003 ต้องผ่าน 002 ก่อน) ถ้า verify ของใบงานก่อนหน้าไม่ผ่านบน stack ปัจจุบัน ให้ blocked ด้วยเหตุ `prerequisite-<id>-failed` ไม่ข้ามไปทำ
+
 ## ส่วนหัวของใบงาน
 
 ```
@@ -28,7 +33,7 @@ id: 001
 commit: <SHA บน branch main>
 approved: no|yes
 budget_usd: 0
-network: none|downloads
+network: none|downloads|local
 files: <รายการ path ที่แก้หรือสร้างได้ คั่นด้วย ;>
 downloads: <รายการ URL ที่ดาวน์โหลดได้ คั่นด้วย ; หรือ none>
 report_dir: codex-queue/reports/001-<slug>/
@@ -39,7 +44,7 @@ pass_criteria: <เกณฑ์อ่านผลที่เขียนก่�
 
 - repository อ้างอิง `aekanun2020/SUT-AI-Chat-App-with-Fine-tuned-Harness-with-KM` และ repository อื่นทุกตัวของเจ้าของ ทุกไฟล์ ทุก branch ทุก remote: ห้าม clone เพื่อแก้ ห้าม push ห้ามเปิด PR ห้าม comment
 - `docs/` ทั้งหมด (รายงาน research, datasets, บริบท NT, lab design, glossary และ research_notes), `README.md` ราก, `codex-queue/queue/`, `codex-queue/README.md`, `codex-queue/CODEX-RULES.md`
-- โฟลเดอร์หัวข้ออื่นที่ไม่อยู่ในรายการ `files:` ของใบงาน และไฟล์ `README.md` ของหัวข้อ (Claude อัปเดตเองหลัง merge)
-- `.gitignore`, `.github/`, `requirements.txt` ราก
+- โฟลเดอร์หัวข้ออื่นและส่วนของ `elk-siem/` ที่ไม่อยู่ในรายการ `files:` ของใบงาน และไฟล์ `README.md` ของหัวข้อ (Claude อัปเดตเองหลัง merge)
+- `.gitignore`, `.github/`, `requirements.txt` ราก, Docker Desktop และ container ทุกตัวบนเครื่อง (ดูข้อ 17)
 - API key, `.env`, credential ทุกชนิด; ห้ามสมัครบริการใดในนามเจ้าของ
 - ชุดข้อมูลที่ดาวน์โหลด: ห้าม commit ห้ามแจกจ่ายต่อนอก license ที่ใบงานระบุ

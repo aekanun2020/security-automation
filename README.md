@@ -28,6 +28,7 @@ Module 5–6 ใน repo นี้ตอบวัตถุประสงค์�
 docs/
   python-security-automation-research.md   # รายงาน research ฉบับเต็ม (9 หัวข้อ, โค้ด 58 ตัวอย่าง, references)
   glossary.md                              # อภิธานศัพท์
+  elastic-siem-vs-qradar.md                # ELK เทียบ QRadar รายส่วน + blueprint ใบงาน Codex
   lab-design-by-gap.md                     # lab design ตาม gap G1–G6
   datasets-for-gap-labs.md                 # ชุดข้อมูลจริงสำหรับ lab ตาม gap G1–G6
   nt-siem-landscape.md                     # บริบทผู้เรียน: SIEM ที่ NT cyfence ใช้
@@ -46,6 +47,7 @@ codex-queue/                               # ใบงานสั่ง Codex, 
 - อภิธานศัพท์: [docs/glossary.md](docs/glossary.md) คำย่อและชื่อเฉพาะทั้งหมดที่ใช้ใน repo นี้ อ่านก่อนเริ่ม lab
 - รายงาน research: [docs/python-security-automation-research.md](docs/python-security-automation-research.md)
 - ฉบับ doc ที่แก้ไขร่วมกันได้: https://claude.ai/artifact/QUBmwvhnnbs7f14y8Tb2z2
+- ELK เป็น SIEM ใกล้ QRadar ได้แค่ไหน และ blueprint ให้ Codex สร้าง: [docs/elastic-siem-vs-qradar.md](docs/elastic-siem-vs-qradar.md) (โน้ตต้นทางใน docs/research_notes/elastic-siem/)
 - Lab design ตาม gap G1–G6: [docs/lab-design-by-gap.md](docs/lab-design-by-gap.md) (6 lab พร้อมชุดข้อมูล ตัวเลขก่อน/หลัง และแบบสอบถาม gap)
 - ชุดข้อมูลจริงสำหรับ lab ตาม gap G1–G6: [docs/datasets-for-gap-labs.md](docs/datasets-for-gap-labs.md) (โน้ตต้นทางใน docs/research_notes/datasets-for-gap-labs/)
 - บริบทผู้เรียน: [docs/nt-siem-landscape.md](docs/nt-siem-landscape.md) ข้อมูลสาธารณะเรื่อง SIEM ที่ NT cyfence ใช้ (IBM QRadar, McAfee/Trellix ESM) และสิ่งที่ต้องยืนยันกับผู้เรียน

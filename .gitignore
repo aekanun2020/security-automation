@@ -14,3 +14,9 @@ venv/
 # codex-queue: ชุดข้อมูลที่ดาวน์โหลดและไฟล์ดิบของรายงาน
 module*/*/data/
 codex-queue/reports/*/artifacts/
+
+# elk-siem lab stack: secret และข้อมูลที่ดาวน์โหลด
+elk-siem/.env
+elk-siem/.secrets/
+elk-siem/data/
+elk-siem/out/
