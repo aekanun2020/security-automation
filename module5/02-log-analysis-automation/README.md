@@ -7,6 +7,10 @@
 
 รายละเอียดเต็ม (แหล่งต้นฉบับ, งานเขียนในชุมชน, โค้ด, references): [รายงาน research ส่วนที่ 2](../../docs/python-security-automation-research.md)
 
+## บทอ่านประกอบ
+
+- [combined log กับการรวม log ใน SIEM คนละเรื่องกัน](reading-combined-log-vs-siem.md) อธิบายความต่างระหว่างชื่อรูปแบบ combined ของ web log กับการรวม log หลายแหล่งใน SIEM และเหตุใด M5.2 จึงจบที่ ECS/OCSF
+
 ## แหล่งต้นฉบับ
 
 - RFC 5424 The Syslog Protocol (PRI = facility×8 + severity)
