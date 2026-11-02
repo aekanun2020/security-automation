@@ -1,0 +1,127 @@
+interpreter: /opt/anaconda3/bin/python3.12 (Python 3.12.7)
+  error: subprocess-exited-with-error
+  
+  × pip subprocess to install build dependencies did not run successfully.
+  │ exit code: 2
+  ╰─> [70 lines of output]
+      Collecting setuptools>=40.8.0
+        Downloading setuptools-84.2.1-py3-none-any.whl.metadata (6.6 kB)
+      Downloading setuptools-84.2.1-py3-none-any.whl (876 kB)
+                                                  0.0/876.3 kB ? eta -:--:--
+      ERROR: Exception:
+      Traceback (most recent call last):
+        File "/private/tmp/security-automation-001-r2.ifZNjy/module5/02-log-analysis-automation/.venv/lib/python3.12/site-packages/pip/_vendor/urllib3/response.py", line 438, in _error_catcher
+          yield
+        File "/private/tmp/security-automation-001-r2.ifZNjy/module5/02-log-analysis-automation/.venv/lib/python3.12/site-packages/pip/_vendor/urllib3/response.py", line 561, in read
+          data = self._fp_read(amt) if not fp_closed else b""
+                 ^^^^^^^^^^^^^^^^^^
+        File "/private/tmp/security-automation-001-r2.ifZNjy/module5/02-log-analysis-automation/.venv/lib/python3.12/site-packages/pip/_vendor/urllib3/response.py", line 527, in _fp_read
+          return self._fp.read(amt) if amt is not None else self._fp.read()
+                 ^^^^^^^^^^^^^^^^^^
+        File "/opt/anaconda3/lib/python3.12/http/client.py", line 479, in read
+          s = self.fp.read(amt)
+              ^^^^^^^^^^^^^^^^^
+        File "/opt/anaconda3/lib/python3.12/socket.py", line 720, in readinto
+          return self._sock.recv_into(b)
+                 ^^^^^^^^^^^^^^^^^^^^^^^
+        File "/opt/anaconda3/lib/python3.12/ssl.py", line 1251, in recv_into
+          return self.read(nbytes, buffer)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^
+        File "/opt/anaconda3/lib/python3.12/ssl.py", line 1103, in read
+          return self._sslobj.read(len, buffer)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+      TimeoutError: The read operation timed out
+      
+      During handling of the above exception, another exception occurred:
+      
+      Traceback (most recent call last):
+        File "/private/tmp/security-automation-001-r2.ifZNjy/module5/02-log-analysis-automation/.venv/lib/python3.12/site-packages/pip/_internal/cli/base_command.py", line 105, in _run_wrapper
+          status = _inner_run()
+                   ^^^^^^^^^^^^
+        File "/private/tmp/security-automation-001-r2.ifZNjy/module5/02-log-analysis-automation/.venv/lib/python3.12/site-packages/pip/_internal/cli/base_command.py", line 96, in _inner_run
+          return self.run(options, args)
+                 ^^^^^^^^^^^^^^^^^^^^^^^
+        File "/private/tmp/security-automation-001-r2.ifZNjy/module5/02-log-analysis-automation/.venv/lib/python3.12/site-packages/pip/_internal/cli/req_command.py", line 67, in wrapper
+          return func(self, options, args)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^
+        File "/private/tmp/security-automation-001-r2.ifZNjy/module5/02-log-analysis-automation/.venv/lib/python3.12/site-packages/pip/_internal/commands/install.py", line 379, in run
+          requirement_set = resolver.resolve(
+                            ^^^^^^^^^^^^^^^^^
+        File "/private/tmp/security-automation-001-r2.ifZNjy/module5/02-log-analysis-automation/.venv/lib/python3.12/site-packages/pip/_internal/resolution/resolvelib/resolver.py", line 179, in resolve
+          self.factory.preparer.prepare_linked_requirements_more(reqs)
+        File "/private/tmp/security-automation-001-r2.ifZNjy/module5/02-log-analysis-automation/.venv/lib/python3.12/site-packages/pip/_internal/operations/prepare.py", line 554, in prepare_linked_requirements_more
+          self._complete_partial_requirements(
+        File "/private/tmp/security-automation-001-r2.ifZNjy/module5/02-log-analysis-automation/.venv/lib/python3.12/site-packages/pip/_internal/operations/prepare.py", line 469, in _complete_partial_requirements
+          for link, (filepath, _) in batch_download:
+                                     ^^^^^^^^^^^^^^
+        File "/private/tmp/security-automation-001-r2.ifZNjy/module5/02-log-analysis-automation/.venv/lib/python3.12/site-packages/pip/_internal/network/download.py", line 184, in __call__
+          for chunk in chunks:
+                       ^^^^^^
+        File "/private/tmp/security-automation-001-r2.ifZNjy/module5/02-log-analysis-automation/.venv/lib/python3.12/site-packages/pip/_internal/cli/progress_bars.py", line 55, in _rich_progress_bar
+          for chunk in iterable:
+                       ^^^^^^^^
+        File "/private/tmp/security-automation-001-r2.ifZNjy/module5/02-log-analysis-automation/.venv/lib/python3.12/site-packages/pip/_internal/network/utils.py", line 65, in response_chunks
+          for chunk in response.raw.stream(
+                       ^^^^^^^^^^^^^^^^^^^^
+        File "/private/tmp/security-automation-001-r2.ifZNjy/module5/02-log-analysis-automation/.venv/lib/python3.12/site-packages/pip/_vendor/urllib3/response.py", line 622, in stream
+          data = self.read(amt=amt, decode_content=decode_content)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        File "/private/tmp/security-automation-001-r2.ifZNjy/module5/02-log-analysis-automation/.venv/lib/python3.12/site-packages/pip/_vendor/urllib3/response.py", line 560, in read
+          with self._error_catcher():
+               ^^^^^^^^^^^^^^^^^^^^^
+        File "/opt/anaconda3/lib/python3.12/contextlib.py", line 158, in __exit__
+          self.gen.throw(value)
+        File "/private/tmp/security-automation-001-r2.ifZNjy/module5/02-log-analysis-automation/.venv/lib/python3.12/site-packages/pip/_vendor/urllib3/response.py", line 443, in _error_catcher
+          raise ReadTimeoutError(self._pool, None, "Read timed out.")
+      pip._vendor.urllib3.exceptions.ReadTimeoutError: HTTPSConnectionPool(host='files.pythonhosted.org', port=443): Read timed out.
+      [end of output]
+  
+  note: This error originates from a subprocess, and is likely not a problem with pip.
+error: subprocess-exited-with-error
+
+× pip subprocess to install build dependencies did not run successfully.
+│ exit code: 2
+╰─> See above for output.
+
+note: This error originates from a subprocess, and is likely not a problem with pip.
+PASS syntax 2_1_authlog_bruteforce.py
+PASS syntax 2_2_evtx_failed_logon.py
+PASS syntax 2_2b_evtx_rs_eventid_counts.py
+PASS syntax 2_3_syslog_to_pandas.py
+PASS syntax 2_4_drain3_templates.py
+PASS syntax 2_5_pysigma_convert.py
+PASS syntax 2_6_zeek_beacon_candidates.py
+PASS syntax 2_7_access_log_pandas.py
+PASS 2.1 auth.log brute force
+FAIL 2.2 python-evtx import
+    Traceback (most recent call last):
+      File "<string>", line 1, in <module>
+    ModuleNotFoundError: No module named 'Evtx'
+PASS 2.2b pyevtx-rs import (venv แยก)
+FAIL 2.3 syslog -> pandas
+    Traceback (most recent call last):
+      File "/private/tmp/security-automation-001-r2.ifZNjy/module5/02-log-analysis-automation/2_3_syslog_to_pandas.py", line 10, in <module>
+        import pandas as pd
+    ModuleNotFoundError: No module named 'pandas'
+FAIL 2.4 Drain3 templates
+    Traceback (most recent call last):
+      File "/private/tmp/security-automation-001-r2.ifZNjy/module5/02-log-analysis-automation/2_4_drain3_templates.py", line 11, in <module>
+        from drain3 import TemplateMiner                      # pip install drain3
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ModuleNotFoundError: No module named 'drain3'
+FAIL 2.5 pySigma -> Splunk
+    Traceback (most recent call last):
+      File "/private/tmp/security-automation-001-r2.ifZNjy/module5/02-log-analysis-automation/2_5_pysigma_convert.py", line 10, in <module>
+        from sigma.collection import SigmaCollection
+    ModuleNotFoundError: No module named 'sigma'
+FAIL 2.6 Zeek beacon candidates
+    Traceback (most recent call last):
+      File "/private/tmp/security-automation-001-r2.ifZNjy/module5/02-log-analysis-automation/2_6_zeek_beacon_candidates.py", line 10, in <module>
+        import pandas as pd
+    ModuleNotFoundError: No module named 'pandas'
+FAIL 2.7 access log -> pandas
+    Traceback (most recent call last):
+      File "/private/tmp/security-automation-001-r2.ifZNjy/module5/02-log-analysis-automation/2_7_access_log_pandas.py", line 10, in <module>
+        import pandas as pd
+    ModuleNotFoundError: No module named 'pandas'
+passed=10 failed=6

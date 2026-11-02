@@ -8,3 +8,4 @@
 - 2026-11-02T17:34:09+07:00 — 001 FAIL: M5.1=4/7 (3 failed), M5.2=4/16 (12 failed), samples=44/121/698/109/302, SHA256=13/13, 0 USD; [results](results/001.md) · [รายงาน](reports/001-queue-smoke-test/README.md)
 - 2026-11-02T17:39:41+07:00 — 001 APPROVED by owner รอบ 2 ("อนุมัติ 001"): approved: yes ที่ pin d71bf29; [ใบงาน](queue/001-queue-smoke-test.md)
 - 2026-11-02T17:40:20+07:00 — 001 ARCHIVED round 1 by Claude: ย้ายรายงาน FAIL ของ Codex (pin 22c935f) ไป reports/001-queue-smoke-test/round1-FAIL/ และ results/001-round1-FAIL.md เพื่อให้รอบ 2 (pin d71bf29) เขียนไฟล์ใหม่ได้; ประวัติไม่ถูกลบ
+- 2026-11-02T17:42:34+07:00 — 001 FAIL รอบ 2: M5.1=7/7, M5.2=10/16 (6 failed; PyPI timeout), samples=44/121/698/109/302, SHA256=13/13, 0 USD; [results](results/001.md) · [รายงาน](reports/001-queue-smoke-test/README.md)

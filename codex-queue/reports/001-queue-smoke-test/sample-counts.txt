@@ -1,0 +1,6 @@
+      44 module5/02-log-analysis-automation/samples/auth.log
+     121 module5/02-log-analysis-automation/samples/syslog.log
+     698 module5/02-log-analysis-automation/samples/access.log
+     109 module5/02-log-analysis-automation/samples/conn.log
+     302 module5/01-python-fundamentals/samples/events.jsonl
+    1274 total

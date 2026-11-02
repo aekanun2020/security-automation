@@ -1,0 +1,73 @@
+{
+  "pin": "d71bf29a76efe93f63e0932c67e34d7175da7702",
+  "execution_branch": "main",
+  "execution_head": "d71bf29a76efe93f63e0932c67e34d7175da7702",
+  "clone": "/private/tmp/security-automation-001-r2.ifZNjy",
+  "timezone": "Asia/Bangkok",
+  "smoke_runs_per_topic": 1,
+  "environment_overrides": {
+    "PYTHON": "/opt/anaconda3/bin/python3.12",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PIP_NO_COMPILE": "1",
+    "PIP_DISABLE_PIP_VERSION_CHECK": "1",
+    "PIP_CONFIG_FILE": "/dev/null",
+    "PIP_INDEX_URL": "https://pypi.org/simple",
+    "PIP_NO_CACHE_DIR": "1"
+  },
+  "runs": [
+    {
+      "command": [
+        "bash",
+        "module5/01-python-fundamentals/run_smoke_tests.sh"
+      ],
+      "output": "m5-1-smoke.txt",
+      "started": "2026-11-02T17:41:07+07:00",
+      "finished": "2026-11-02T17:41:09+07:00",
+      "exit_code": 0,
+      "bytes": 353,
+      "sha256": "656c85ea750fd217fb3d434bc62e1caed5618303509da77f991b1d40f6448d52"
+    },
+    {
+      "command": [
+        "bash",
+        "module5/02-log-analysis-automation/run_smoke_tests.sh"
+      ],
+      "output": "m5-2-smoke.txt",
+      "started": "2026-11-02T17:41:09+07:00",
+      "finished": "2026-11-02T17:41:30+07:00",
+      "exit_code": 1,
+      "bytes": 8419,
+      "sha256": "ea618f3f8559355943d200d6b1da1a722dc03132a9f5131a2200c8cc57f524b3"
+    },
+    {
+      "command": [
+        "wc",
+        "-l",
+        "module5/02-log-analysis-automation/samples/auth.log",
+        "module5/02-log-analysis-automation/samples/syslog.log",
+        "module5/02-log-analysis-automation/samples/access.log",
+        "module5/02-log-analysis-automation/samples/conn.log",
+        "module5/01-python-fundamentals/samples/events.jsonl"
+      ],
+      "output": "sample-counts.txt",
+      "started": "2026-11-02T17:41:30+07:00",
+      "finished": "2026-11-02T17:41:30+07:00",
+      "exit_code": 0,
+      "bytes": 324,
+      "sha256": "1306e353f40933183dc7ebda970b3f83791b4085ef9941bf1fbce188fde163c5"
+    },
+    {
+      "command": [
+        "/opt/anaconda3/bin/python3.12",
+        "module5/01-python-fundamentals/1_1_combined_log_counter.py",
+        "module5/02-log-analysis-automation/samples/access.log"
+      ],
+      "output": "scanner.txt",
+      "started": "2026-11-02T17:41:30+07:00",
+      "finished": "2026-11-02T17:41:30+07:00",
+      "exit_code": 0,
+      "bytes": 543,
+      "sha256": "d82625e49f1a472bf88c5ccfa5d16be3a49bd81c3b0847c3a04c8099a766b2d6"
+    }
+  ]
+}
