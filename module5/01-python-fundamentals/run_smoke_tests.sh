@@ -3,12 +3,22 @@
 # 1.1 ใช้ access.log ของ M5.2, 1.2 ทดสอบด้วยการ append บรรทัดลงไฟล์ชั่วคราวระหว่างที่ watcher รันอยู่, 1.3 ใช้ samples/events.jsonl
 set -u
 cd "$(dirname "$0")"
-PY=${PYTHON:-python3}
+# เลือก interpreter: ตัวแปร PYTHON ถ้าตั้งไว้ > python3.12 > python3.11 > python3 (บทเรียนใบงาน 001: python3 ของ Xcode เป็น 3.9 และเขียน cache ที่ sandbox ห้าม)
+pick_python() {
+  if [ -n "${PYTHON:-}" ]; then command -v "$PYTHON"; return; fi
+  for c in python3.12 python3.11 python3; do
+    if command -v "$c" >/dev/null 2>&1; then command -v "$c"; return; fi
+  done
+}
+# ไม่เขียน bytecode cache ทั้งตอนรันและตอน pip install (Python ของ Xcode ชี้ cache ไปที่ ~/Library/Caches/com.apple.python ซึ่ง sandbox ของ Codex ห้ามเขียน)
+export PYTHONDONTWRITEBYTECODE=1 PIP_NO_COMPILE=1 PIP_DISABLE_PIP_VERSION_CHECK=1
+syntax_ok() { "$1" -c 'import ast, sys; ast.parse(open(sys.argv[1], encoding="utf-8").read(), sys.argv[1])' "$2"; }
+PY=$(pick_python); echo "interpreter: $PY ($("$PY" --version 2>&1))"
 pass=0; fail=0
 run() { local label=$1; shift
   if "$@" >/tmp/smoke_out.txt 2>&1; then echo "PASS $label"; pass=$((pass+1));
   else echo "FAIL $label"; sed 's/^/    /' /tmp/smoke_out.txt | tail -5; fail=$((fail+1)); fi; }
-for f in 1_*.py; do run "compile $f" $PY -m py_compile "$f"; done
+for f in 1_*.py; do run "syntax $f" syntax_ok "$PY" "$f"; done
 run "1.1 combined log counter finds scanner" bash -c "$PY 1_1_combined_log_counter.py ../02-log-analysis-automation/samples/access.log | grep -q 'SCANNER? 203.0.113.50'"
 run "1.2 follow() alerts on live burst" $PY - <<'PYT'
 import subprocess, sys, tempfile, time, os, threading

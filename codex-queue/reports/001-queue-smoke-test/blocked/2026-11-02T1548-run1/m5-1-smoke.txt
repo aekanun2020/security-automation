@@ -1,0 +1,23 @@
+FAIL compile 1_1_combined_log_counter.py
+      File "/Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/os.py", line 215, in makedirs
+        makedirs(head, exist_ok=exist_ok)
+      File "/Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/os.py", line 225, in makedirs
+        mkdir(name, mode)
+    PermissionError: [Errno 1] Operation not permitted: '/Users/grizzlymacbookpro/Library/Caches/com.apple.python/private/tmp/security-automation-001-20261102'
+FAIL compile 1_2_follow_log_watcher.py
+      File "/Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/os.py", line 215, in makedirs
+        makedirs(head, exist_ok=exist_ok)
+      File "/Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/os.py", line 225, in makedirs
+        mkdir(name, mode)
+    PermissionError: [Errno 1] Operation not permitted: '/Users/grizzlymacbookpro/Library/Caches/com.apple.python/private/tmp/security-automation-001-20261102'
+FAIL compile 1_3_jsonl_field_counter.py
+      File "/Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/os.py", line 215, in makedirs
+        makedirs(head, exist_ok=exist_ok)
+      File "/Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/os.py", line 225, in makedirs
+        mkdir(name, mode)
+    PermissionError: [Errno 1] Operation not permitted: '/Users/grizzlymacbookpro/Library/Caches/com.apple.python/private/tmp/security-automation-001-20261102'
+PASS 1.1 combined log counter finds scanner
+PASS 1.2 follow() alerts on live burst
+PASS 1.3 jsonl counter top value + csv
+PASS 1.3 verbose logs bad JSON lines
+passed=4 failed=3
