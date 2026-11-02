@@ -27,7 +27,9 @@ Module 5–6 ใน repo นี้ตอบวัตถุประสงค์�
 ```
 docs/
   python-security-automation-research.md   # รายงาน research ฉบับเต็ม (9 หัวข้อ, โค้ด 58 ตัวอย่าง, references)
-  research_notes/                          # บันทึกการค้นคว้าต้นทาง 5 ชุด
+  datasets-for-gap-labs.md                 # ชุดข้อมูลจริงสำหรับ lab ตาม gap G1–G6
+  nt-siem-landscape.md                     # บริบทผู้เรียน: SIEM ที่ NT cyfence ใช้
+  research_notes/                          # บันทึกการค้นคว้าต้นทาง (รอบรายงานหลัก 5 ชุด, รอบ datasets 3 ชุด)
 module5/                                   # โค้ดและแบบฝึกหัดของแต่ละหัวข้อ (01–05)
 module6/                                   # โค้ดและแบบฝึกหัดของแต่ละหัวข้อ (06–09)
 ```
@@ -36,6 +38,7 @@ module6/                                   # โค้ดและแบบฝ�
 
 - รายงาน research: [docs/python-security-automation-research.md](docs/python-security-automation-research.md)
 - ฉบับ doc ที่แก้ไขร่วมกันได้: https://claude.ai/artifact/QUBmwvhnnbs7f14y8Tb2z2
+- ชุดข้อมูลจริงสำหรับ lab ตาม gap G1–G6: [docs/datasets-for-gap-labs.md](docs/datasets-for-gap-labs.md) (โน้ตต้นทางใน docs/research_notes/datasets-for-gap-labs/)
 - บริบทผู้เรียน: [docs/nt-siem-landscape.md](docs/nt-siem-landscape.md) ข้อมูลสาธารณะเรื่อง SIEM ที่ NT cyfence ใช้ (IBM QRadar, McAfee/Trellix ESM) และสิ่งที่ต้องยืนยันกับผู้เรียน
 
 หมายเหตุ: ตัวอย่างโค้ดในรายงานยังไม่ได้รันทดสอบ ควร smoke-test ก่อนนำไปใช้ในชั้นเรียน ข้อมูลและจำนวนดาว GitHub เป็นค่า ณ 2026-11-01
