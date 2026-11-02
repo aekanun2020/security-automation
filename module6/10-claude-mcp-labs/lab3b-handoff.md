@@ -24,7 +24,7 @@ lab นี้ทำเฉพาะขั้นสุดท้าย ขั้น
 ```
 อ่าน /generic-security/coherent-pcap-handoff-retry-20260820050900/input/events.log
 แล้วสร้าง investigation handoff ด้วย skill build-security-investigation-handoff-with-spark
-เขียน output ที่ /module7/<ชื่อ>/lab3b-handoff แล้วเทียบ sha256 ของ report ที่ได้กับ report ของรอบ 20 ส.ค.
+เขียน output ที่ /m6-10/<ชื่อ>/lab3b-handoff แล้วเทียบ sha256 ของ report ที่ได้กับ report ของรอบ 20 ส.ค.
 ```
 
 ## ลำดับ tool ที่ควรเห็น

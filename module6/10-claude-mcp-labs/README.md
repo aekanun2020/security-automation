@@ -82,6 +82,6 @@ Claude Desktop ── ดึง feed / ทำ PDF / Artifact (ออกเน็
 ## ก่อนสอน
 
 - ผู้สอนเปิด Claude Desktop ที่ต่อ MCP ทั้งสองตัวไว้แล้ว ผู้เรียนดูผ่านจอหรือทำตามบนเครื่องที่ต่อ MCP เดียวกัน
-- ทุกคนต้องใช้ **ชื่อ output ของตัวเอง** ใน HDFS เช่น `/module7/<ชื่อ>/lab2-ids` เพราะ Spark เขียนแบบ `errorifexists`
-- หมายเหตุชื่อ: โฟลเดอร์ใน HDFS (`/module7/...`), ชื่อไฟล์ job (`module7_lab*.py`) และ idempotency key ใช้คำว่า module7 เพราะเป็นชื่อตอนรันเฉลยคืน 2026-11-02 ก่อนย้ายแทร็กนี้มาอยู่ใต้ Module 6 ตาม course outline ค่าเหล่านี้เป็นบันทึกจริงบน server จึงไม่เปลี่ยน
+- ทุกคนต้องใช้ **ชื่อ output ของตัวเอง** ใน HDFS ใต้ `/m6-10/<ชื่อ>/` เช่น `/m6-10/<ชื่อ>/lab2-ids` เพราะ Spark เขียนแบบ `errorifexists`
+- หมายเหตุชื่อ: โฟลเดอร์ใน HDFS (`/module7/...`), ชื่อไฟล์ job (`module7_lab*.py`) และ idempotency key ใช้คำว่า module7 เพราะเป็นชื่อตอนรันเฉลยคืน 2026-11-02 ก่อนย้ายแทร็กนี้มาอยู่ใต้ Module 6 ตาม course outline ค่าเหล่านี้เป็นบันทึกจริงบน server จึงไม่เปลี่ยน ส่วนผู้เรียนใช้ namespace `/m6-10/<ชื่อ>/`
 - สิ่งที่ Claude ทำผิดได้และผู้เรียนต้องจับ (รวบรวมจากการรันจริง): ใส่ชื่อ skill ผิดตอน render (ต้องใช้ skill ของ parser ไม่ใช่ workflow), ส่ง virtual path ให้ Spark, รายงานผลก่อน job SUCCEEDED, อ่าน report จาก part file ผิดไฟล์, สรุปว่า "ถูกโจมตีแน่" ทั้งที่ tool คืนเพียงสถิติ (interpretation: no incident verdict)

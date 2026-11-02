@@ -10,7 +10,7 @@
 
 ```
 สร้าง ids-report จาก /student/agentic-siem/incident-lab/input/coherent-pcap-suricata-alerts-340.jsonl
-ด้วย parser suricata-eve-alert-json-v1 เขียน output ไว้ที่ /module7/<ชื่อผู้เรียน>/lab2-ids
+ด้วย parser suricata-eve-alert-json-v1 เขียน output ไว้ที่ /m6-10/<ชื่อผู้เรียน>/lab2-ids
 ให้ validate ทั้งก่อน submit และ validate report หลังจบ แล้วสรุปตัวเลขให้ดู
 ```
 
@@ -21,7 +21,7 @@
 | 1 | `log_skill_get` analyze-ids-alerts-with-spark | skill | กติกา 6 ข้อ: ใช้ parser ids/json_lines เท่านั้น, model ไม่เขียน PySpark |
 | 2 | `log_skill_render_spark_job` (skill = **parse-suricata-eve-alerts**, parser_id) | skill | code + `code_sha256` |
 | 3 | `spark_save_job` filename, code | spark | `sha256` ต้องเท่ากับข้อ 2 |
-| 4 | `hdfs_mkdir` /module7/<ชื่อ>/lab2-ids | spark | คืน physical path `/mcp/module7/...` |
+| 4 | `hdfs_mkdir` /m6-10/<ชื่อ>/lab2-ids | spark | คืน physical path `/mcp/m6-10/...` |
 | 5 | `spark_validate_job` | spark | valid_python, imports_pyspark |
 | 6 | `log_skill_validate_spark_job` (code) | skill | `matches_trusted_template: true` + 15 checks |
 | 7 | `spark_submit_job` arguments = [physical input, physical curated, physical report], idempotency_key, expected_sha256 | spark | status RUNNING, job_id |

@@ -9,7 +9,7 @@ MCP ทั้งสองตัวออกอินเทอร์เน็ต�
 ## prompt ที่ผู้เรียนพิมพ์
 
 ```
-ดึง Feodo Tracker ipblocklist (JSON) และ CISA KEV มาวางใน HDFS ที่ /module7/<ชื่อ>/feeds
+ดึง Feodo Tracker ipblocklist (JSON) และ CISA KEV มาวางใน HDFS ที่ /m6-10/<ชื่อ>/feeds
 บันทึกวันที่ดาวน์โหลดและ sha256 แล้วเช็คว่า 203.0.113.66 กับ 10.70.0.66 อยู่ใน Feodo ไหม
 ```
 
