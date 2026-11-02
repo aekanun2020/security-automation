@@ -8,6 +8,7 @@
 | 7 | [Automated Alert Processing](07-automated-alert-processing/) | ระดับ 2 ปลายน้ำ (ทุกชิ้น) | 7.1–7.4 |
 | 8 | [Automated Reporting](08-automated-reporting/) | ระดับ 2 ปลายน้ำ (8.1, 8.2) | 8.1–8.6 |
 | 9 | [Security Operations Optimization](09-security-operations-optimization/) | ระดับ 2 ปลายน้ำ (9.2–9.4) | 9.1–9.4 |
+| 10 | [แทร็ก lab: Claude + MCP](10-claude-mcp-labs/) | วิธีสอนทางเลือก: ผู้เรียนสั่ง Claude ใช้ MCP ทำ 7.2, 6.1, 8.1 และ M5.2 บน Spark/HDFS โดยคนเป็นผู้ตรวจ (เพิ่ม 2026-11-02) | lab 0–5, 2b, 3b |
 
 ## โปรเจ็กต์ปลายทางที่ research เสนอ
 

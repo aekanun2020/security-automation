@@ -1,10 +1,10 @@
-# Module 7 — SOC Automation ด้วย Claude + MCP (คนเป็นผู้ตรวจ)
+# M6.10 — แทร็ก lab: SOC Automation ด้วย Claude + MCP (คนเป็นผู้ตรวจ)
 
-ผู้รับผิดชอบ: ครูเอ้ · ร่าง 2026-11-02 สำหรับคาบ 2026-11-03 · ศัพท์ดูใน [glossary](../docs/glossary.md) · ที่มาของโครง: [บันทึกถาม-ตอบ Q9–Q10](../docs/qa-2026-11-02-mcp-spark-hdfs.md)
+ผู้รับผิดชอบ: ครูเอ้ · ร่าง 2026-11-02 สำหรับคาบ 2026-11-03 · ศัพท์ดูใน [glossary](../../docs/glossary.md) · ที่มาของโครง: [บันทึกถาม-ตอบ Q9–Q10](../../docs/qa-2026-11-02-mcp-spark-hdfs.md)
 
 ## แนวคิด
 
-Module 5–6 สอนให้ผู้เรียน **เขียน Python เอง** เพื่อทำ automation ส่วน Module 7 สอนอีกวิธี: ผู้เรียน **สั่ง Claude ให้ใช้เครื่องมือ (MCP) ทำงาน** แล้วทำหน้าที่ตรวจผลและอนุมัติ ตรงกับวัตถุประสงค์หลักสูตรข้อ 4 และคอลัมน์ "AI ทำได้ / คนต้องทำ" ใน [checklist ELK→QRadar](../docs/elastic-siem-vs-qradar.md)
+หัวข้อ M5.1–M6.4 สอนให้ผู้เรียน **เขียน Python เอง** เพื่อทำ automation แทร็กนี้เป็นส่วนหนึ่งของ Module 6 (Security Automation Project) และสอนอีกวิธี: ผู้เรียน **สั่ง Claude ให้ใช้เครื่องมือ (MCP) ทำงาน** แล้วทำหน้าที่ตรวจผลและอนุมัติ ตรงกับวัตถุประสงค์หลักสูตรข้อ 4 และคอลัมน์ "AI ทำได้ / คนต้องทำ" ใน [checklist ELK→QRadar](../../docs/elastic-siem-vs-qradar.md)
 
 ```
 ผู้เรียน (prompt + ตรวจ + อนุมัติ)
@@ -73,7 +73,7 @@ Claude Desktop ── ดึง feed / ทำ PDF / Artifact (ออกเน็
 | M5.1 Python Fundamentals | 2, 2b | ◐ อ่าน/แก้ PySpark | ผู้เรียนไม่ได้เขียนเองทั้งหมด |
 | M6.1 Workflow Automation | 3b | ◐ handoff | TheHive, SOAR |
 
-**ยังไม่บรรลุ** M5.3 (TLS, Nmap, schedule, secrets), M5.4 auth flow, M5.5 STIX/MISP, M6.1 SOAR จริง, M6.4 metrics จาก ticket, G5 Sigma, G6 ML — สี่ข้อหลังเพราะไม่มี ticket export, label และ rule engine ในระบบ เสนอเป็นคาบถัดไปเมื่อมี Elastic (ดู [codex-queue](../codex-queue/README.md) ใบงาน 002–016)
+**ยังไม่บรรลุ** M5.3 (TLS, Nmap, schedule, secrets), M5.4 auth flow, M5.5 STIX/MISP, M6.1 SOAR จริง, M6.4 metrics จาก ticket, G5 Sigma, G6 ML — สี่ข้อหลังเพราะไม่มี ticket export, label และ rule engine ในระบบ เสนอเป็นคาบถัดไปเมื่อมี Elastic (ดู [codex-queue](../../codex-queue/README.md) ใบงาน 002–016)
 
 ## ลำดับสอนที่แนะนำ (ครึ่งวัน)
 
@@ -83,4 +83,5 @@ Claude Desktop ── ดึง feed / ทำ PDF / Artifact (ออกเน็
 
 - ผู้สอนเปิด Claude Desktop ที่ต่อ MCP ทั้งสองตัวไว้แล้ว ผู้เรียนดูผ่านจอหรือทำตามบนเครื่องที่ต่อ MCP เดียวกัน
 - ทุกคนต้องใช้ **ชื่อ output ของตัวเอง** ใน HDFS เช่น `/module7/<ชื่อ>/lab2-ids` เพราะ Spark เขียนแบบ `errorifexists`
+- หมายเหตุชื่อ: โฟลเดอร์ใน HDFS (`/module7/...`), ชื่อไฟล์ job (`module7_lab*.py`) และ idempotency key ใช้คำว่า module7 เพราะเป็นชื่อตอนรันเฉลยคืน 2026-11-02 ก่อนย้ายแทร็กนี้มาอยู่ใต้ Module 6 ตาม course outline ค่าเหล่านี้เป็นบันทึกจริงบน server จึงไม่เปลี่ยน
 - สิ่งที่ Claude ทำผิดได้และผู้เรียนต้องจับ (รวบรวมจากการรันจริง): ใส่ชื่อ skill ผิดตอน render (ต้องใช้ skill ของ parser ไม่ใช่ workflow), ส่ง virtual path ให้ Spark, รายงานผลก่อน job SUCCEEDED, อ่าน report จาก part file ผิดไฟล์, สรุปว่า "ถูกโจมตีแน่" ทั้งที่ tool คืนเพียงสถิติ (interpretation: no incident verdict)

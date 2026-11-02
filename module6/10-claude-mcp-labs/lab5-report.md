@@ -19,7 +19,7 @@
 1. `hdfs_list` → `hdfs_read_text` part-*.txt → `hdfs_sha256`
 2. `log_skill_validate_report` (ซ้ำ เพื่อให้แน่ใจว่าไฟล์ที่อ่านคือฉบับที่ผ่าน)
 3. Artifact (HTML dashboard) — ตัวเลขจาก JSON โดยตรง
-4. skill pdf (Bash + reportlab/weasyprint) → ไฟล์ PDF ในโฟลเดอร์ module7-claude-mcp/outputs/
+4. skill pdf (Bash + reportlab/weasyprint) → ไฟล์ PDF ในโฟลเดอร์ module6/10-claude-mcp-labs/outputs/
 
 ## เฉลยที่คาด
 
