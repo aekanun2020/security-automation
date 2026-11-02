@@ -1,6 +1,6 @@
 id: 002
 commit: ee7d055098cacd542d3abfd4c04899b8cbce50fd
-approved: no
+approved: yes
 budget_usd: 0
 network: downloads
 files: elk-siem/scripts/preflight.sh; elk-siem/preflight.json; elk-siem/tests/verify-T0.sh
