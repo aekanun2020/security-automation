@@ -110,3 +110,68 @@ Lab ตาม gap: L1 → L3 → L2 → L4 → L5 → L6 (ดู [lab-design-by-
 **เชื่อมกับ Spark/HDFS** หัวข้อที่สอนบนระบบนี้ได้ตรงคือ M5.2, M6.2, M6.4 (= L1, L2) ส่วน M5.4–M5.5 และ M6.1 ต้องออกเครือข่าย จึงอยู่นอก MCP
 
 **ค้างใน repo** โค้ด 3.1–9.4 ยังไม่แยกไฟล์และยังไม่ smoke-test คิว Codex เปลี่ยนไปสร้าง ELK stack (ใบงาน 002–016) ใบงาน Python lab เดิม 002–007 ถูก archive โดยไม่เคยอนุมัติ
+
+## Q7 — เซสชันนี้อยู่ในโปรเจกต์อะไร และทำไมหาชื่อโปรเจกต์ทางซ้ายไม่เจอ
+
+เซสชันอยู่ในโฟลเดอร์ `security-automation` บน branch `main` (เริ่มต้นเป็น "No folder" แล้วย้ายมาเมื่อสั่ง "ย้าย") หาไม่เจอเพราะเซสชันถูกปักหมุด (pinned) จึงอยู่ในส่วน Pinned ด้านบนสุดของ sidebar ไม่อยู่ใต้ชื่อโปรเจกต์ในส่วน Sessions ที่จัดกลุ่มตามโฟลเดอร์ ชื่อเซสชันคือ "MCP server for Spark, HDFS tools" ถ้าเลิกปักหมุดจะย้ายไปอยู่ใต้ security-automation
+
+## Q8 — Claude + MCP ตามเซสชันนี้ปิด gap ของ SIEM อย่าง QRadar ได้ไหม
+
+**ประเมิน** ปิดได้บางส่วนและเป็นคนละชั้นกับ QRadar: gap G1–G6 ในเอกสารเป็น gap ของคนและกระบวนการใน SOC ไม่ใช่ความสามารถที่ขาดในตัว SIEM ชุดนี้จึงเป็น "ชั้นเสริมที่วางข้าง SIEM" ไม่ใช่ทางเลือกแทน
+
+คำตอบรอบแรกระบุว่า G3 (enrichment) ไม่ปิดเพราะ MCP ไม่มี HTTP ออกนอก และ G4 (รายงาน) ปิดครึ่งเดียวเพราะ PDF/dashboard อยู่นอก MCP เจ้าของทักว่า Claude Desktop ทำสองอย่างนั้นได้ ซึ่งถูกต้อง ตารางที่แก้แล้ว:
+
+| gap | ปิดได้ไหม | ใครทำ | เงื่อนไข |
+| --- | --- | --- | --- |
+| G1 parser | ปิดได้ | skill server + คนรีวิว draft ผ่าน Git | วัด % บรรทัดที่ parse ได้ |
+| G2 alert overload | ปิดได้ระดับ lab | Spark/HDFS + label จากคน | ไม่ real-time |
+| G3 enrichment | ปิดได้ | Claude Desktop ดึง feed (WebFetch/browser/Bash) → `hdfs_write_text` → Spark หรือ `hdfs_query_records` CIDR filter | `hdfs_write_text` รับ text ผ่าน argument ไฟล์ใหญ่ต้องแบ่ง; `hdfs_import_file` รับ source ฝั่ง server; การดาวน์โหลดต้องขออนุญาตทุกครั้ง; ต้องบันทึกวันที่และ sha256 ของ feed เองเพราะอยู่นอก audit trail ของ MCP |
+| G4 รายงาน | ปิดได้ | Spark ให้ตัวเลข (ผ่าน `log_skill_validate_report`) → Claude Desktop ทำ PDF/DOCX/Artifact | การรันยังเป็นคนสั่ง ถ้าต้องการรายสัปดาห์อัตโนมัติต้องทดสอบ scheduled routine ว่าเรียก MCP ถึง |
+| G5 vendor lock-in | ปิดบางส่วน | canonical schema ของ skill server | ไม่มี Sigma, ไม่มี rule engine |
+| G6 ML ไม่ปรับ | ปิดได้ระดับ lab | Spark/HDFS | เทียบ rule กับ ML baseline บนข้อมูลเดียวกัน |
+
+สิ่งที่ไม่ปิด: correlation engine real-time, offense UI/case management, UBA ต่อเนื่อง, retention ตาม พ.ร.บ. คอมพิวเตอร์, support/license เพราะทั้ง Claude Desktop และ MCP ไม่ได้วิ่งต่อเนื่อง และ LLM ไม่ควรเป็น detection engine
+
+จุดแข็งของชุดนี้ที่น่าใช้สอน: AI เป็นผู้ร่าง artifact แบบ deterministic แล้วคนอนุมัติ — skill code อ่านอย่างเดียวไม่รัน, Spark job render จาก template ที่เชื่อถือได้และตรวจ sha256, submit มี idempotency key และเก็บ snapshot ไว้ audit, draft parser ต้องผ่าน Git review
+
+## Q9 — ภายในเที่ยงพรุ่งนี้ (2026-11-03) ต้องทำ material การสอนบน GitHub ให้เสร็จ ควรทำอะไร
+
+ข้อเสนอแรกของ Claude (แยกโค้ด 3.1–9.4 เป็นไฟล์ + lab เรือธง + README + push) ถูกเจ้าของปฏิเสธ: **ต้องการสอน automation ในแนว Claude + MCP ตามเซสชันนี้** ไม่ใช่ให้ผู้เรียนเขียน Python เอง
+
+โครงที่ตกลงเป็นฐาน: โฟลเดอร์ใหม่ (เสนอ `module7-claude-mcp/`) แต่ละ lab เป็น markdown 5 ส่วน: โจทย์ → prompt ที่ผู้เรียนพิมพ์ให้ Claude → ลำดับ tool ที่ควรเห็น Claude เรียก → ตัวเลขเฉลยจากการรันจริง → จุดที่คนต้องทำ (อนุมัติ, ตรวจ, ตัดสินใจ) และทุก lab ปิดท้ายด้วยคำถามว่า Claude ทำผิดตรงไหนได้บ้างและตรวจอย่างไร
+
+| lab | gap | ผู้เรียนสั่ง Claude | tool หลัก | ข้อมูล |
+| --- | --- | --- | --- | --- |
+| 0 สำรวจเครื่องมือ | — | MCP มี tool อะไร กติกา path | list/search/get | Q1, Q4 |
+| 1 parser | G1 | log บรรทัดนี้ใช้ parser ไหน ทดสอบ แล้วร่าง parser ใหม่สำหรับ auth.log | resolve, test_parser, save_draft | samples/auth.log |
+| 2 วิเคราะห์ด้วย Spark | G2 | สร้าง report จาก Suricata alerts ใน HDFS | render → save → validate → submit → status → validate_report | incident-lab ใน HDFS |
+| 3 correlate | G2 | จับคู่ alert กับ Zeek conn ด้วย 5-tuple | hdfs_correlate_records, hdfs_pcap_packets | ชุดเดียวกัน |
+| 4 enrich | G3 | ดึง Feodo/KEV แล้วเช็ค IP ใน alert | WebFetch → hdfs_write_text → query (CIDR) | feed สด |
+| 5 รายงาน | G4 | ทำ dashboard และ PDF จาก report | Artifact, pdf skill | report จาก lab 2 |
+
+สมมติฐาน: ผู้เรียนดูการสาธิตผ่านจอผู้สอนและทำตามบนเครื่องที่มี MCP ตัวเดียวกัน, ภาษาไทย, ไม่แตะ ELK ticket; lab 1–3 รันคืนนี้เพื่อเก็บเฉลย lab 4–5 รันตอนเช้าเพราะต้องขออนุญาตดาวน์โหลด feed
+
+## Q10 — โครงนี้บรรจุหัวข้ออะไรบ้าง และหัวข้ออะไรยังไม่บรรลุ
+
+✔ ทำได้จริงในเซสชันนี้ ◐ แตะบางส่วน ✗ ไม่บรรลุ
+
+| หัวข้อ | lab | ครอบคลุม | ยังขาด |
+| --- | --- | --- | --- |
+| M5.2 Log Analysis Automation | 1, 2, 3 | ✔ parse หลาย vendor, canonical schema, Zeek, PCAP, batch analytics | Drain3, EVTX, Sigma |
+| M6.2 Automated Alert Processing | 2, 3 | ◐ aggregate IDS alert, correlate กับ flow | dedupe/risk score (7.2), Jira |
+| M5.4 API Integration | 0, 4 | ◐ MCP เป็น API contract, feed สาธารณะ, allowlist, idempotency | OAuth2, HMAC, Wazuh API |
+| M5.5 Threat Intelligence | 4 | ◐ ingest feed, match indicator กับ log | STIX, TAXII, MISP, OTX, OpenCTI |
+| M6.3 Automated Reporting | 5 | ✔ report contract → PDF/DOCX/dashboard | Navigator layer |
+| M6.4 SecOps Optimization | 5 | ◐ dashboard | ATT&CK coverage, MTTD/MTTR, FP ต่อ rule (ไม่มี ticket/label) |
+| M5.3 Automation Scripts | 0, 2 | ◐ file integrity (hdfs_sha256), subprocess ปลอดภัยผ่าน submit | TLS expiry, Nmap, scheduled job, secrets |
+| M5.1 Python Fundamentals | 2 | ◐ อ่าน PySpark ที่ render และแก้ด้วย replace_job_text | ผู้เรียนไม่ได้เขียน Python เอง |
+| M6.1 Workflow Automation | — | ✗ | TheHive, SOAR, active response |
+
+gap: G1 ✔, G2 ◐, G3 ✔, G4 ✔, G5 ✗, G6 ✗ วัตถุประสงค์หลักสูตร: ข้อ 4 ✔ โดยตรง และตอบข้อ 2–3 (incident analysis, forensics) ได้ดีกว่าแผนเดิมเพราะใช้ PCAP จริงและมี skill correlate → investigation handoff
+
+**เพิ่ม 3 จุดด้วยต้นทุนต่ำ**
+- lab 2b: ใช้ skill `author-debug-pyspark-security-jobs` เขียน dedupe/score ตามตัวอย่าง 7.2 บน alert ของ lab 2 → ปิด M6.2 และให้ผู้เรียนอ่าน/แก้ Python (M5.1)
+- lab 3b: ต่อผล correlate เข้า skill `build-security-investigation-handoff-with-spark` → handoff-v1 แทน "ส่งต่อเป็น case" ปิด M6.1 บางส่วนโดยไม่ต้องมี TheHive
+- lab 4: เพิ่ม EPSS (api.first.org ไม่ต้องมี key) และ ATT&CK TAXII → แตะ 8.5 และ 5.4
+
+**ยังไม่บรรลุแม้เพิ่มแล้ว (ต้องระบุใน README)** M5.3 (TLS, Nmap, schedule, secrets), M5.4 auth flow, M5.5 STIX/MISP, M6.1 SOAR จริง, M6.4 metrics MTTD/MTTR/FP rate, G5 Sigma, G6 ML — สี่ข้อหลังเพราะไม่มี ticket export, label และ rule engine ในระบบ ไม่ใช่เพราะ Claude ทำไม่ได้ เสนอเป็น "คาบถัดไปเมื่อมี Elastic" สถานะ: รอเจ้าของเลือกระหว่างโครงที่เพิ่ม 2b/3b/EPSS กับ 6 lab เดิม
