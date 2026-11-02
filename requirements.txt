@@ -1,0 +1,14 @@
+requests
+pandas
+pydantic
+python-evtx
+drain3
+pysigma
+stix2
+taxii2-client
+pymisp
+mitreattack-python
+jinja2
+weasyprint
+matplotlib
+python-docx
