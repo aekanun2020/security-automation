@@ -1,0 +1,18 @@
+interpreter: /opt/anaconda3/bin/python3.12 (Python 3.12.7)
+PASS syntax 2_1_authlog_bruteforce.py
+PASS syntax 2_2_evtx_failed_logon.py
+PASS syntax 2_2b_evtx_rs_eventid_counts.py
+PASS syntax 2_3_syslog_to_pandas.py
+PASS syntax 2_4_drain3_templates.py
+PASS syntax 2_5_pysigma_convert.py
+PASS syntax 2_6_zeek_beacon_candidates.py
+PASS syntax 2_7_access_log_pandas.py
+PASS 2.1 auth.log brute force
+PASS 2.2 python-evtx import
+PASS 2.2b pyevtx-rs import (venv แยก)
+PASS 2.3 syslog -> pandas
+PASS 2.4 Drain3 templates
+PASS 2.5 pySigma -> Splunk
+PASS 2.6 Zeek beacon candidates
+PASS 2.7 access log -> pandas
+passed=16 failed=0

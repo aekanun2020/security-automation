@@ -1,0 +1,48 @@
+{
+  "ticket": "001",
+  "run": "round3",
+  "assessor": "Codex",
+  "assessment": "new run; historical reports excluded",
+  "commit": "d71bf29a76efe93f63e0932c67e34d7175da7702",
+  "tested_branch": "main",
+  "task_branch": null,
+  "task_head": null,
+  "clone": "/private/tmp/security-automation-001.6nvzgP",
+  "baseline_recorded_at": "2026-11-02T17:56:13+07:00",
+  "evidence_verified_at": "2026-11-02T17:58:51+07:00",
+  "smoke_runs_this_execution": {
+    "M5.1": 1,
+    "M5.2": 1
+  },
+  "observed_exit_codes": {
+    "M5.1": 0,
+    "M5.2": 0,
+    "sample_counts": 0,
+    "scanner": 0
+  },
+  "interpreter": "/opt/anaconda3/bin/python3.12",
+  "python_version": "3.12.7",
+  "budget_usd": 0,
+  "external_service_cost_usd": 0,
+  "pip_bootstrap": {
+    "index": "https://pypi.org/simple",
+    "config": "/dev/null",
+    "cache": false,
+    "locations": [
+      "module5/02-log-analysis-automation/.venv",
+      "module5/02-log-analysis-automation/.venv-evtx"
+    ]
+  },
+  "codex_attestations": [
+    "No network except git origin and PyPI bootstrap",
+    "No module, smoke-test, criterion, or requirements edits",
+    "No external model or paid-service call; no API key use"
+  ],
+  "artifact_checks": {
+    "last_lines_exact": true,
+    "sample_counts_exact": true,
+    "hashes_match": 13,
+    "hash_mismatches": 0,
+    "module_diff_vs_pin_empty": true
+  }
+}
