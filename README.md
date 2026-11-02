@@ -4,6 +4,7 @@
 
 - **Module 5 – Python for Cybersecurity**: Python Fundamentals, Log Analysis Automation, Security Automation Scripts, API Integration for Security Tools, Threat Intelligence Automation
 - **Module 6 – Security Automation Project**: Security Workflow Automation, Automated Alert Processing, Automated Reporting, Security Operations Optimization
+- **Module 7 – SOC Automation ด้วย Claude + MCP** (เพิ่ม 2026-11-02): ผู้เรียนสั่ง Claude ใช้ MCP ทำ parser, Spark report, correlate, enrich, รายงาน โดยคนเป็นผู้ตรวจ — [module7-claude-mcp/](module7-claude-mcp/README.md)
 
 ## วัตถุประสงค์ของหลักสูตร
 
@@ -35,6 +36,7 @@ docs/
   research_notes/                          # บันทึกการค้นคว้าต้นทาง (รอบรายงานหลัก 5 ชุด, รอบ datasets 3 ชุด)
 module5/                                   # โค้ดและแบบฝึกหัดของแต่ละหัวข้อ (01–05)
 module6/                                   # โค้ดและแบบฝึกหัดของแต่ละหัวข้อ (06–09)
+module7-claude-mcp/                        # SOC automation ด้วย Claude + MCP (lab 0–5, คนเป็นผู้ตรวจ)
 codex-queue/                               # ใบงานสั่ง Codex, กติกา, ผลและรายงาน
 ```
 

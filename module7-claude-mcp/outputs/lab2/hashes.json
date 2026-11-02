@@ -1,0 +1,22 @@
+{
+  "run_date": "2026-11-02",
+  "job_id": "30d2a9d4-f6ad-412b-8dcf-dfaff1ce1233",
+  "job_status": "SUCCEEDED",
+  "job_started_at": "2026-11-02T14:43:42.518244+00:00",
+  "job_finished_at": "2026-11-02T14:46:25.627438+00:00",
+  "idempotency_key": "module7-lab2-ids-20261102",
+  "template_sha256": "a5b95a8d22a2386a3fd4c5354580a51bfed0b1674335bf10358997dc795662b1",
+  "parser_sha256": "9198c1551f9de597b3f90783342538d752e0379a077b7c3067b68bc7b0e5d270",
+  "code_sha256": "000a31479ed493810f179599615436c811aa4c9b77cd016dc6babd6d4386169b",
+  "input": {"physical_path": "/mcp/student/agentic-siem/incident-lab/input/coherent-pcap-suricata-alerts-340.jsonl", "sha256": "9cd3513a8bd84b65c6a1059fb168b6fbe2a28d07fe44051de3d42ccd103e66d7", "bytes": 154267},
+  "report_hdfs": {"physical_path": "/mcp/module7/lab2-ids/report/part-00000-0e020a8d-3245-45fc-99eb-5082085587e8-c000.txt", "sha256": "08e4e2290f0e7da14c362c9972cc4cfae433fa1b069b99e8cdeaae621c0f1031", "bytes": 2175},
+  "report_validate_sha256": "538c5ef1ec1e444280e22a3e1fd4d60cf8d7ca53018b65f66e102051a2f1fd3c",
+  "lab3": {
+    "zeek_conn_sha256": "82736842b7831d314d37a60aae1becde703d07e046160091d1a6c45d9999e273",
+    "pcap_sha256": "fa9d5c21eb157e0630ff7524a656ea8bbf761951d602d238c4a35c9cb81ffa5a",
+    "correlate_matched_pairs": 340,
+    "exfil_orig_bytes": 6010330,
+    "exfil_resp_bytes": 240,
+    "pcap_matching_packets": 480
+  }
+}
