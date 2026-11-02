@@ -24,9 +24,29 @@
 - BHIS webcast "Log File Frequency Analysis with Python" (2017)
 - ISC diary 20451 และ `freq.py` ของ Mark Baggett
 
-## ตัวอย่างโค้ดในรายงาน
+## ตัวอย่างโค้ด (ระดับ 2: แยกเป็นไฟล์และ smoke-test แล้ว)
 
-ยังไม่ได้ย้ายมาเป็นไฟล์ในโฟลเดอร์นี้ (ระดับ 2) ทุกชิ้นยังไม่ได้รันทดสอบ ต้อง smoke-test ก่อนใช้สอน
+โค้ดคัดจากรายงานโดยไม่แก้ไขตรรกะ ทุกไฟล์ใช้ standard library เท่านั้น ไม่ต้องมี venv
+
+```bash
+./run_smoke_tests.sh        # รันทุกตัวอย่าง (1.1 ใช้ access.log ของ M5.2, 1.2 ทดสอบแบบ live, 1.3 ใช้ samples/events.jsonl)
+```
+
+| ตัวอย่าง | ไฟล์ | sample | ผล smoke-test (2026-11-02, Python 3.12.7) |
+| --- | --- | --- | --- |
+| 1.1 | `1_1_combined_log_counter.py` | `../02-log-analysis-automation/samples/access.log` | ผ่าน: top talker และ scanner 203.0.113.50 (73/80 = 91% เป็น 404), user agent หายาก 6 ตัว |
+| 1.2 | `1_2_follow_log_watcher.py` | ไฟล์ชั่วคราวที่ harness append บรรทัดลงไประหว่างรัน | ผ่าน: alert `203.0.113.9: 5 failed logins in 60s` ภายใน 5 วินาทีหลัง append ครบ 5 บรรทัด |
+| 1.3 | `1_3_jsonl_field_counter.py` | `samples/events.jsonl` (ECS-style 300 event + 2 บรรทัดเสีย) | ผ่าน: นับ `source.ip` ได้ 203.0.113.50 = 100, เขียน CSV ได้, `-v` รายงานบรรทัด JSON เสียที่ตำแหน่งที่ถูกต้อง |
+
+### ข้อสังเกตจาก smoke-test
+
+1. ไม่ต้องแก้โค้ดจากรายงานแม้แต่บรรทัดเดียว ต่างจาก M5.2 ที่ต้องแก้ import ของ 2.2b
+2. 1.2 ทดสอบเฉพาะกรณี append ปกติ ยังไม่ได้ทดสอบกรณี logrotate (inode เปลี่ยน) และ truncate ซึ่ง `follow()` อ้างว่ารองรับ เหมาะเป็นแบบฝึกหัดให้ผู้เรียนเขียน test เพิ่ม
+3. 1.2 พิมพ์ alert ซ้ำทุกบรรทัดที่ทำให้จำนวนใน window ≥ 5 (ไม่มี `alerted` set แบบ 2.1) ตามรายงาน ผู้สอนอาจใช้เป็นจุดเปรียบเทียบกับ 2.1
+4. 1.1 ใช้ sample ร่วมกับ M5.2 โดยตั้งใจ เพื่อให้ผู้เรียนเห็นว่า regex + Counter (1.1) กับ pandas (2.7) ให้ผลเดียวกันบนข้อมูลเดียวกัน
+5. 1.3 ส่ง log ระดับ INFO ออก stderr ส่วนผลนับออก stdout จึง pipe ผลไปต่อได้โดยไม่ปน (`2>/dev/null`)
+
+### รายการตัวอย่าง
 
 - ตัวอย่าง 1.1 parse Nginx/Apache combined log ด้วย regex + Counter
 - ตัวอย่าง 1.2 streaming log watcher แบบ `tail -f` ด้วย generator
