@@ -36,5 +36,6 @@ module6/                                   # โค้ดและแบบฝ�
 
 - รายงาน research: [docs/python-security-automation-research.md](docs/python-security-automation-research.md)
 - ฉบับ doc ที่แก้ไขร่วมกันได้: https://claude.ai/artifact/QUBmwvhnnbs7f14y8Tb2z2
+- บริบทผู้เรียน: [docs/nt-siem-landscape.md](docs/nt-siem-landscape.md) ข้อมูลสาธารณะเรื่อง SIEM ที่ NT cyfence ใช้ (IBM QRadar, McAfee/Trellix ESM) และสิ่งที่ต้องยืนยันกับผู้เรียน
 
 หมายเหตุ: ตัวอย่างโค้ดในรายงานยังไม่ได้รันทดสอบ ควร smoke-test ก่อนนำไปใช้ในชั้นเรียน ข้อมูลและจำนวนดาว GitHub เป็นค่า ณ 2026-11-01
