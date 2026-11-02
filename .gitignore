@@ -10,3 +10,7 @@ venv/
 
 # sample logs สำหรับแบบฝึกหัดต้องอยู่ใน repo
 !**/samples/*.log
+
+# codex-queue: ชุดข้อมูลที่ดาวน์โหลดและไฟล์ดิบของรายงาน
+module*/*/data/
+codex-queue/reports/*/artifacts/
