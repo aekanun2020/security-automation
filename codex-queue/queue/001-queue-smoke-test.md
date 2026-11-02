@@ -1,6 +1,6 @@
 id: 001
 commit: 22c935f62e4c4b75d0973f566a7b853302983a8c
-approved: no
+approved: yes
 budget_usd: 0
 network: none
 files: none
