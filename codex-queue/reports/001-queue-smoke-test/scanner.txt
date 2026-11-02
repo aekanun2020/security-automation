@@ -1,0 +1,4 @@
+Top talkers: [('203.0.113.50', 80), ('198.51.100.35', 31), ('198.51.100.38', 22), ('198.51.100.16', 22), ('198.51.100.33', 22)]
+Top 404 paths: [('/static/app.js', 8), ('/api/items', 8), ('/', 8), ('/login', 7), ('/about', 6)]
+Rare user agents: ['RareBot/0.0 (+https://example.test/bot0)', 'RareBot/1.0 (+https://example.test/bot1)', 'RareBot/2.0 (+https://example.test/bot2)', 'RareBot/3.0 (+https://example.test/bot3)', 'RareBot/4.0 (+https://example.test/bot4)', 'RareBot/5.0 (+https://example.test/bot5)']
+SCANNER? 203.0.113.50 73/80 = 91%

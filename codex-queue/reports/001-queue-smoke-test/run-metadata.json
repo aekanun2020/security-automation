@@ -1,0 +1,53 @@
+{
+  "ticket": "001",
+  "assessor": "Codex",
+  "assessment": "new",
+  "recorded_at": "2026-11-02T17:34:09+07:00",
+  "tested_commit": "22c935f62e4c4b75d0973f566a7b853302983a8c",
+  "tested_branch": "main",
+  "task_branch": null,
+  "task_head": null,
+  "origin": "https://github.com/aekanun2020/security-automation.git",
+  "smoke_runs": [
+    {
+      "topic": "M5.1",
+      "invocations": 1,
+      "command": "PYTHON=/usr/bin/python3 bash module5/01-python-fundamentals/run_smoke_tests.sh",
+      "exit_code": 1,
+      "final_line": "passed=4 failed=3",
+      "output": "m5-1-smoke.txt"
+    },
+    {
+      "topic": "M5.2",
+      "invocations": 1,
+      "command": "env -u PIP_TARGET -u PIP_PREFIX -u PIP_USER PIP_CONFIG_FILE=/dev/null PIP_INDEX_URL=https://pypi.org/simple PIP_EXTRA_INDEX_URL= PIP_FIND_LINKS= PIP_TRUSTED_HOST= PIP_DISABLE_PIP_VERSION_CHECK=1 PIP_NO_CACHE_DIR=1 PIP_RETRIES=0 bash module5/02-log-analysis-automation/run_smoke_tests.sh",
+      "exit_code": 1,
+      "final_line": "passed=4 failed=12",
+      "output": "m5-2-smoke.txt",
+      "bootstrap_complete": false
+    }
+  ],
+  "other_commands": [
+    {
+      "command": "wc -l module5/02-log-analysis-automation/samples/auth.log module5/02-log-analysis-automation/samples/syslog.log module5/02-log-analysis-automation/samples/access.log module5/02-log-analysis-automation/samples/conn.log module5/01-python-fundamentals/samples/events.jsonl",
+      "exit_code": 0,
+      "output": "sample-counts.txt"
+    },
+    {
+      "command": "python3 module5/01-python-fundamentals/1_1_combined_log_counter.py module5/02-log-analysis-automation/samples/access.log",
+      "exit_code": 0,
+      "output": "scanner.txt"
+    }
+  ],
+  "network_attestation": "Codex invoked only git origin and PyPI bootstrap; no packet-level network audit was performed.",
+  "paid_service_calls": 0,
+  "external_model_calls": 0,
+  "upstream_change_detected_before_push": {
+    "origin_main": "ca1e625b39f03c2c413c1e3d92c9f5460998ee1f",
+    "new_ticket_pin": "d71bf29a76efe93f63e0932c67e34d7175da7702",
+    "new_ticket_approved": false,
+    "new_ticket_executed": false,
+    "hash_after_scope": "disk at original tested pin before rebase",
+    "log_resolution": "preserve upstream prefix and append original result line unchanged"
+  }
+}

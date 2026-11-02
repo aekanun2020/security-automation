@@ -1,0 +1,88 @@
+    ERROR: Command errored out with exit status 1:
+     command: /private/tmp/security-automation-001-20261102/module5/02-log-analysis-automation/.venv/bin/python3 -u -c 'import io, os, sys, setuptools, tokenize; sys.argv[0] = '"'"'/private/var/folders/yd/mk1j5cm1051czrvw0q_khzbm0000gn/T/pip-install-acu9vh3a/hexdump_c60af4b287e54bc2997d691e94db88da/setup.py'"'"'; __file__='"'"'/private/var/folders/yd/mk1j5cm1051czrvw0q_khzbm0000gn/T/pip-install-acu9vh3a/hexdump_c60af4b287e54bc2997d691e94db88da/setup.py'"'"';f = getattr(tokenize, '"'"'open'"'"', open)(__file__) if os.path.exists(__file__) else io.StringIO('"'"'from setuptools import setup; setup()'"'"');code = f.read().replace('"'"'\r\n'"'"', '"'"'\n'"'"');f.close();exec(compile(code, __file__, '"'"'exec'"'"'))' install --record /private/var/folders/yd/mk1j5cm1051czrvw0q_khzbm0000gn/T/pip-record-jj9gam0v/install-record.txt --single-version-externally-managed --compile --install-headers /private/tmp/security-automation-001-20261102/module5/02-log-analysis-automation/.venv/include/site/python3.9/hexdump
+         cwd: /private/var/folders/yd/mk1j5cm1051czrvw0q_khzbm0000gn/T/pip-install-acu9vh3a/hexdump_c60af4b287e54bc2997d691e94db88da/
+    Complete output (10 lines):
+    running install
+    running build
+    running build_py
+    creating build
+    creating build/lib
+    copying hexdump.py -> build/lib
+    running install_lib
+    copying build/lib/hexdump.py -> /private/tmp/security-automation-001-20261102/module5/02-log-analysis-automation/.venv/lib/python3.9/site-packages
+    byte-compiling /private/tmp/security-automation-001-20261102/module5/02-log-analysis-automation/.venv/lib/python3.9/site-packages/hexdump.py to hexdump.cpython-39.pyc
+    error: [Errno 1] Operation not permitted: '/Users/grizzlymacbookpro/Library/Caches/com.apple.python/private/tmp/security-automation-001-20261102'
+    ----------------------------------------
+ERROR: Command errored out with exit status 1: /private/tmp/security-automation-001-20261102/module5/02-log-analysis-automation/.venv/bin/python3 -u -c 'import io, os, sys, setuptools, tokenize; sys.argv[0] = '"'"'/private/var/folders/yd/mk1j5cm1051czrvw0q_khzbm0000gn/T/pip-install-acu9vh3a/hexdump_c60af4b287e54bc2997d691e94db88da/setup.py'"'"'; __file__='"'"'/private/var/folders/yd/mk1j5cm1051czrvw0q_khzbm0000gn/T/pip-install-acu9vh3a/hexdump_c60af4b287e54bc2997d691e94db88da/setup.py'"'"';f = getattr(tokenize, '"'"'open'"'"', open)(__file__) if os.path.exists(__file__) else io.StringIO('"'"'from setuptools import setup; setup()'"'"');code = f.read().replace('"'"'\r\n'"'"', '"'"'\n'"'"');f.close();exec(compile(code, __file__, '"'"'exec'"'"'))' install --record /private/var/folders/yd/mk1j5cm1051czrvw0q_khzbm0000gn/T/pip-record-jj9gam0v/install-record.txt --single-version-externally-managed --compile --install-headers /private/tmp/security-automation-001-20261102/module5/02-log-analysis-automation/.venv/include/site/python3.9/hexdump Check the logs for full command output.
+FAIL compile 2_1_authlog_bruteforce.py
+      File "/Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/os.py", line 215, in makedirs
+        makedirs(head, exist_ok=exist_ok)
+      File "/Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/os.py", line 225, in makedirs
+        mkdir(name, mode)
+    PermissionError: [Errno 1] Operation not permitted: '/Users/grizzlymacbookpro/Library/Caches/com.apple.python/private/tmp/security-automation-001-20261102'
+FAIL compile 2_2_evtx_failed_logon.py
+      File "/Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/os.py", line 215, in makedirs
+        makedirs(head, exist_ok=exist_ok)
+      File "/Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/os.py", line 225, in makedirs
+        mkdir(name, mode)
+    PermissionError: [Errno 1] Operation not permitted: '/Users/grizzlymacbookpro/Library/Caches/com.apple.python/private/tmp/security-automation-001-20261102'
+FAIL compile 2_2b_evtx_rs_eventid_counts.py
+      File "/Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/os.py", line 215, in makedirs
+        makedirs(head, exist_ok=exist_ok)
+      File "/Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/os.py", line 225, in makedirs
+        mkdir(name, mode)
+    PermissionError: [Errno 1] Operation not permitted: '/Users/grizzlymacbookpro/Library/Caches/com.apple.python/private/tmp/security-automation-001-20261102'
+FAIL compile 2_3_syslog_to_pandas.py
+      File "/Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/os.py", line 215, in makedirs
+        makedirs(head, exist_ok=exist_ok)
+      File "/Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/os.py", line 225, in makedirs
+        mkdir(name, mode)
+    PermissionError: [Errno 1] Operation not permitted: '/Users/grizzlymacbookpro/Library/Caches/com.apple.python/private/tmp/security-automation-001-20261102'
+FAIL compile 2_4_drain3_templates.py
+      File "/Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/os.py", line 215, in makedirs
+        makedirs(head, exist_ok=exist_ok)
+      File "/Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/os.py", line 225, in makedirs
+        mkdir(name, mode)
+    PermissionError: [Errno 1] Operation not permitted: '/Users/grizzlymacbookpro/Library/Caches/com.apple.python/private/tmp/security-automation-001-20261102'
+FAIL compile 2_5_pysigma_convert.py
+      File "/Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/os.py", line 215, in makedirs
+        makedirs(head, exist_ok=exist_ok)
+      File "/Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/os.py", line 225, in makedirs
+        mkdir(name, mode)
+    PermissionError: [Errno 1] Operation not permitted: '/Users/grizzlymacbookpro/Library/Caches/com.apple.python/private/tmp/security-automation-001-20261102'
+FAIL compile 2_6_zeek_beacon_candidates.py
+      File "/Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/os.py", line 215, in makedirs
+        makedirs(head, exist_ok=exist_ok)
+      File "/Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/os.py", line 225, in makedirs
+        mkdir(name, mode)
+    PermissionError: [Errno 1] Operation not permitted: '/Users/grizzlymacbookpro/Library/Caches/com.apple.python/private/tmp/security-automation-001-20261102'
+FAIL compile 2_7_access_log_pandas.py
+      File "/Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/os.py", line 215, in makedirs
+        makedirs(head, exist_ok=exist_ok)
+      File "/Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/os.py", line 225, in makedirs
+        mkdir(name, mode)
+    PermissionError: [Errno 1] Operation not permitted: '/Users/grizzlymacbookpro/Library/Caches/com.apple.python/private/tmp/security-automation-001-20261102'
+PASS 2.1 auth.log brute force
+FAIL 2.2 python-evtx import
+    Traceback (most recent call last):
+      File "<string>", line 1, in <module>
+    ModuleNotFoundError: No module named 'Evtx'
+PASS 2.2b pyevtx-rs import (venv แยก)
+PASS 2.3 syslog -> pandas
+FAIL 2.4 Drain3 templates
+    Traceback (most recent call last):
+      File "/private/tmp/security-automation-001-20261102/module5/02-log-analysis-automation/2_4_drain3_templates.py", line 11, in <module>
+        from drain3 import TemplateMiner                      # pip install drain3
+    ModuleNotFoundError: No module named 'drain3'
+FAIL 2.5 pySigma -> Splunk
+    Traceback (most recent call last):
+      File "/private/tmp/security-automation-001-20261102/module5/02-log-analysis-automation/2_5_pysigma_convert.py", line 11, in <module>
+        from sigma.backends.splunk import SplunkBackend
+    ModuleNotFoundError: No module named 'sigma.backends.splunk'
+FAIL 2.6 Zeek beacon candidates
+    Traceback (most recent call last):
+      File "/private/tmp/security-automation-001-20261102/module5/02-log-analysis-automation/2_6_zeek_beacon_candidates.py", line 11, in <module>
+        from zat.log_to_dataframe import LogToDataFrame      # pip install zat
+    ModuleNotFoundError: No module named 'zat'
+PASS 2.7 access log -> pandas
+passed=4 failed=12
