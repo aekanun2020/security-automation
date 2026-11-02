@@ -5,6 +5,15 @@
 - **Module 5 – Python for Cybersecurity**: Python Fundamentals, Log Analysis Automation, Security Automation Scripts, API Integration for Security Tools, Threat Intelligence Automation
 - **Module 6 – Security Automation Project**: Security Workflow Automation, Automated Alert Processing, Automated Reporting, Security Operations Optimization
 
+## วัตถุประสงค์ของหลักสูตร
+
+1. มีความรู้พื้นฐานด้าน Cybersecurity ตามกรอบมาตรฐานสากล
+2. สามารถวิเคราะห์เหตุการณ์ด้านความมั่นคงปลอดภัยและดำเนินการ Incident Analysis ได้อย่างเป็นระบบ
+3. สามารถดำเนินการ Digital Forensics และวิเคราะห์หาสาเหตุของเหตุการณ์ด้านความมั่นคงปลอดภัยได้
+4. สามารถพัฒนาเครื่องมือและระบบอัตโนมัติด้าน Cybersecurity ด้วยภาษา Python เพื่อสนับสนุนการปฏิบัติงานภายในองค์กร
+
+Module 5–6 ใน repo นี้ตอบวัตถุประสงค์ข้อ 4 โดยตรง และต่อยอดจากข้อ 2–3
+
 ## โครงสร้าง
 
 ```
