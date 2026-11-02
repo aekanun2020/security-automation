@@ -1,5 +1,7 @@
 # M6.1 Security Workflow Automation
 
+ศัพท์ที่ไม่คุ้นดูได้ใน[อภิธานศัพท์](../../docs/glossary.md)
+
 **ความเกี่ยวข้องกับ log analysis:** ระดับ 2 — ตอบสนองต่อ rule ที่ยิงจาก log (ตัวอย่าง 6.7); ที่เหลือเป็น orchestration
 
 - รับอินพุตจาก: M5.3 (subprocess), M5.4 (API), M5.5 (enrichment)

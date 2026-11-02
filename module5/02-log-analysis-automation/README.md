@@ -1,5 +1,7 @@
 # M5.2 Log Analysis Automation
 
+ศัพท์ที่ไม่คุ้นดูได้ใน[อภิธานศัพท์](../../docs/glossary.md)
+
 **ความเกี่ยวข้องกับ log analysis:** ระดับ 1 — log analysis โดยตรง (หัวข้อแกนของทั้ง Module 5 และ 6)
 
 - รับอินพุตจาก: M5.1 (regex, Counter, deque, CLI)

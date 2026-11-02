@@ -1,5 +1,7 @@
 # M6.2 Automated Alert Processing
 
+ศัพท์ที่ไม่คุ้นดูได้ใน[อภิธานศัพท์](../../docs/glossary.md)
+
 **ความเกี่ยวข้องกับ log analysis:** ระดับ 2 — ทุกตัวอย่างรับ alert ซึ่งคือ log ที่ผ่าน detection rule แล้ว และ normalize ด้วย schema เดียวกับ M5.2
 
 - รับอินพุตจาก: M5.2 (ECS/OCSF), M5.5 (indicator สำหรับ enrich), M6.1 (TheHive/Jira)

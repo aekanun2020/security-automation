@@ -5,6 +5,7 @@
 - หลักฐานของ gap และตัวอย่างโค้ด: [python-security-automation-research.md](python-security-automation-research.md)
 - ชุดข้อมูลจริงที่เลือกให้แต่ละ lab และรูปแบบ QRadar: [datasets-for-gap-labs.md](datasets-for-gap-labs.md)
 - บริบทผู้เรียน (NT cyfence ใช้ IBM QRadar และ McAfee/Trellix ESM): [nt-siem-landscape.md](nt-siem-landscape.md)
+- คำย่อและชื่อเฉพาะทุกคำในเอกสารนี้: [glossary.md](glossary.md)
 
 ข้อมูลทั้งหมด ณ 2026-11-02 ตัวเลขที่ใช้ตั้งโจทย์มาจากแหล่งที่อ้างในรายงานข้างต้น ไม่มีตัวเลขใดเป็นมาตรฐาน
 

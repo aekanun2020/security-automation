@@ -1,5 +1,7 @@
 # M5.3 Security Automation Scripts
 
+ศัพท์ที่ไม่คุ้นดูได้ใน[อภิธานศัพท์](../../docs/glossary.md)
+
 **ความเกี่ยวข้องกับ log analysis:** ระดับ 2 — ปลายน้ำของ log analysis (parse output ที่มีโครงสร้างและตั้งเวลารัน job)
 
 - รับอินพุตจาก: M5.1 (CLI, logging) และวิธี parse จาก M5.2

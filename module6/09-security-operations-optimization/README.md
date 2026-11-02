@@ -1,5 +1,7 @@
 # M6.4 Security Operations Optimization
 
+ศัพท์ที่ไม่คุ้นดูได้ใน[อภิธานศัพท์](../../docs/glossary.md)
+
 **ความเกี่ยวข้องกับ log analysis:** ระดับ 2 — metrics คำนวณจาก timestamp และ rule hit ที่มาจาก log (9.2–9.4); visibility coverage วัดจาก data source ที่ parse ได้
 
 - รับอินพุตจาก: M5.2 (data source/visibility), M6.2 (alert ต่อ rule), M6.3 (Navigator layer)

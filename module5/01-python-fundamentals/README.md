@@ -1,5 +1,7 @@
 # M5.1 Python Fundamentals
 
+ศัพท์ที่ไม่คุ้นดูได้ใน[อภิธานศัพท์](../../docs/glossary.md)
+
 **ความเกี่ยวข้องกับ log analysis:** ระดับ 1 — log analysis โดยตรง
 
 - รับอินพุตจาก: ไม่มี (จุดเริ่มต้นของ Module 5)

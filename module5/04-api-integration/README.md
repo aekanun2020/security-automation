@@ -1,5 +1,7 @@
 # M5.4 API Integration for Security Tools
 
+ศัพท์ที่ไม่คุ้นดูได้ใน[อภิธานศัพท์](../../docs/glossary.md)
+
 **ความเกี่ยวข้องกับ log analysis:** ระดับ 2 — ส่ง log ขึ้น SIEM และดึง alert ที่สร้างจาก log (ตัวอย่าง 4.9, 4.10)
 
 - รับอินพุตจาก: M5.3 (Session, retry, secrets)

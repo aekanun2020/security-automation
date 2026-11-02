@@ -1,5 +1,7 @@
 # M5.5 Threat Intelligence Automation
 
+ศัพท์ที่ไม่คุ้นดูได้ใน[อภิธานศัพท์](../../docs/glossary.md)
+
 **ความเกี่ยวข้องกับ log analysis:** ระดับ 3 — ไม่ได้แตะ log โดยตรง (แต่ indicator ที่ได้ถูกนำไป match กับ log ในขั้น enrich ของ M6.2)
 
 - รับอินพุตจาก: M5.4 (API pattern, AbuseIPDB)

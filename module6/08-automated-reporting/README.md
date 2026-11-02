@@ -1,5 +1,7 @@
 # M6.3 Automated Reporting
 
+ศัพท์ที่ไม่คุ้นดูได้ใน[อภิธานศัพท์](../../docs/glossary.md)
+
 **ความเกี่ยวข้องกับ log analysis:** ระดับ 2 — ข้อมูลตั้งต้นคือ alert/ticket export (ตัวอย่าง 8.1, 8.2); 8.3–8.6 เป็นเรื่อง format
 
 - รับอินพุตจาก: M6.2 (alert ที่ normalize/score แล้ว), M6.1 (case data)
