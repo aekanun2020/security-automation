@@ -1,8 +1,12 @@
 __pycache__/
 *.pyc
 .venv/
+.venv*/
 venv/
 .env
 .DS_Store
 *.log
 .ipynb_checkpoints/
+
+# sample logs สำหรับแบบฝึกหัดต้องอยู่ใน repo
+!**/samples/*.log

@@ -1,0 +1,10 @@
+pandas
+python-evtx
+drain3
+pysigma
+pysigma-backend-splunk
+pysigma-pipeline-sysmon
+zat
+# pyevtx-rs (ตัวอย่าง 2.2b) ต้องติดตั้งใน venv แยก: python-evtx ติดตั้งเป็นโฟลเดอร์ Evtx/ และ pyevtx-rs เป็น evtx/
+# บน macOS APFS (case-insensitive) และ Windows สองโฟลเดอร์นี้ชนกันจน import ไม่ได้
+# ดู requirements-evtx-rs.txt
