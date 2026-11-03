@@ -4,7 +4,7 @@
 
 ## โจทย์
 
-lab 3 เริ่มจาก alert ของ Suricata ซึ่งต้องมีคนเขียน signature ไว้ก่อน lab นี้กลับทาง: **ไม่ดู alert เลย** ให้ Claude สร้าง baseline ว่าเครื่องปกติในเครือข่ายนี้ส่ง traffic ออกเท่าไร แล้วหาเครื่องที่ผิดจาก baseline นั้น นี่คือ correlation แบบ (4) ใน [glossary หมวด 6](../../docs/glossary.md#6-ฟังก์ชันของ-siem) ซึ่ง QRadar ทำด้วย Anomaly Detection Engine และ UBA ส่วนเราทำด้วยสถิติล้วน
+lab 3 เริ่มจาก alert ของ Suricata ซึ่งต้องมีคนเขียน signature ไว้ก่อน lab นี้กลับทาง: **ไม่ดู alert เลย** ให้ Claude สร้าง baseline ว่าเครื่องปกติในเครือข่ายนี้ส่ง traffic ออกเท่าไร แล้วหาเครื่องที่ผิดจาก baseline นั้น นี่คือ correlation แบบ (4) ใน [glossary หมวด 6](../../../docs/glossary.md#6-ฟังก์ชันของ-siem) ซึ่ง QRadar ทำด้วย Anomaly Detection Engine และ UBA ส่วนเราทำด้วยสถิติล้วน
 
 ผู้เรียนต้องตัดสินใจเองว่า "ปกติ" วัดด้วยอะไร เพราะ metric ที่เลือกจะกำหนดว่าเจอหรือไม่เจอ
 

@@ -36,9 +36,10 @@ docs/
   research_notes/                          # บันทึกการค้นคว้าต้นทาง (รอบรายงานหลัก 5 ชุด, รอบ datasets 3 ชุด)
 module5/                                   # โค้ดและแบบฝึกหัดของแต่ละหัวข้อ (01–05)
 module6/                                   # โค้ดและแบบฝึกหัดของแต่ละหัวข้อ (06–09)
-  10-claude-mcp-labs/                      # แทร็ก lab: SOC automation ด้วย Claude + MCP (lab 0–5, 2b, 3b; คนเป็นผู้ตรวจ)
+  10-claude-mcp-labs/                      # แทร็ก lab: SOC automation ด้วย Claude + MCP (คนเป็นผู้ตรวจ)
     mcp-tools-reference.md                 # tool 37 ตัวของ MCP ทั้งสอง server อธิบายไทย + ต้นฉบับอังกฤษ
-    student/                               # ฉบับผู้เรียน (ไม่มีเฉลย) สร้างจากไฟล์ผู้สอนด้วย make_student.py
+    instructor/                            # ไฟล์ผู้สอน lab 0–5, 2b, 3b, 3c มีเฉลย + บันทึกการพิสูจน์เฉลย (ห้ามแจกผู้เรียน)
+    student/                               # ฉบับผู้เรียน (ไม่มีเฉลย) สร้างจาก instructor/ ด้วย make_student.py
 codex-queue/                               # ใบงานสั่ง Codex, กติกา, ผลและรายงาน
 ```
 

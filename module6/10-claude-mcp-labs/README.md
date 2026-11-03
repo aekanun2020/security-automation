@@ -125,17 +125,17 @@ MCP ชุดนี้ทำหน้าที่ของ SIEM ได้กี�
 
 | lab | gap | ผู้เรียนสั่ง Claude ว่า | สถานะเฉลย |
 | --- | --- | --- | --- |
-| [0 สำรวจเครื่องมือ](lab0-tools.md) | — | MCP มี tool อะไร กติกา path คืออะไร | ✅ จากเซสชัน 2026-11-02 |
-| [1 parser](lab1-parser.md) | G1 | log บรรทัดนี้ใช้ parser ไหน ทดสอบให้ดู | ✅ รันจริง |
-| [2 Spark report](lab2-spark-report.md) | G2 | สร้าง ids-report จาก Suricata alerts ใน HDFS | ✅ รันจริง job 30d2a9d4 |
-| [3 correlate](lab3-correlate.md) | G2 | จับคู่ alert กับ Zeek conn และยืนยันด้วย PCAP | ✅ รันจริง |
-| [4 enrich](lab4-enrich.md) | G3 | ดึง Feodo/KEV/EPSS แล้วเช็ค IP ใน alert | ⏳ ร่าง รันตอนเช้า (ต้องขออนุญาตดาวน์โหลด) |
-| [5 รายงาน](lab5-report.md) | G4 | ทำ dashboard และ PDF จาก report | ⏳ ร่าง |
-| [2b dedupe/score](lab2b-dedupe-score.md) | G2 | เขียน PySpark เองตามตัวอย่าง 7.2 (ไม่มี template) แล้วคนตรวจโค้ด | ✅ รันจริง job 291d645c: 340 → 39 offense, score ชน 100 ทุกตัว |
-| [3b investigation handoff](lab3b-handoff.md) | — | สร้าง handoff-v2 จาก correlation report แล้วพิสูจน์ determinism | ✅ รันจริง job 2b6283c3: sha256 ตรงกับรอบ 20 ส.ค. |
-| [3c baseline](lab3c-baseline.md) | G6 (ขั้นก่อน ML) | สร้าง baseline จาก Zeek conn แล้วหา host ที่ผิดโดยไม่ใช้ signature | ✅ รันจริง 2026-11-03: query อย่างเดียว ไม่มี Spark job; 10.70.0.66 byte ออก 212× ของ baseline แต่ connection น้อยกว่า baseline |
+| [0 สำรวจเครื่องมือ](instructor/lab0-tools.md) | — | MCP มี tool อะไร กติกา path คืออะไร | ✅ จากเซสชัน 2026-11-02 |
+| [1 parser](instructor/lab1-parser.md) | G1 | log บรรทัดนี้ใช้ parser ไหน ทดสอบให้ดู | ✅ รันจริง |
+| [2 Spark report](instructor/lab2-spark-report.md) | G2 | สร้าง ids-report จาก Suricata alerts ใน HDFS | ✅ รันจริง job 30d2a9d4 |
+| [3 correlate](instructor/lab3-correlate.md) | G2 | จับคู่ alert กับ Zeek conn และยืนยันด้วย PCAP | ✅ รันจริง |
+| [4 enrich](instructor/lab4-enrich.md) | G3 | ดึง Feodo/KEV/EPSS แล้วเช็ค IP ใน alert | ⏳ ร่าง รันตอนเช้า (ต้องขออนุญาตดาวน์โหลด) |
+| [5 รายงาน](instructor/lab5-report.md) | G4 | ทำ dashboard และ PDF จาก report | ⏳ ร่าง |
+| [2b dedupe/score](instructor/lab2b-dedupe-score.md) | G2 | เขียน PySpark เองตามตัวอย่าง 7.2 (ไม่มี template) แล้วคนตรวจโค้ด | ✅ รันจริง job 291d645c: 340 → 39 offense, score ชน 100 ทุกตัว |
+| [3b investigation handoff](instructor/lab3b-handoff.md) | — | สร้าง handoff-v2 จาก correlation report แล้วพิสูจน์ determinism | ✅ รันจริง job 2b6283c3: sha256 ตรงกับรอบ 20 ส.ค. |
+| [3c baseline](instructor/lab3c-baseline.md) | G6 (ขั้นก่อน ML) | สร้าง baseline จาก Zeek conn แล้วหา host ที่ผิดโดยไม่ใช้ signature | ✅ รันจริง 2026-11-03: query อย่างเดียว ไม่มี Spark job; 10.70.0.66 byte ออก 212× ของ baseline แต่ connection น้อยกว่า baseline |
 
-ทุก lab มี 7 ส่วน: โจทย์ → prompt แรกที่ผู้เรียนพิมพ์ → **คำถามที่ถาม Claude ต่อ** (คำถามแบบที่ analyst คุยกันหน้า SIEM รวม 64 ข้อ ผู้เรียนพิมพ์ถาม Claude ทีละข้อแล้วตรวจคำตอบ คอลัมน์ "คำตอบต้องอ้างอะไร" บอกว่า Claude ต้องอ้าง tool และฟิลด์ใด คอลัมน์ "ประเภท" แยกข้อ **ตรวจ** ที่คนเทียบตัวเลขกับ output ดิบ กับข้อ **ตัดสิน** ที่ Claude เสนอได้แต่คนเป็นผู้ตัดสิน รวม 20 ข้อ) → ลำดับ tool ที่ควรเห็น → เฉลย → จุดที่คนต้องทำ และปิดท้ายด้วย "Claude ผิดตรงไหนได้บ้าง" ฉบับผู้เรียน (ไม่มีเฉลย มีช่องบันทึกคำตอบ) อยู่ใน [student/](student/README.md) สร้างจากไฟล์ในโฟลเดอร์นี้ด้วย `python3 make_student.py` ห้ามแก้ student/ ด้วยมือ
+ทุก lab มี 7 ส่วน: โจทย์ → prompt แรกที่ผู้เรียนพิมพ์ → **คำถามที่ถาม Claude ต่อ** (คำถามแบบที่ analyst คุยกันหน้า SIEM รวม 64 ข้อ ผู้เรียนพิมพ์ถาม Claude ทีละข้อแล้วตรวจคำตอบ คอลัมน์ "คำตอบต้องอ้างอะไร" บอกว่า Claude ต้องอ้าง tool และฟิลด์ใด คอลัมน์ "ประเภท" แยกข้อ **ตรวจ** ที่คนเทียบตัวเลขกับ output ดิบ กับข้อ **ตัดสิน** ที่ Claude เสนอได้แต่คนเป็นผู้ตัดสิน รวม 20 ข้อ) → ลำดับ tool ที่ควรเห็น → เฉลย → จุดที่คนต้องทำ และปิดท้ายด้วย "Claude ผิดตรงไหนได้บ้าง" ไฟล์ผู้สอน (มีเฉลย) อยู่ใน [instructor/](instructor/) ฉบับผู้เรียน (ไม่มีเฉลย มีช่องบันทึกคำตอบ) อยู่ใน [student/](student/README.md) สร้างจาก instructor/ ด้วย `python3 make_student.py` ห้ามแก้ student/ ด้วยมือ และห้ามแชร์ลิงก์ instructor/ ให้ผู้เรียน
 
 ## หัวข้อตาม course outline ที่ครอบคลุม
 
@@ -160,8 +160,8 @@ MCP ชุดนี้ทำหน้าที่ของ SIEM ได้กี�
 ## ก่อนสอน
 
 - ให้ผู้เรียนอ่าน [mcp-tools-reference.md](mcp-tools-reference.md) ก่อน lab 0 เพื่อรู้ว่า Claude มี tool อะไรให้ใช้และแต่ละตัวทำอะไรไม่ได้ (ต้นฉบับอังกฤษคือข้อความที่ Claude เห็นจริง)
-- เฉลยทุก lab ถูกรันซ้ำตามฉบับผู้เรียนเมื่อ 2026-11-03 และเทียบทีละข้อใน [verification-2026-11-03.md](verification-2026-11-03.md) (namespace `/m6-10/claude-verify/`) ถ้าแก้เฉลยหรือ server เปลี่ยน ให้รันซ้ำแบบเดียวกัน คำถาม 64 ข้อถูกทดลองตอบด้วย tool เดียวกันใน [qa-dry-run-2026-11-03.md](qa-dry-run-2026-11-03.md) (คำตอบที่คาด + tool/ฟิลด์ที่ต้องอ้าง ใช้เป็นแนวตรวจงานผู้เรียน)
-- แจกโฟลเดอร์ [student/](student/README.md) ให้ผู้เรียน (วิธีใช้อยู่ใน README ของโฟลเดอร์นั้น) ผู้เรียนกรอก "บันทึกคำตอบ" ในไฟล์ lab แล้วส่งทั้งไฟล์ ผู้สอนตรวจกับส่วน "เฉลย" ของไฟล์ชื่อเดียวกันในโฟลเดอร์นี้ ถ้าแก้ไฟล์ผู้สอนให้รัน `python3 make_student.py` ซ้ำ
+- เฉลยทุก lab ถูกรันซ้ำตามฉบับผู้เรียนเมื่อ 2026-11-03 และเทียบทีละข้อใน [verification-2026-11-03.md](instructor/verification-2026-11-03.md) (namespace `/m6-10/claude-verify/`) ถ้าแก้เฉลยหรือ server เปลี่ยน ให้รันซ้ำแบบเดียวกัน คำถาม 64 ข้อถูกทดลองตอบด้วย tool เดียวกันใน [qa-dry-run-2026-11-03.md](instructor/qa-dry-run-2026-11-03.md) (คำตอบที่คาด + tool/ฟิลด์ที่ต้องอ้าง ใช้เป็นแนวตรวจงานผู้เรียน)
+- แจกโฟลเดอร์ [student/](student/README.md) ให้ผู้เรียน (วิธีใช้อยู่ใน README ของโฟลเดอร์นั้น) ผู้เรียนกรอก "บันทึกคำตอบ" ในไฟล์ lab แล้วส่งทั้งไฟล์ ผู้สอนตรวจกับส่วน "เฉลย" ของไฟล์ชื่อเดียวกันใน instructor/ ถ้าแก้ไฟล์ใน instructor/ ให้รัน `python3 make_student.py` ซ้ำ
 - ผู้สอนเปิด Claude Desktop ที่ต่อ MCP ทั้งสองตัวไว้แล้ว ผู้เรียนดูผ่านจอหรือทำตามบนเครื่องที่ต่อ MCP เดียวกัน
 - ทุกคนต้องใช้ **ชื่อ output ของตัวเอง** ใน HDFS ใต้ `/m6-10/<ชื่อ>/` เช่น `/m6-10/<ชื่อ>/lab2-ids` เพราะ Spark เขียนแบบ `errorifexists`
 - หมายเหตุชื่อ: โฟลเดอร์ใน HDFS (`/module7/...`), ชื่อไฟล์ job (`module7_lab*.py`) และ idempotency key ใช้คำว่า module7 เพราะเป็นชื่อตอนรันเฉลยคืน 2026-11-02 ก่อนย้ายแทร็กนี้มาอยู่ใต้ Module 6 ตาม course outline ค่าเหล่านี้เป็นบันทึกจริงบน server จึงไม่เปลี่ยน ส่วนผู้เรียนใช้ namespace `/m6-10/<ชื่อ>/`

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""สร้างฉบับผู้เรียน (student/) จากไฟล์ lab ของผู้สอนในโฟลเดอร์นี้
+"""สร้างฉบับผู้เรียน (student/) จากไฟล์ lab ของผู้สอนใน instructor/
 
 python3 make_student.py            # เขียน student/lab*.md และ student/README.md ใหม่ทั้งหมด
 
@@ -12,6 +12,7 @@ python3 make_student.py            # เขียน student/lab*.md และ s
 import pathlib, re, sys
 
 HERE = pathlib.Path(__file__).resolve().parent
+SRC = HERE / "instructor"
 OUT = HERE / "student"
 ORDER = ["lab0-tools.md", "lab1-parser.md", "lab2-spark-report.md", "lab3-correlate.md",
          "lab3c-baseline.md", "lab3b-handoff.md", "lab2b-dedupe-score.md", "lab4-enrich.md", "lab5-report.md"]
@@ -72,7 +73,7 @@ REPLACE = {
 ],
 "lab5-report.md": [
  ("อ่าน report ที่ /module7/lab2-ids/report", "อ่าน report ที่ /m6-10/<ชื่อ>/lab2-ids/report"),
- ("→ ไฟล์ PDF ในโฟลเดอร์ module6/10-claude-mcp-labs/outputs/", "→ ไฟล์ PDF ในโฟลเดอร์งานของผู้เรียน"),
+ ("→ ไฟล์ PDF ในโฟลเดอร์ module6/10-claude-mcp-labs/instructor/outputs/", "→ ไฟล์ PDF ในโฟลเดอร์งานของผู้เรียน"),
  ("- นิยามนาฬิกา: MTTD/MTTR คำนวณไม่ได้จากชุดนี้เพราะไม่มี ticket — ต้องบอกผู้บริหารว่ารายงานนี้ไม่มี metric นั้น", "- นิยามนาฬิกา: ดูว่าชุดข้อมูลมีเวลาเปิด/ปิด ticket หรือไม่ แล้วตัดสินว่ารายงานนี้ให้ MTTD/MTTR ได้ไหม และบอกผู้บริหารตามนั้น"),
 ],
 }
@@ -89,7 +90,7 @@ README = """# ฉบับผู้เรียน M6.10 — SOC Automation ด�
 4. **พิมพ์คำถามใน "คำถามที่ถาม Claude ต่อ" ทีละข้อ** เหมือนถามเพื่อนร่วมทีม ไม่ต้องไปค้นเอง แต่ทุกคำตอบต้องอ้าง tool และฟิลด์ (คอลัมน์ "คำตอบต้องอ้างอะไร" บอกว่าควรเป็นอะไร) ถ้า Claude ตอบลอย ๆ ให้สั่ง "อ่านจาก tool แล้วบอกฟิลด์ที่ใช้"
 5. **กรอก "บันทึกคำตอบ"** ทีละข้อ: Claude ตอบว่าอะไร อ้างอะไร และคุณตรวจแล้วตรงไหม อย่างน้อย 1 ข้อต่อ lab ต้องเทียบตัวเลขกับ output ดิบด้วยตาตัวเอง (เช่น เปิด report JSON ด้วย `hdfs_read_text` แล้วดูค่าเอง) ข้อประเภท **ตัดสิน** Claude เสนอได้ แต่คำตัดสินและเหตุผลต้องเป็นของคุณ
 6. **ทำ "จุดที่คนต้องทำ"** ข้อเหล่านี้ Claude ทำแทนไม่ได้ (อนุมัติ, ตรวจ sha256, ตัดสิน confirm/dismiss, นิยาม baseline) เขียนคำตัดสินและเหตุผลไว้ท้าย "บันทึกคำตอบ"
-7. **ส่งไฟล์ lab ที่กรอกแล้ว** (markdown ทั้งไฟล์) ให้ผู้สอนตรวจกับส่วน "เฉลย" ของไฟล์ชื่อเดียวกันในโฟลเดอร์แม่
+7. **ส่งไฟล์ lab ที่กรอกแล้ว** (markdown ทั้งไฟล์) ให้ผู้สอนตรวจกับส่วน "เฉลย" ของไฟล์ชื่อเดียวกันใน `instructor/` (ผู้เรียนไม่ต้องเปิดโฟลเดอร์นั้น)
 
 ## กติกาการตอบ
 
@@ -106,11 +107,11 @@ README = """# ฉบับผู้เรียน M6.10 — SOC Automation ด�
 
 lab 2b ต้องผ่าน lab 2 ก่อน (ใช้ Parquet ของตัวเอง) lab 3c และ 3b ต่อจาก lab 3 lab 5 ใช้ report จาก lab 2 ของตัวเอง
 
-[กลับโฟลเดอร์ผู้สอน](../README.md)
+[ภาพรวมแทร็ก lab](../README.md) · ไฟล์ผู้สอนอยู่ใน `../instructor/`
 """
 
 def convert(name: str) -> tuple[str, str, int]:
-    text = (HERE / name).read_text(encoding="utf-8")
+    text = (SRC / name).read_text(encoding="utf-8")
     parts = re.split(r"(?m)^(?=## )", text)
     head, secs = parts[0], parts[1:]
     qsec = next(s for s in secs if s.startswith("## คำถามที่ถาม Claude ต่อ"))

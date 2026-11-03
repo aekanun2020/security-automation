@@ -42,7 +42,7 @@ MCP ทั้งสองตัวออกอินเทอร์เน็ต�
 ## เฉลย (รันจริง 2026-11-03 12:10 UTC)
 
 - 203.0.113.66 อยู่ใน TEST-NET-3 (RFC 5737) และ 10.70.0.66 เป็น private → **ไม่ควรอยู่ใน feed ใด** ผลที่ถูกคือ matched_records 0 — นี่คือบทเรียน: enrichment ที่ไม่เจออะไรก็เป็นผลลัพธ์ที่ต้องรายงาน
-- Feodo JSON record มีฟิลด์ `ip_address, port, status, hostname, as_number, as_name, country, first_seen, last_online, malware` (จาก [research notes](../../docs/research_notes/datasets-for-gap-labs/enrichment_feeds_and_qradar_formats.md))
+- Feodo JSON record มีฟิลด์ `ip_address, port, status, hostname, as_number, as_name, country, first_seen, last_online, malware` (จาก [research notes](../../../docs/research_notes/datasets-for-gap-labs/enrichment_feeds_and_qradar_formats.md))
 - EPSS CVE-2024-3400 เมื่อ 2026-11-01: epss 0.99999, percentile 1.0 (ตรวจสดแล้วในรายงาน research; รันซ้ำ 2026-11-03 ได้ 0.999990000 / 1.000000000 date 2026-11-02)
 
 **ผลรันจริง 2026-11-03** (curl บนเครื่องผู้สอน นอก audit ของ MCP แล้วเขียนเข้า HDFS)
