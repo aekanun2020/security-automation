@@ -141,3 +141,32 @@
 | 5 | 6 | 5 | 1 | 0 |
 
 ตัวเลขทุกตัวในเฉลยที่ตรวจได้ด้วย tool ตรงกับที่รันจริง ข้อที่แก้เป็นเรื่องขั้นตอน (จำนวน checks, coalesce, ข้อจำกัดอัปโหลด KEV, ไลบรารี PDF) ไม่ใช่ตัวเลขผิด
+
+---
+
+# รอบ 2 (2026-11-03 12:39–12:45 UTC, namespace `/m6-10/claude-verify2/`) รันซ้ำหลังแก้เฉลยแล้ว
+
+จุดประสงค์: ยืนยันว่าเฉลยฉบับแก้ (commit eeaff38, 71626ab) ถูกต้อง และผลไม่ขึ้นกับรอบ/namespace
+
+| lab | สิ่งที่รันซ้ำ | ผลรอบ 2 | เทียบรอบ 1 / เฉลย |
+| --- | --- | --- | --- |
+| 0 | `log_skill_list_drafts`, `spark_cluster_status` | draft 1 (parse-linux-sshd-auth); ALIVE 2 workers 2 core 2048 MB ว่าง | ✅ ตรงเฉลยฉบับแก้ |
+| 1 | resolve sshd, test_parser 2 sample | selected null / unknown_format true; passed 1 failed 1 event_time 2026-08-24T00:00:00+00:00 | ✅ |
+| 2 | render → save → validate → submit job `0c8f975b…` (12:42:20 → 12:43:08, 48 วินาที) → read → sha → validate_report | code 000a3147… ทุกจุด; report 2,175 byte sha **08e4e229…** (เท่ารอบ 1 และรอบ 2026-11-02); validate valid true report_sha256 538c5ef1…; parquet 31,051 byte | ✅ byte-identical 3 รอบ |
+| 3 | group_by [signature, source_ip]; correlate; conn sum; pcap | 120/120/100, mean 60/10/2.42, stddev 0/0/4.28; matched 340 / right 265 / unmatched_left 0 / unmatched_right 99,735 / cohorts 120-120-25; orig 6,010,330 resp 240; 480 packet frame 241 | ✅ ทุกค่า |
+| 3c | per-port, group_by orig_h, 5 CIDR, host | 6 พอร์ตตรงตาราง; 201 กลุ่ม truncated; host 265 conn / 6,017,085 / 8,090 / 27 ปลายทาง / 5 พอร์ต | ✅ ตัวเลข **แต่พบข้อผิดในขั้นตอน** (ดูข้างล่าง) |
+| 3b | render → save → validate → submit job `27a024f8…` (7 วินาที) → sha | code 160f6057…; report 3,433 byte sha **a803c6b7…** | ✅ เท่ารอบ 2026-08-20, รอบ 1 |
+| 2b | โค้ดรอบ 2 (sha `85b316df…`, เพิ่ม coalesce(1)) job `307f14e3…` (10 วินาที) | 39 / 88.53 / 12-25-2 / raw 123–127 / magnitude 100 / escalate 39 / fingerprint แรก cd71af772d9c38bb; offenses เป็น part file เดียว 16,276 byte sha 5718f4b2… | ✅ และ**ขั้น 5 ของเฉลยใช้ได้แล้ว**: `hdfs_query_records` บน offenses คืน 3 กลุ่ม sum event_count 100/120/120 = 340, distinct window_start 1/12/2 |
+| 4 | curl 12:43:52Z → write → sha → query | Feodo 5 record sha ต้นฉบับ ef1c98c8… JSONL 3ecc94c1… = hdfs_sha256; matched 0; KEV 1,766 catalog 2026.10.30; EPSS 0.99999/1.0 | ✅ เท่ารอบ 1 (feed ไม่เปลี่ยนใน 33 นาที) |
+| 5 | report รอบ 2 byte-identical กับที่ PDF/HTML ใช้ | ไม่ต้องสร้างใหม่ | ✅ |
+
+## ข้อผิดในเฉลยที่พบเฉพาะรอบ 2 (แก้แล้ว)
+
+1. **Lab 3c ขั้น 4** `hdfs_query_records` มี `max_groups` ค่าเริ่มต้น **30** ถ้าไม่ตั้งเป็น ≥ 40 แต่ละก้อน CIDR จะคืน 30 host และ `groups_truncated: true` (เกิดจริงรอบ 2 เพราะไม่ได้ใส่ max_groups เหมือนรอบ 1) เฉลยเดิมบอกแค่ว่าเพดานคือ 100 ไม่ได้บอกว่าค่าเริ่มต้นต่ำกว่าขนาดก้อน
+2. **Lab 3 ขั้น 3** `hdfs_correlate_records` บังคับ `max_examples` 1..5 และ `max_delta_seconds` 0..60 ใส่ 0 หรือเกินช่วงจะ error `delta 0..60 seconds, examples 1..5` (เกิดจริงรอบ 2)
+
+ทั้งสองข้อเป็นขีดจำกัดของ tool ที่ผู้เรียนจะชนเองและ Claude อาจแก้ผิดทาง (ลดจำนวน host แทนที่จะเพิ่ม max_groups) จึงเพิ่มในขั้นตอนและ pitfall
+
+## สรุปสองรอบ
+
+ตัวเลขทุกตัวในเฉลยทั้ง 9 lab ตรงกับผลรันทั้งสองรอบ รอบ 2 ไม่พบตัวเลขผิดเพิ่ม พบขีดจำกัดของ tool 2 ข้อที่เฉลยไม่ได้บอก และยืนยันว่าข้อแก้ของรอบ 1 (coalesce(1)) ทำให้ขั้นตอนในเฉลยทำได้จริง

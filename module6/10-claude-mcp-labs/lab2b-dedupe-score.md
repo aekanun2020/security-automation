@@ -59,7 +59,7 @@ score = base(severity) + 8*asset_crit + min(10, 2*(repeats-1)) clamp 0..100, rou
 
 offense แรก: fingerprint `cd71af772d9c38bb` window 00:00–00:09 event_count 10 raw_score 127 → magnitude 100 → escalate
 
-**รันซ้ำ 2026-11-03** (job `b8d8a9ff…`, โค้ดเขียนใหม่โดยไม่ดูโค้ดเฉลย sha `b0e07fdc…`): ทำนาย 39 ก่อน submit แล้วได้ 39 / 88.53 / 12-25-2 / raw 123–127 / magnitude 100 / escalate 39 / fingerprint แรก cd71af772d9c38bb เท่ากันทุกค่า ทั้งที่โค้ดคนละชุด แสดงว่าผลถูกกำหนดโดยข้อมูลและสูตร ไม่ใช่โค้ดเฉพาะครั้ง
+**รันซ้ำ 2026-11-03** (job `b8d8a9ff…`, โค้ดเขียนใหม่โดยไม่ดูโค้ดเฉลย sha `b0e07fdc…`): ทำนาย 39 ก่อน submit แล้วได้ 39 / 88.53 / 12-25-2 / raw 123–127 / magnitude 100 / escalate 39 / fingerprint แรก cd71af772d9c38bb เท่ากันทุกค่า ทั้งที่โค้ดคนละชุด แสดงว่าผลถูกกำหนดโดยข้อมูลและสูตร ไม่ใช่โค้ดเฉพาะครั้ง รอบ 2 (job `307f14e3…`, โค้ดเพิ่ม coalesce(1)) `hdfs_query_records` บน offenses part file เดียวคืน 3 กลุ่ม sum event_count 100/120/120 = 340 และ distinct window_start 1/12/2 ตามเฉลย
 
 **บทเรียนหลักของ lab นี้** สูตร 7.2 กับข้อมูลนี้ให้ magnitude 100 ทุกรายการ เพราะ severity 1 ของ Suricata แปลงเป็น base 85 บวก asset_crit 4×8 = 32 ก็เกิน 100 แล้วก่อนคิด burst — score จึง**ไม่แยกลำดับความสำคัญ**ระหว่าง beacon 10 ครั้ง กับ SSH 4 ครั้ง ผู้เรียนต้องเสนอว่าจะแก้อย่างไร (ลด base, ใช้ severity ของ Suricata ตรง ๆ ที่ 1 = สูงสุด, ถ่วงด้วย event_count แบบ log, หรือใช้ fp_rate จาก label เมื่อมี)
 

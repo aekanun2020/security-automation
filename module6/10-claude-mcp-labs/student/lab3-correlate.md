@@ -36,7 +36,7 @@ alert "Outbound Transfer" ส่งข้อมูลไปไหน กี่ b
 
 1. `hdfs_query_records` path alerts, format jsonl, group_by [signature, source_ip], time_field ts
 2. `hdfs_read_lines` zeek conn 2 บรรทัด — เพื่อรู้ชื่อฟิลด์จริง (`id.orig_h`, `id.resp_p`, `proto`) ก่อน correlate
-3. `hdfs_correlate_records` left = alerts (keys source_ip, source_port, destination_ip, destination_port, network_protocol; time ts; group_by signature), right = zeek conn (keys id.orig_h, id.orig_p, id.resp_h, id.resp_p, proto; time ts), max_delta 1
+3. `hdfs_correlate_records` left = alerts (keys source_ip, source_port, destination_ip, destination_port, network_protocol; time ts; group_by signature), right = zeek conn (keys id.orig_h, id.orig_p, id.resp_h, id.resp_p, proto; time ts), max_delta 1 (tool รับ `max_delta_seconds` 0..60 และ `max_examples` 1..5 เท่านั้น ใส่ 0 จะ error `delta 0..60 seconds, examples 1..5`)
 4. `hdfs_query_records` zeek conn, filters {id.orig_h: <source_ip จากขั้น 1>, id.resp_h: <destination_ip ของ Outbound Transfer จากขั้น 1>}, group_by id.resp_p, sum_fields [orig_bytes, resp_bytes]
 5. `hdfs_pcap_packets` display_filter `ip.src == <source_ip> && ip.dst == <destination_ip> && tcp.dstport == <port>`
 
@@ -63,6 +63,7 @@ alert "Outbound Transfer" ส่งข้อมูลไปไหน กี่ b
 
 ## Claude ผิดตรงไหนได้บ้าง
 
+- ใส่ `max_examples: 0` เพื่อลด output แล้วเจอ error ช่วง 1..5 → ใช้ 1 (เกิดจริงตอนรันซ้ำ 2026-11-03)
 - correlate ด้วยชื่อฟิลด์เดาเอง (`src_ip`) โดยไม่อ่าน sample ก่อน → "Missing requested fields fail" ตามกติกา tool
 - สรุปว่า "ถูกโจมตีแน่นอน ข้อมูลรั่ว x MB" ทั้งที่ชุดข้อมูลเป็น synthetic และ tool บอกว่าไม่ตัดสิน
 - นับ packet เป็นจำนวน connection (tool เตือนไว้: packet count is not connection count)
