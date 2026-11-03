@@ -209,3 +209,28 @@ gap: G1 ✔, G2 ◐, G3 ✔, G4 ✔, G5 ✗, G6 ✗ วัตถุประส�
 | 3 | LAB13 Coherent East-West Remote Service (1300103) | Attempted Administrator Privilege Gain | 100 | 10.70.1.1–25 :22 tcp/ssh | 02:40 → 02:44 | SSH ไป 25 เครื่อง เครื่องละ 4 ครั้ง = lateral movement |
 
 เรื่องราวคือ kill chain C2 → exfiltration → lateral movement ตรงกับ profile host-threat-sequence ของ skill correlate ข้อย้ำ: ข้อมูล synthetic (203.0.113.66 อยู่ใน TEST-NET-3) และ alert คือ rule ตรง ไม่ใช่ข้อพิสูจน์ incident
+
+## Q17 — SOAR คืออะไร (ถาม 2026-11-03)
+
+SOAR = Security Orchestration, Automation and Response ระบบที่รับ alert จาก SIEM แล้วทำต่อแทนคนตาม **playbook** (ลำดับ if/then ที่เขียนไว้ก่อน) แยกเป็น orchestration (ร้อยเครื่องมือหลายตัวเป็นสายเดียว SIEM → TI → EDR → firewall → ticket), automation (งานซ้ำที่คนเคยทำ เช่น ดึง whois/VT, เปิด ticket, แจ้ง Slack) และ response (ลงมือจริง block IP, isolate host, disable บัญชี) ตัวอย่างผลิตภัณฑ์: IBM QRadar SOAR (Resilient), Splunk SOAR (Phantom), Cortex XSOAR, open source Shuffle / TheHive+Cortex / n8n
+
+เทียบกับแทร็ก M6.10: ส่วน decision logic ของ playbook มีแล้ว (lab 2b dedupe, risk score, route auto-close/queue/escalate), enrichment อยู่ใน lab 4, รายงาน/handoff ใน lab 2, 3b, 5 แต่ไม่มี orchestration ข้ามเครื่องมือ (มี MCP แค่ 2 ตัว), ไม่มี response ลงมือจริง และไม่มี playbook ที่รันซ้ำได้โดยไม่มีคน ทุกรอบคนสั่ง Claude และตรวจเอง จึงคงสถานะ **M6.1 SOAR ✗** ใน coverage table วิธีสอนที่ใกล้สุดคือชี้ว่า route จาก lab 2b คือ input ที่ SOAR จะรับไปเลือก playbook โดยคนยังเป็นผู้ approve ขั้น response
+
+## Q18 — SIEM มีฟังก์ชันหลักคือ extraction, parsing, normalize, storing, analysis, alert, manage ใช่ไหม
+
+ใกล้ แต่ศัพท์มาตรฐานต่างเล็กน้อยและขาด 3 ขั้น: "extraction" ปกติซ้อนกับ parsing ขั้นแรกจึงเรียก collection ส่วน "manage" มักแยกเป็น investigation, reporting และ case management
+
+| # | ฟังก์ชัน | QRadar | MCP ใน M6.10 |
+| --- | --- | --- | --- |
+| 1 | Collection / Ingestion | Event Collector, Log Source | batch เท่านั้น `hdfs_import_file` / `hdfs_write_text` ไม่มี syslog/agent real-time |
+| 2 | Parsing | DSM | parser skill 12 ตัว (lab 1) จุดแข็ง |
+| 3 | Normalization | QID map | canonical schema จาก parser skill (lab 1, 2) |
+| 4 | Enrichment (ขาดในคำถาม) | Reference set, X-Force, Asset model | Claude Desktop ดึง feed แล้ว import (lab 4 ร่าง) |
+| 5 | Storage / Indexing | Ariel | HDFS + Parquet ไม่มี index ค้นต้องสแกน |
+| 6 | Correlation / Analytics | Custom Rules Engine | `hdfs_correlate_records`, Spark job (lab 3, 2b) |
+| 7 | Alerting | Offense | lab 2b dedupe/score/route แบบ batch ไม่ real-time |
+| 8 | Search / Investigation (ขาดในคำถาม) | AQL, Log Activity | `hdfs_query_records`, `hdfs_pcap_packets` ผ่าน Claude ไม่มี query language ให้คนใช้ตรง |
+| 9 | Reporting / Dashboard (ขาดในคำถาม) | Reports, Dashboard | lab 2, 3b, 5 ผ่าน report contract |
+| 10 | Case / Incident Management | Offense Manager, QRadar SOAR | ไม่มี ticket, assignment, state |
+
+สรุป: MCP ชุดนี้คือ SIEM แบบ batch ที่ขาดหัว (real-time collection) และขาดท้าย (case management) สอดคล้องกับ gap ใน Q6–Q7
