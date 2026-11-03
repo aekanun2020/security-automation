@@ -2,6 +2,10 @@
 
 **หัวข้อ** M6.2 (correlation), M5.2 (Zeek, PCAP), incident analysis · **เวลา** 45 นาที · **ข้อมูล** Suricata alerts + Zeek conn 100k + PCAP 61 MB ใน HDFS
 
+## สถานการณ์
+
+รายงานจาก lab 2 บอกว่ามีสามก้อน C2 DNS, Outbound Transfer, East-West Remote Service และทั้งหมดมาจากเครื่อง 10.70.0.66 น้องรู้แค่ว่า rule ตรง ยังไม่รู้ว่าสามก้อนเป็นเรื่องเดียวกันไหม และ alert แต่ละตัวมี connection จริงรองรับหรือเป็น alert ลอย คำถามที่พา lab นี้คือ ร้อยสามก้อนนี้เข้าด้วยกันตามเวลาได้ไหม ข้อมูลออกไปเท่าไรจริง และถ้าเปิด packet ดูจะเห็นอย่างที่ Zeek บอกไหม
+
 ## โจทย์
 
 alert จาก IDS บอกว่า "มี rule ตรง" แต่ยังไม่ใช่หลักฐาน ผู้เรียนต้องให้ Claude (1) สรุปรูปแบบเวลาของ alert แต่ละ signature (2) จับคู่ alert กับ connection จริงใน Zeek ด้วย 5-tuple (3) ยืนยันระดับ packet ใน PCAP และ (4) วัดปริมาณข้อมูลที่ออกไป โดยไม่ใช้ Spark เลย (ทุก tool เป็น HDFS scan)
