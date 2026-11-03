@@ -35,19 +35,45 @@ Claude Desktop ── ดึง feed / ทำ PDF / Artifact (ออกเน็
 
 ### เครือข่ายในชุดข้อมูล
 
+```mermaid
+flowchart TB
+    subgraph internet["internet (ที่อยู่สมมติตาม RFC 5737)"]
+        WEB["198.51.100.x ×180<br/>เว็บเซิร์ฟเวอร์ปกติ"]
+        EXF["203.0.113.66:443<br/>ปลายทาง exfil"]
+    end
+
+    subgraph edge["ทางออกของเครือข่าย"]
+        FGT["⑥ FGT-LAB-SIM-01<br/>firewall · policy accept ทั้งหมด"]
+        RTR["⑤ 192.0.2.66<br/>router · NetFlow exporter"]
+        SEN["sensor บน tap/SPAN<br/>① PCAP → ② Suricata · ③ Zeek conn · ④ Zeek dns"]
+    end
+
+    subgraph lan["lan 10.70.0.0/16"]
+        H66["10.70.0.66<br/>เครื่องที่สงสัย (asset-066)"]
+        DNS["10.70.0.53<br/>DNS resolver"]
+        SRV["10.70.1.1–25<br/>server segment · SSH 22 / SMB 445 / RDP 3389"]
+        USR["10.70.20.x – 10.70.39.x ×200<br/>เครื่องผู้ใช้ปกติ"]
+    end
+
+    H66 -->|"ระยะ 1 · 00:00–01:59<br/>DNS ทุก 60 s ถาม c2-course.evidence.example.test<br/>คำตอบ = 203.0.113.66"| DNS
+    H66 -->|"ระยะ 2 · 02:10–02:29<br/>443 ทุก 10 s · 6.0 MB ออก"| FGT
+    H66 -->|"ระยะ 3 · 02:40–02:44<br/>25 host ทุก 30 s ต่อพอร์ต"| SRV
+    USR -->|"HTTP 80 · 99,735 conn<br/>00:00–04:43 (baseline)"| FGT
+    FGT --> RTR
+    RTR --> EXF
+    RTR --> WEB
+    SEN -. "เห็นทุก conn ของ lan" .- lan
+
+    classDef bad fill:#fde8e8,stroke:#c0392b,color:#7b1d1d
+    classDef ok fill:#eaf4ea,stroke:#2e7d32,color:#1b4d1e
+    classDef dev fill:#eef2f7,stroke:#4a5568,color:#1a202c
+    class H66,EXF bad
+    class USR,WEB,DNS,SRV ok
+    class FGT,RTR,SEN dev
 ```
-            internet (ที่อยู่สมมติตาม RFC 5737)
-   198.51.100.x ×180 เว็บเซิร์ฟเวอร์ปกติ (TEST-NET-2)        203.0.113.66:443 ปลายทาง exfil (TEST-NET-3)
-            │                                                        │
-            └──────────────────────── wan ───────────────────────────┘
-                     FGT-LAB-SIM-01  firewall (log ⑥)
-                     192.0.2.66      router / NetFlow exporter (log ⑤)
-                     sensor บน tap/SPAN → PCAP ① → Zeek conn ③, Zeek dns ④, Suricata ②
-                                      lan
-   ┌───────────────────┬──────────────────────┬─────────────────────────┬────────────────────────────┐
-   10.70.0.66          10.70.0.53             10.70.1.1–25             10.70.20.x … 10.70.39.x
-   เครื่องที่สงสัย       DNS resolver ภายใน     server segment            200 เครื่องผู้ใช้ (10 ต่อ /24)
-   (asset-066)                                SSH 22 / SMB 445 / RDP 3389   HTTP ไป 198.51.100.x
+
+ตัวเลข ①–⑥ คือ log ในตารางถัดไป ระยะ 1–3 คือลำดับเหตุการณ์ของ 10.70.0.66 สีแดง = จุดที่เรื่องราวเกิด สีเขียว = traffic ปกติและเป้าหมายที่ถูกแตะ สีเทา = อุปกรณ์ที่ผลิต log
+
 ```
 
 | ที่อยู่ | บทบาท | ที่มาของข้อสรุป |
