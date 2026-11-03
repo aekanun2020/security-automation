@@ -1,6 +1,6 @@
 # Module 5 — Python for Cybersecurity
 
-ผู้รับผิดชอบ: ครูเอ้ · รายละเอียดเต็มใน [รายงาน research](../docs/python-security-automation-research.md) ส่วนที่ 1–5
+ผู้รับผิดชอบ: ครูเอ้ · รายละเอียดเต็มใน [รายงาน research](../docs/python-security-automation-research.md) ส่วนที่ 1–5 · ศัพท์ที่ไม่คุ้นดูได้ใน[อภิธานศัพท์](../docs/glossary.md)
 
 | ลำดับ | หัวข้อ | ความเกี่ยวข้องกับ log analysis | ตัวอย่างโค้ดในรายงาน |
 | --- | --- | --- | --- |

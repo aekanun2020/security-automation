@@ -17,7 +17,7 @@
 | EPS / FPM | events per second และ flows per minute หน่วยที่ QRadar ใช้คิด license และขีดจำกัดของ CE | L1 | [D] |
 | UBA | User Behavior Analytics ส่วนเสริมของ QRadar ที่ NT นำมาใช้ปี 2021 เพื่อหาพฤติกรรมผู้ใช้ผิดปกติ | L6 | [N] |
 | McAfee SIEM / Trellix ESM | SIEM อีกตัวที่ NT cyfence ระบุว่าใช้ (2022) McAfee Enterprise Security Manager เปลี่ยนชื่อเป็น Trellix ESM ตั้งแต่ 2022 | L1 | [N] |
-| SOAR | Security Orchestration, Automation and Response ระบบต่อ playbook อัตโนมัติ Gartner บัญญัติปี 2017 และจัด standalone SOAR เป็น obsolete ในปี 2024 | L2 | [R] M6.1 |
+| SOAR | Security Orchestration, Automation and Response ระบบรับ alert จาก SIEM แล้วทำงานต่อเองตาม playbook (เช่น ถาม VirusTotal → สั่ง firewall บล็อก → เปิด ticket) Gartner บัญญัติปี 2017 และจัด standalone SOAR เป็น obsolete before plateau ในปี 2024 (ดู Gartner Hype Cycle) | L2 | [R] M6.1 |
 | EDR / XDR / MDR | Endpoint Detection and Response (บน endpoint), Extended DR (รวมหลายแหล่ง), Managed DR (จ้างผู้ให้บริการเฝ้าระวัง) NT ร่วมกับ Cynclair ด้าน MDR ปี 2024 | บริบท | [N], [R] M6.1 |
 | alert / incident / ticket / case | alert = สิ่งที่ rule ยิงออกมา; incident = เหตุการณ์ที่ยืนยันแล้วว่าต้องจัดการ; ticket/case = รายการติดตามงานใน Jira หรือ TheHive | L2, L4 | [R] M6.2 [นอกกรอบ] บางส่วน |
 | TP / FP / BP | true positive (ภัยจริง), false positive (rule ยิงผิด), benign positive (เกิดจริงแต่ไม่เป็นภัย เช่นงาน admin) GUIDE ใช้ label สามค่านี้ | L2, L4, L6 | [D] G2 |
@@ -27,6 +27,11 @@
 | alert fatigue / alert overload | ภาวะ alert มากจน analyst รับไม่ไหว Critical Start พบเกือบครึ่งของ SOC มี FP ≥ 50% | L2 | [R] M6.2 |
 | SOC-CMM / Metrics 101 | กรอบวัดวุฒิภาวะ SOC ของ Rob van Os และเอกสารนิยาม metric (เช่น % false positives, % ATT&CK coverage) | L4, L5 | [R] M6.4 |
 | MITRE 11 Strategies | หนังสือฟรีของ MITRE (2022) ว่าด้วยการสร้าง SOC ระดับโลก ข้อ 10 คือ "วัดผลเพื่อปรับปรุง" | L4 | [R] M6.4 |
+| endpoint | เครื่องปลายทางที่คนใช้งานหรือให้บริการ (โน้ตบุ๊ก, เซิร์ฟเวอร์, มือถือ) ต่างจากอุปกรณ์เครือข่ายอย่าง firewall/router ซอฟต์แวร์ที่เฝ้าเครื่องเหล่านี้คือ EDR SANS 2025 พบ 85% ของ SOC เริ่ม incident response จาก endpoint alert | M5.2, M6.2 | [R] M6.2 (ตัวเลข 85% อ้างผ่านสรุปของผู้ผลิต) |
+| metrics (SOC metrics) | ตัวเลขวัดผลงาน SOC ที่รายงานผู้บริหารเป็นรอบ เช่น จำนวน alert/incident, MTTD/MTTR, % FP, % ATT&CK coverage SANS 2025 พบ 69% ของ SOC ยังทำด้วยมือ | L4, lab 5 | [R] M6.3, M6.4 |
+| SANS SOC Survey | แบบสำรวจ SOC ประจำปีของสถาบันฝึกอบรม SANS ฉบับ 2025 เป็นครั้งที่ 9 (Christopher Crowley, ผู้ตอบจาก 57 ประเทศ, Elastic เป็นสปอนเซอร์) ที่มาของตัวเลข 69%, 85%, 42% ใน README ของ Module 6 | บริบท | [R] M6.3 ([PDF](https://www.elastic.co/pdf/sans-soc-survey-2025.pdf)) |
+| Critical Start survey | แบบสำรวจคน SOC ปี 2019 โดย Critical Start (ผู้ให้บริการ MDR) จาก SOC ราว 50 แห่ง ที่มาของ "เกือบครึ่งของ SOC มี FP ≥ 50%" ตัวเลขเก่าและกลุ่มตัวอย่างเล็ก ใช้เป็นภาพประกอบ ไม่ใช่สถิติปัจจุบัน | L2 | [R] M6.2 |
+| Gartner Hype Cycle / obsolete before plateau | แผนภาพของบริษัทวิจัย Gartner ที่บอกว่าเทคโนโลยีอยู่ช่วงไหนของกระแส จากถูกพูดถึงเกินจริง → ผิดหวัง → ไต่สู่ช่วงใช้งานมั่นคง (plateau) ป้าย "obsolete before plateau" แปลว่าล้าสมัยก่อนจะถึงช่วงนั้น Gartner แปะให้ standalone SOAR ใน Hype Cycle for Security Operations 2024 | บริบท M6.1 | [R] M6.1 (Gartner ติด paywall อ้างผ่านผู้ผลิต) |
 
 ## 2. รูปแบบ log และ schema
 
@@ -103,6 +108,7 @@
 | retry / backoff / rate limit | ลองใหม่เมื่อ API ล้มเหลวโดยเว้นช่วงเพิ่มขึ้น และเคารพขีดจำกัดจำนวนครั้ง (HTTP 429, header Retry-After) | L3 | [R] M5.4 ตัวอย่าง 4.1 |
 | API key / token / OAuth2 | วิธียืนยันตัวกับ API: key คงที่ใน header, token ที่หมดอายุ (JWT), หรือ OAuth2 client credentials QRadar ใช้ token ใน header `SEC` | L3 | [R] M5.4, [D] |
 | webhook | URL ที่ระบบหนึ่ง POST ข้อมูลมาให้เมื่อเกิดเหตุ ใช้รับ alert จาก SIEM | L2 | [R] M6.2 |
+| entry point (Python) | จุดที่ platform เปิดให้โค้ดของเราเข้าไปทำงาน รูปแบบร่วมของ SOAR/SIEM ทุกตัวในรายงานคือฟังก์ชัน Python ใน sandbox ที่รับ dict เข้าและคืน dict ออก เช่น Code node ของ n8n, active response script ของ Wazuh | M6.1 | [R] M6.1 |
 | idempotent | ทำซ้ำกี่ครั้งผลเหมือนเดิม จำเป็นเมื่อ script อาจถูกรันซ้ำจาก retry | L3 | [R] M5.3 |
 | venv / requirements.txt | สภาพแวดล้อม Python แยกต่อโปรเจ็กต์ และไฟล์รายการ library ที่ต้องติดตั้ง | ทุก lab | [R] M5.3 [นอกกรอบ] |
 | smoke-test | การรันทดสอบขั้นต่ำเพื่อยืนยันว่าโค้ดทำงานได้กับข้อมูลตัวอย่าง ทุกหัวข้อใน repo มี `run_smoke_tests.sh` | ทุก lab | [นอกกรอบ] |

@@ -1,6 +1,6 @@
 # Module 6 — Security Automation Project
 
-ผู้รับผิดชอบ: ครูเอ้ · รายละเอียดเต็มใน [รายงาน research](../docs/python-security-automation-research.md) ส่วนที่ 6–9
+ผู้รับผิดชอบ: ครูเอ้ · รายละเอียดเต็มใน [รายงาน research](../docs/python-security-automation-research.md) ส่วนที่ 6–9 · ศัพท์ที่ไม่คุ้นดูได้ใน[อภิธานศัพท์](../docs/glossary.md)
 
 | ลำดับ | หัวข้อ | ความเกี่ยวข้องกับ log analysis | ตัวอย่างโค้ดในรายงาน |
 | --- | --- | --- | --- |
@@ -26,9 +26,16 @@ Wazuh / Elastic (detection จาก log)
 
 ## หลักฐานที่ใช้ตั้งโจทย์โปรเจ็กต์
 
-- SANS SOC Survey 2025: 69% ของ SOC ยังรายงาน metrics ด้วยมือ; 85% trigger incident response จาก endpoint alert; 42% dump ข้อมูลทั้งหมดลง SIEM โดยไม่มีแผน
-- Critical Start: เกือบครึ่งของ SOC มี false positive ≥ 50%
-- Gartner จัด standalone SOAR เป็น "obsolete before plateau" (2024) แต่ทุก platform ในขอบเขตยังมี entry point Python
+ตัวเลขจากแบบสำรวจที่ใช้เป็น "ค่าก่อนเรียน" ของแต่ละ gap (ดู [lab design ตาม gap](../docs/lab-design-by-gap.md)) ทุกตัวเลขเป็นภาพรวมของ SOC ทั่วโลก ไม่ใช่ตัวเลขของ NT ศัพท์ในตารางนิยามไว้ใน [glossary หมวด 1](../docs/glossary.md#1-งาน-soc)
+
+| ตัวเลข | หมายความว่า | ตั้งโจทย์ | แหล่ง | สถานะการอ้าง |
+| --- | --- | --- | --- | --- |
+| 69% ของ SOC ยังรายงาน metrics ด้วยมือ | SOC 7 ใน 10 แห่งยังทำรายงานตัวเลขให้ผู้บริหารโดย export จาก SIEM และระบบ ticket มาจัดใน Excel/PowerPoint เอง ทั้งที่ข้อมูลอยู่ในระบบแล้ว | G4 · M6.3, M6.4 · lab 5 | SANS SOC Survey 2025 ครั้งที่ 9 ผู้ตอบจาก 57 ประเทศ ([PDF](https://www.elastic.co/pdf/sans-soc-survey-2025.pdf)) | อ้างจาก PDF ตรง |
+| 85% trigger incident response จาก endpoint alert | เหตุที่ต้องลงมือจัดการจริงส่วนใหญ่เริ่มจากแจ้งเตือนของ EDR บนเครื่องปลายทาง (endpoint) ไม่ใช่จาก firewall หรือ rule ใน SIEM log จาก endpoint จึงเป็นแหล่งที่สำคัญที่สุด | M5.2 (EVTX) · M6.2 | SANS SOC Survey 2025 | อ้างผ่านสรุปของผู้ผลิต ([Swimlane](https://swimlane.com/blog/global-soc-survey-insights/), [Torq](https://torq.io/blog/sans-2025-soc-survey)) ยังไม่ได้ตรวจกับ PDF |
+| 42% dump ข้อมูลทั้งหมดลง SIEM โดยไม่มีแผน | SOC 4 ใน 10 แห่งเทข้อมูลทุกอย่างลง SIEM โดยไม่มีแผนว่าจะดึงกลับมาใช้อย่างไร ผลคือ log จำนวนมากไม่มี parser ค้นไม่ได้ และเสียค่าเก็บ | G1 · M5.2 · lab 1 | SANS SOC Survey 2025 ([PDF](https://www.elastic.co/pdf/sans-soc-survey-2025.pdf)) | อ้างจาก PDF ตรง |
+| เกือบครึ่งของ SOC มี false positive ≥ 50% | alert ที่ดังทุกวันเกินครึ่งเป็นการเตือนผิด analyst เสียเวลากับของปลอม และของจริงหลุดได้ง่าย | G2 · M6.2 · lab 2, 2b, 3 | Critical Start SOC survey 2019 จาก SOC ราว 50 แห่ง ([ประกาศ](https://criticalstart.com/resources/criticalstart-releases-third-annual-security-operations-center-soc-professional-survey)) | ตัวเลขปี 2019 กลุ่มตัวอย่างเล็ก และสื่ออื่นรายงานตัวเลขขัดแย้งกัน |
+| Gartner จัด standalone SOAR เป็น "obsolete before plateau" (2024) | ใน Hype Cycle 2024 บริษัทวิจัย Gartner มองว่า SOAR ที่ขายแยกล้าสมัยก่อนจะถึงช่วงใช้งานมั่นคง เพราะ SIEM และ platform ใหญ่รวมความสามารถนี้เข้าไปแล้ว ผู้ซื้อไม่ต้องซื้อแยก | M6.1 เลือกสอน Python แทนผลิตภัณฑ์ SOAR ตัวใดตัวหนึ่ง | Gartner Hype Cycle for Security Operations, 29 ก.ค. 2024 | Gartner ติด paywall อ้างผ่านผู้ผลิต SOAR และสองแหล่งระบุวันที่ไม่ตรงกัน |
+| แต่ทุก platform ในขอบเขตยังมี entry point Python | platform ทุกตัวที่รายงานสำรวจ (เช่น n8n, Wazuh) เปิดช่องให้เสียบฟังก์ชัน Python ที่รับ dict เข้าและคืน dict ออก ชื่อผลิตภัณฑ์ SOAR อาจหายไป แต่ทักษะ Python ต่อระบบยังจำเป็น | M6.1 ตัวอย่าง 6.1–6.7 | [รายงาน research ส่วนที่ 6](../docs/python-security-automation-research.md) | ตรวจจากเอกสารของแต่ละ platform ณ 2026-11-01 |
 
 ## ข้อควรระวัง
 
