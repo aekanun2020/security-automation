@@ -6,7 +6,7 @@
 
 ## 1. Collection / Ingestion
 
-**Collection คือ** การย้าย log จากที่ที่มันเกิด (sensor, เครื่องผู้ใช้) มาอยู่ในที่เก็บกลางที่เครื่องมือวิเคราะห์เข้าถึงได้ ในที่นี้คือจากไฟล์นอก HDFS มาเป็นไฟล์ใต้ `/mcp/...` เนื้อหาไฟล์ไม่เปลี่ยน เปลี่ยนแค่ที่อยู่และ metadata (owner, replication)
+**Collection คือ** การย้าย log จากที่ที่มันเกิด (sensor, เครื่องผู้ใช้) มาอยู่ในที่เก็บกลางที่เครื่องมือวิเคราะห์เข้าถึงได้ ในที่นี้คือจากไฟล์นอก HDFS มาเป็นไฟล์ใต้ `/mcp/...` เนื้อหาไฟล์ไม่เปลี่ยน เปลี่ยนแค่ที่อยู่และ metadata (owner, replication) นิยามเต็มนอกกรอบตัวอย่าง: [glossary หมวด 6](../../docs/glossary.md#6-ฟังก์ชันของ-siem)
 
 **QRadar:** Event Collector รับ syslog แบบ real-time, auto-discover log source หลัง ~25 event · **MCP:** `hdfs_import_file`, `hdfs_write_text` (batch) · **lab:** 0, 4
 
@@ -19,7 +19,7 @@
 
 ## 2. Parsing
 
-**Parsing คือ** การแยก log 1 บรรทัดที่เป็น text ยาวติดกัน ออกเป็นฟิลด์ที่มีชื่อและชนิดข้อมูล (string, integer, ip) ในที่นี้คือจาก key=value 1 บรรทัด ไปเป็น JSON 24 ฟิลด์ ถ้ารูปแบบไม่ตรงกับที่ parser รู้จัก ผลคือ failed ไม่ใช่ฟิลด์ว่าง
+**Parsing คือ** การแยก log 1 บรรทัดที่เป็น text ยาวติดกัน ออกเป็นฟิลด์ที่มีชื่อและชนิดข้อมูล (string, integer, ip) ในที่นี้คือจาก key=value 1 บรรทัด ไปเป็น JSON 24 ฟิลด์ ถ้ารูปแบบไม่ตรงกับที่ parser รู้จัก ผลคือ failed ไม่ใช่ฟิลด์ว่าง นิยามเต็มนอกกรอบตัวอย่าง: [glossary หมวด 6](../../docs/glossary.md#6-ฟังก์ชันของ-siem)
 
 **QRadar:** DSM แยก raw เป็น field · **MCP:** `log_skill_resolve` → `log_skill_test_parser` (log-skill server) · **lab:** 1
 
@@ -49,7 +49,7 @@ date=2026-08-24 time=00:00:00 devname="FGT-LAB-SIM-01" devid="SYNTHETIC0000001" 
 
 ## 3. Normalization
 
-**Normalization คือ** การเปลี่ยนชื่อฟิลด์ที่แต่ละ vendor ตั้งเองให้เป็นชื่อกลางชุดเดียว เพื่อให้ข้อมูลจากต่างแหล่งเทียบหรือ join กันได้ ในที่นี้คือ `srcip`, `id.orig_h`, `source_ip` ที่หมายถึงสิ่งเดียวกัน กลายเป็น `source_ip` ทั้งหมด ส่วนค่าที่ต่างกัน (เช่น `17` กับ `udp`) ขั้นนี้ยังไม่ได้แปลงให้
+**Normalization คือ** การทำให้ event ต่างแหล่งเทียบหรือ join กันได้ มี 3 ชั้น: (1) ชื่อฟิลด์ ในที่นี้ `srcip`, `id.orig_h`, `source_ip` กลายเป็น `source_ip` ชื่อเดียว (2) ค่าในฟิลด์ ซึ่งตัวอย่างแสดงว่ายังไม่ทำ (`17` กับ `udp`, timezone ไม่สม่ำเสมอ) (3) หมวดเหตุการณ์ ในที่นี้คือ `event_category` network_traffic / network_connection / ids_alert และ `severity_summary` ที่แปลง severity 1 ของ Suricata เป็น critical ในข้อ 9 นิยามเต็มนอกกรอบตัวอย่าง: [glossary หมวด 6](../../docs/glossary.md#6-ฟังก์ชันของ-siem)
 
 **QRadar:** QID map, normalized event (sourceIP, destinationIP, ...) · **MCP:** canonical schema ใน skill normalize-security-logs ที่ทุก parser ต้อง map เข้า · **lab:** 1, 3
 
@@ -79,7 +79,7 @@ date=2026-08-24 time=00:00:00 devname="FGT-LAB-SIM-01" devid="SYNTHETIC0000001" 
 
 ## 4. Enrichment
 
-**Enrichment คือ** การเติมข้อมูลจากแหล่งภายนอก log เข้าไปใน record เพื่อให้ตัดสินได้ว่า IP หรือ asset นั้นสำคัญหรืออันตรายแค่ไหน ในที่นี้คือเอา IP ไปเทียบกับ threat feed และตารางความสำคัญของ asset ผลลัพธ์อาจเป็น "ไม่พบ" ก็ได้
+**Enrichment คือ** การเติมข้อมูลจากแหล่งภายนอก log เข้าไปใน record เพื่อให้ตัดสินได้ว่า IP หรือ asset นั้นสำคัญหรืออันตรายแค่ไหน ในที่นี้คือเอา IP ไปเทียบกับ threat feed และตารางความสำคัญของ asset ผลลัพธ์อาจเป็น "ไม่พบ" ก็ได้ นิยามเต็มนอกกรอบตัวอย่าง: [glossary หมวด 6](../../docs/glossary.md#6-ฟังก์ชันของ-siem)
 
 **QRadar:** Reference set, X-Force feed, Asset model · **MCP:** ไม่มี tool ดึง feed แต่ Claude Desktop ดึงแล้ว `hdfs_write_text` เข้าไป จากนั้น `hdfs_query_records` filter · **lab:** 4 (ร่าง ยังไม่รัน), 2b (asset criticality)
 
@@ -93,7 +93,7 @@ date=2026-08-24 time=00:00:00 devname="FGT-LAB-SIM-01" devid="SYNTHETIC0000001" 
 
 ## 5. Storage / Indexing
 
-**Storage คือ** การเก็บ record ที่ parse แล้วในรูปแบบที่อ่านซ้ำได้เร็วและเล็กกว่าต้นฉบับ ในที่นี้คือจาก JSON text 154 KB เป็น Parquet 31 KB ที่มี schema ติดมา ส่วน indexing (ทำให้ค้นได้โดยไม่ต้องอ่านทั้งไฟล์) ชุดนี้ไม่มี
+**Storage คือ** การเก็บ record ที่ parse แล้วในรูปแบบที่อ่านซ้ำได้เร็วและเล็กกว่าต้นฉบับ ในที่นี้คือจาก JSON text 154 KB เป็น Parquet 31 KB ที่มี schema ติดมา ส่วน indexing (ทำให้ค้นได้โดยไม่ต้องอ่านทั้งไฟล์) ชุดนี้ไม่มี นิยามเต็มนอกกรอบตัวอย่าง: [glossary หมวด 6](../../docs/glossary.md#6-ฟังก์ชันของ-siem)
 
 **QRadar:** Ariel database, index ตามฟิลด์ที่เลือก, retention policy · **MCP:** HDFS + Parquet จาก Spark job · **lab:** 2
 
@@ -106,7 +106,7 @@ date=2026-08-24 time=00:00:00 devname="FGT-LAB-SIM-01" devid="SYNTHETIC0000001" 
 
 ## 6. Correlation / Analytics
 
-**Correlation คือ** การหาว่า record จากคนละไฟล์หรือคนละแหล่ง อันไหนพูดถึงเหตุการณ์เดียวกัน โดยใช้ key ร่วม (5-tuple) และเวลาที่ใกล้กัน ในที่นี้คือ alert 340 กับ conn 100,000 ที่จับคู่กันได้ 340 คู่ และการหาแบบแผนเวลา (stddev 0 = ยิงเป็นจังหวะคงที่) ก็อยู่ในขั้นนี้
+**Correlation คือ** การสร้างสัญญาณจากความสัมพันธ์ระหว่าง event ที่ event เดียวบอกไม่ได้ ตัวอย่างในเอกสารนี้แสดง 3 แบบ: join ข้ามแหล่งด้วย key ร่วม (5-tuple) และเวลาใกล้กัน (alert 340 ↔ conn 100,000 จับคู่ได้ 340 คู่), แบบแผนเวลา (stddev 0 = ยิงเป็นจังหวะคงที่) และ sequence คือ A แล้ว B แล้ว C ภายในเวลาที่กำหนดบน asset เดียว (C2 → exfil → lateral ห่างไม่เกิน 1800 s ซึ่งเป็น input ของข้อ 10) ส่วนแบบ threshold ใน window อยู่ในข้อ 7 นิยามเต็มนอกกรอบตัวอย่าง: [glossary หมวด 6](../../docs/glossary.md#6-ฟังก์ชันของ-siem)
 
 **QRadar:** Custom Rules Engine (CRE) ทำงาน streaming · **MCP:** `hdfs_correlate_records` (join สองไฟล์ด้วย key + เวลา), `hdfs_query_records` (สถิติเวลา), Spark workflow correlate-security-evidence-with-spark · **lab:** 3, 3b
 
@@ -134,7 +134,7 @@ date=2026-08-24 time=00:00:00 devname="FGT-LAB-SIM-01" devid="SYNTHETIC0000001" 
 
 ## 7. Alerting
 
-**Alerting คือ** การยุบ event ที่ซ้ำกันเป็นก้อนเดียว ให้คะแนนความรุนแรง และตัดสินว่าก้อนนั้นต้องมีคนดูหรือไม่ ในที่นี้คือ alert 340 บรรทัด กลายเป็น offense 39 รายการ แต่ละรายการมี fingerprint, จำนวน event, score และ route (escalate / queue / auto-close)
+**Alerting คือ** การยุบ event ที่ซ้ำกันเป็นก้อนเดียว ให้คะแนนความรุนแรง และตัดสินว่าก้อนนั้นต้องมีคนดูหรือไม่ ในที่นี้คือ alert 340 บรรทัด กลายเป็น offense 39 รายการ แต่ละรายการมี fingerprint, จำนวน event, score และ route (escalate / queue / auto-close) นิยามเต็มนอกกรอบตัวอย่าง: [glossary หมวด 6](../../docs/glossary.md#6-ฟังก์ชันของ-siem)
 
 **QRadar:** Offense รวม event ที่เกี่ยวกันเป็นก้อนเดียว, magnitude 1–10, dedupe อัตโนมัติ · **MCP:** ไม่มี engine ให้ ต้องเขียน PySpark เอง (lab 2b) · **lab:** 2b
 
@@ -149,7 +149,7 @@ date=2026-08-24 time=00:00:00 devname="FGT-LAB-SIM-01" devid="SYNTHETIC0000001" 
 
 ## 8. Search / Investigation
 
-**Investigation คือ** การถามคำถามเฉพาะเจาะจงกับข้อมูลที่เก็บไว้ เพื่อตอบว่าเกิดอะไร ไปไหน เท่าไร ในที่นี้คือ filter ด้วย IP คู่หนึ่ง แล้ว group และ sum byte จากนั้นลงไปดูระดับ packet ใน PCAP เพื่อยืนยันตัวเลขเดียวกัน
+**Investigation คือ** การถามคำถามเฉพาะเจาะจงกับข้อมูลที่เก็บไว้ เพื่อตอบว่าเกิดอะไร ไปไหน เท่าไร ในที่นี้คือ filter ด้วย IP คู่หนึ่ง แล้ว group และ sum byte จากนั้นลงไปดูระดับ packet ใน PCAP เพื่อยืนยันตัวเลขเดียวกัน นิยามเต็มนอกกรอบตัวอย่าง: [glossary หมวด 6](../../docs/glossary.md#6-ฟังก์ชันของ-siem)
 
 **QRadar:** AQL, Log Activity tab, pivot จาก IP ไป user · **MCP:** `hdfs_query_records` (filters, group_by, sum, CIDR), `hdfs_pcap_packets` (TShark display filter), `hdfs_read_lines` · **lab:** 3
 
@@ -169,7 +169,7 @@ date=2026-08-24 time=00:00:00 devname="FGT-LAB-SIM-01" devid="SYNTHETIC0000001" 
 
 ## 9. Reporting / Dashboard
 
-**Reporting คือ** การสรุป record จำนวนมากเป็นตัวเลขไม่กี่ตัวที่คนอ่านได้ (นับ, จัดอันดับ, ช่วงเวลา) ตามรูปแบบที่ตกลงไว้ล่วงหน้า ในที่นี้คือ Parquet 340 แถว กลายเป็น JSON 1 บรรทัดที่มี top_signatures, top_destination_ips, severity_summary และผ่านการตรวจว่าครบตาม contract
+**Reporting คือ** การสรุป record จำนวนมากเป็นตัวเลขไม่กี่ตัวที่คนอ่านได้ (นับ, จัดอันดับ, ช่วงเวลา) ตามรูปแบบที่ตกลงไว้ล่วงหน้า ในที่นี้คือ Parquet 340 แถว กลายเป็น JSON 1 บรรทัดที่มี top_signatures, top_destination_ips, severity_summary และผ่านการตรวจว่าครบตาม contract นิยามเต็มนอกกรอบตัวอย่าง: [glossary หมวด 6](../../docs/glossary.md#6-ฟังก์ชันของ-siem)
 
 **QRadar:** Reports (PCI, ISO template), Dashboard · **MCP:** report contract (`ids-report-v1`) ผ่าน `log_skill_validate_report` แล้ว Claude Desktop ทำ Artifact / PDF · **lab:** 2 (รันจริง), 5 (ร่าง)
 
@@ -197,7 +197,7 @@ date=2026-08-24 time=00:00:00 devname="FGT-LAB-SIM-01" devid="SYNTHETIC0000001" 
 
 ## 10. Case / Incident Management
 
-**Case management คือ** การเปลี่ยนผลวิเคราะห์เป็นงานที่มีเจ้าของ มีสถานะ และมีที่บันทึกการตัดสินใจ ในที่นี้ทำได้ถึงแค่ "ใบส่งต่อ" ที่ระบุ asset, timeline, หลักฐาน และสิ่งที่ analyst ต้องทำ แต่ไม่มี owner, ไม่มี state ที่เปลี่ยนได้ และไม่มีที่บันทึกผลว่า confirm หรือ dismiss
+**Case management คือ** การเปลี่ยนผลวิเคราะห์เป็นงานที่มีเจ้าของ มีสถานะ และมีที่บันทึกการตัดสินใจ ในที่นี้ทำได้ถึงแค่ "ใบส่งต่อ" ที่ระบุ asset, timeline, หลักฐาน และสิ่งที่ analyst ต้องทำ แต่ไม่มี owner, ไม่มี state ที่เปลี่ยนได้ และไม่มีที่บันทึกผลว่า confirm หรือ dismiss นิยามเต็มนอกกรอบตัวอย่าง: [glossary หมวด 6](../../docs/glossary.md#6-ฟังก์ชันของ-siem)
 
 **QRadar:** Offense Manager (assign, note, close), QRadar SOAR · **MCP:** ไม่มี ใกล้ที่สุดคือ handoff document จาก build-security-investigation-handoff-with-spark · **lab:** 3b
 
@@ -230,6 +230,16 @@ date=2026-08-24 time=00:00:00 devname="FGT-LAB-SIM-01" devid="SYNTHETIC0000001" 
 | ส่ง SOAR playbook | ✔ | ต้องส่ง JSON นี้เข้า TheHive/Jira เอง นอก MCP |
 
 **ให้ผู้เรียนสังเกต** handoff คือ "ใบส่งต่อ" ไม่ใช่ case และ template v2 ผูกค่าคงที่กับ asset-066 ใช้กับ incident อื่นไม่ได้ นี่คือ "ท้ายที่ขาด" และเป็นเหตุผลที่ M6.1 (TheHive, SOAR) ยังไม่บรรลุ
+
+## สิ่งที่อยู่ทุกขั้น
+
+สามเรื่องที่ไม่ใช่ฟังก์ชันใดฟังก์ชันหนึ่ง แต่โผล่ในตัวอย่างข้างบนและ SIEM ทุกตัวต้องมี นิยามเต็มอยู่ใน [glossary หมวด 6 ตารางเรื่องข้ามขั้น](../../docs/glossary.md#6-ฟังก์ชันของ-siem)
+
+| เรื่อง | เห็นได้จากตัวอย่างข้อ | หลักฐาน |
+| --- | --- | --- |
+| เวลา 2 ชนิด | 2, 3 | record เดียวมีทั้ง `event_time: 2026-08-24 00:00:00` (จาก log) และ `ingest_time: 2026-11-03T01:50:54` (ตอนรัน parser) rule ใช้ตัวแรก audit ใช้ตัวหลัง |
+| provenance | 5, 9, 10 | sha256 ของ input `9cd3513a…`, code `000a3147…`, report `08e4e229…` ใน `hashes.json`; `raw_event` เก็บทั้งบรรทัด; handoff ใหม่ sha256 เท่ารอบ 2026-08-20 |
+| feedback loop | 7, 10 | lab 2b ลด alert 88% แต่วัด TP ที่หลุดไม่ได้เพราะไม่มี label; ข้อ 10 ไม่มีที่บันทึก confirm / dismiss จึงไม่มีอะไรย้อนกลับไปปรับ score |
 
 ## สรุปภาพรวม
 

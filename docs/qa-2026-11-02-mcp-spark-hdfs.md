@@ -247,6 +247,8 @@ alert ประเภท phishing เข้ามา
 
 ## Q18 — SIEM มีฟังก์ชั่นหลักๆ คือ extraction, parsing, normalize, storing, analysis, alert, manage หรือป่าว
 
+*หมายเหตุบรรณาธิการ 2026-11-03: นิยามเต็มของ 10 ฟังก์ชันและเรื่องข้ามขั้นถูกย้ายไปเป็น source of truth ที่ [glossary หมวด 6](glossary.md#6-ฟังก์ชันของ-siem) ส่วนตัวอย่าง before & after อยู่ที่ [M6.10](../module6/10-claude-mcp-labs/siem-10-functions-before-after.md) ข้อความด้านล่างคงไว้ตามที่ตอบจริง*
+
 ใกล้แล้วครับ แต่ศัพท์มาตรฐานใช้ต่างไปนิดและขาดอยู่ 2–3 ขั้น ลำดับที่วงการใช้กันคือ
 
 | # | ฟังก์ชัน | คำที่คุณใช้ | ความหมาย | ใน QRadar |
