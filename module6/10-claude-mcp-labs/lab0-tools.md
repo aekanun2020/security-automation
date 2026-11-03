@@ -48,7 +48,7 @@ mcp server for security skill มีอะไรบ้าง
 | Spark รัน | spark_submit_job, spark_job_status, spark_job_logs, spark_list_jobs, spark_cancel_job |
 | Spark สถานะ | spark_cluster_status |
 
-**log-skill server: 14 tools, 23 skills (parser 12, workflow 11), draft 0**
+**log-skill server: 14 tools, 23 skills (parser 12, workflow 11), draft 0** (ตั้งแต่ 2026-11-03 มี draft 1 คือ `parse-linux-sshd-auth` จาก lab 1 ขั้น 3)
 
 | กลุ่ม | tool |
 | --- | --- |
@@ -65,7 +65,7 @@ mcp server for security skill มีอะไรบ้าง
 - ไม่ถือว่า job สำเร็จจนกว่าสถานะเป็น SUCCEEDED
 - ไฟล์และ conf ของ Spark ถูก allowlist: pip install เพิ่มไม่ได้
 
-สถานะ cluster ที่รันเฉลย: Spark master ALIVE, 2 workers × 1 core × 1 GB; HDFS root มี generic-security (45 ชุดผลรันเก่า), integration, investigations, lab13, lab16, student
+สถานะ cluster ที่รันเฉลย: Spark master ALIVE, 2 workers × 1 core × 1 GB; HDFS root มี generic-security (45 ชุดผลรันเก่า), integration, investigations, lab13, lab16, student (หลังรันเฉลยมี m6-10 และ module7 เพิ่ม)
 
 ## จุดที่คนต้องทำ
 

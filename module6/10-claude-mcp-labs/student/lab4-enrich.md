@@ -62,4 +62,5 @@ MCP ทั้งสองตัวออกอินเทอร์เน็ต�
 
 - บอกว่า IP "สะอาด" เพราะไม่อยู่ใน feed
 - ดาวน์โหลดโดยไม่ขออนุญาต หรือไม่บันทึก sha256
-- ใช้ `hdfs_import_file` กับไฟล์บนเครื่องผู้เรียน (tool นี้รับ source ฝั่ง server เท่านั้น)
+- ใช้ `hdfs_import_file` กับไฟล์บนเครื่องผู้เรียน (tool นี้รับ source ฝั่ง server ที่ `/imports/<source_name>` เท่านั้น error จริง: `No such file or directory: '/imports/kev.json'`)
+- รายงานว่า "feed มีน้อยผิดปกติ น่าจะดึงผิด" ทั้งที่ Feodo แสดงเฉพาะ C2 ที่ active ในช่วงนั้น → ให้ดู `fetched_at` และ status ของ record

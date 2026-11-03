@@ -39,11 +39,23 @@ MCP ทั้งสองตัวออกอินเทอร์เน็ต�
 4. `hdfs_query_records` path feed, filters {ip_address: [203.0.113.66, 10.70.0.66]} หรือ `cidr_filters`
 5. EPSS: WebFetch `https://api.first.org/data/v1/epss?cve=CVE-2024-3400`
 
-## เฉลยที่คาด (ต้องยืนยันตอนรัน)
+## เฉลย (รันจริง 2026-11-03 12:10 UTC)
 
 - 203.0.113.66 อยู่ใน TEST-NET-3 (RFC 5737) และ 10.70.0.66 เป็น private → **ไม่ควรอยู่ใน feed ใด** ผลที่ถูกคือ matched_records 0 — นี่คือบทเรียน: enrichment ที่ไม่เจออะไรก็เป็นผลลัพธ์ที่ต้องรายงาน
 - Feodo JSON record มีฟิลด์ `ip_address, port, status, hostname, as_number, as_name, country, first_seen, last_online, malware` (จาก [research notes](../../docs/research_notes/datasets-for-gap-labs/enrichment_feeds_and_qradar_formats.md))
-- EPSS CVE-2024-3400 เมื่อ 2026-11-01: epss 0.99999, percentile 1.0 (ตรวจสดแล้วในรายงาน research)
+- EPSS CVE-2024-3400 เมื่อ 2026-11-01: epss 0.99999, percentile 1.0 (ตรวจสดแล้วในรายงาน research; รันซ้ำ 2026-11-03 ได้ 0.999990000 / 1.000000000 date 2026-11-02)
+
+**ผลรันจริง 2026-11-03** (curl บนเครื่องผู้สอน นอก audit ของ MCP แล้วเขียนเข้า HDFS)
+
+| รายการ | ค่า |
+| --- | --- |
+| Feodo ipblocklist.json | **5 record เท่านั้น** (Emotet 1 offline, QakBot 4: online 1 offline 3) sha256 ต้นฉบับ ef1c98c8…; แปลงเป็น JSONL 1,211 byte sha256 3ecc94c1… ทั้งบนเครื่องและ `hdfs_sha256` หลัง `hdfs_write_text` |
+| `hdfs_query_records` filters ip_address [203.0.113.66, 10.70.0.66] | scanned 5, matched_records **0** |
+| CISA KEV | 1,826,755 byte, 1,766 CVE, catalogVersion 2026.10.30, sha256 3aa9cf3c…; มี CVE-2024-3400 dateAdded 2024-04-12 |
+| KEV เข้า HDFS | **ไม่ได้** `hdfs_import_file` คืน `import source is unavailable or unstable: [Errno 2] No such file or directory: '/imports/kev.json'` (source ต้องอยู่ที่ /imports บน server) และ `hdfs_write_text` รับข้อความทั้งก้อนผ่าน argument ซึ่ง 1.8 MB ไม่เหมาะ ผู้เรียนทำได้แค่บันทึก sha256 + ผล lookup ใน hashes.json หรือแบ่งก้อนเอง |
+| hashes.json | `/m6-10/<ชื่อ>/feeds/hashes.json` บันทึก fetched_at, url, license, sha256 ต้นฉบับ/JSONL, path ใน HDFS, ผล lookup |
+
+บทเรียนเพิ่ม: feed ที่ "ว่าง" (5 record) ไม่ได้แปลว่า tool ผิด Feodo เผยแพร่เฉพาะ C2 ที่ยัง active ในช่วงนั้น ต้องบันทึกวันที่ดึงเสมอ
 
 ## จุดที่คนต้องทำ
 
@@ -55,4 +67,5 @@ MCP ทั้งสองตัวออกอินเทอร์เน็ต�
 
 - บอกว่า IP "สะอาด" เพราะไม่อยู่ใน feed
 - ดาวน์โหลดโดยไม่ขออนุญาต หรือไม่บันทึก sha256
-- ใช้ `hdfs_import_file` กับไฟล์บนเครื่องผู้เรียน (tool นี้รับ source ฝั่ง server เท่านั้น)
+- ใช้ `hdfs_import_file` กับไฟล์บนเครื่องผู้เรียน (tool นี้รับ source ฝั่ง server ที่ `/imports/<source_name>` เท่านั้น error จริง: `No such file or directory: '/imports/kev.json'`)
+- รายงานว่า "feed มีน้อยผิดปกติ น่าจะดึงผิด" ทั้งที่ Feodo แสดงเฉพาะ C2 ที่ active ในช่วงนั้น → ให้ดู `fetched_at` และ status ของ record

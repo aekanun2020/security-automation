@@ -37,7 +37,7 @@ score = base(severity) + 8*asset_crit + min(10, 2*(repeats-1)) clamp 0..100, rou
 2. Claude เขียนโค้ด → `spark_save_job` ชื่อใหม่ (`<ชื่อ>_lab2b_offense_v1.py`; แก้แล้วต้องเป็น v2 ไม่ทับ)
 3. `spark_validate_job` (ได้แค่ valid_python + imports_pyspark; **ไม่มี** `log_skill_validate_spark_job` เพราะไม่มี policy สำหรับงานนี้)
 4. `hdfs_mkdir` → `spark_submit_job` (argv = curated parquet, offenses path, report path) → `spark_job_status` จน SUCCEEDED
-5. `hdfs_read_text` report, `hdfs_query_records` บน offenses (group_by signature, route; sum event_count; distinct window_start, destination_ip) เพื่อตรวจผลรวมด้วย tool อิสระ
+5. `hdfs_read_text` report, `hdfs_query_records` บน offenses (group_by signature, route; sum event_count; distinct window_start, destination_ip) เพื่อตรวจผลรวมด้วย tool อิสระ — ใช้ได้ต่อเมื่อโค้ดเขียน offenses ด้วย `coalesce(1)` ให้เป็น part file เดียว ถ้าปล่อยให้ Spark เขียนหลาย part (เช่น 39 ไฟล์) tool จะคืน `Expected an HDFS file` เมื่อชี้ที่ directory
 6. `hdfs_sha256` ทั้ง report และ offenses
 
 ## บันทึกคำตอบ
@@ -65,5 +65,6 @@ score = base(severity) + 8*asset_crit + min(10, 2*(repeats-1)) clamp 0..100, rou
 
 - เรียก `F.all(...)` หรือ API ที่ไม่มี → ต้องดู reference ก่อน
 - ใช้ sliding window ด้วย Python UDF + deque บน Spark → ช้าและผิด semantics ของ distributed; ให้ Claude อธิบายว่าทำไมเลือก fixed window และผลต่างคืออะไร
+- เขียน offenses โดยไม่ `coalesce(1)` → ได้ part file เท่าจำนวน offense แล้ว `hdfs_query_records`/`hdfs_sha256` ใช้กับ directory ไม่ได้ ต้องชี้ทีละไฟล์หรือเขียนใหม่ (เกิดจริงตอนรันซ้ำ 2026-11-03)
 - แก้โค้ดแล้ว save ทับชื่อเดิม → snapshot ของ job เก่าหายไม่ได้ (server เก็บ) แต่ผิดกติกา repair discipline ของ skill
 - บอกว่า "ลด alert ได้ x% ดีมาก" โดยไม่พูดถึงว่า TP หลุดกี่ % — ชุดนี้ไม่มี label จึง**วัดไม่ได้** ต้องรายงานว่าวัดไม่ได้ ไม่ใช่สรุปว่าดี

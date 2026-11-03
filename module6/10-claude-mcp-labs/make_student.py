@@ -28,7 +28,7 @@ REPLACE = {
 ],
 "lab2-spark-report.md": [
  ("(skill = **parse-suricata-eve-alerts**, parser_id) | skill | code + `code_sha256` |", "(skill, parser_id) | skill | code + `code_sha256` — ถ้าได้ error ให้อ่านข้อความแล้วคิดว่าต้องใช้ skill ชนิดใด |"),
- ("`matches_trusted_template: true` + 15 checks", "`matches_trusted_template: true` + รายการ checks"),
+ ("`matches_trusted_template: true` + checks 16 รายการ", "`matches_trusted_template: true` + รายการ checks"),
  ("- ตีความ: `alert_action = allowed` ทั้ง 340 แปลว่า IDS เห็นแต่ไม่ block", "- ตีความค่า `alert_action` ที่ได้: IDS block หรือแค่เห็น"),
 ],
 "lab2b-dedupe-score.md": [
@@ -57,7 +57,7 @@ REPLACE = {
  ("| ภาพรวมทั้งไฟล์: 201 host ต้นทาง, 207 ปลายทาง, 6 พอร์ต |", "| ภาพรวมทั้งไฟล์: จำนวน conn, ช่วงเวลา, host ต้นทาง/ปลายทาง, พอร์ต |"),
  ("| พอร์ต 80 มี 200 host; พอร์ตอื่นทั้งหมดมาจาก host เดียว |", "| พอร์ตใดมี host ต้นทางหลายตัว พอร์ตใดมาจาก host น้อยตัว |"),
  ("| `groups_truncated: true`, 201 กลุ่ม แต่ได้มา 100 — **host ผิดปกติไม่อยู่ในนี้** |", "| อ่าน `group_count` และ `groups_truncated` ก่อนสรุป — ได้มาครบทุกกลุ่มไหม |"),
- ("| `cidr_filters` {id.orig_h: 10.70.20.0/22}, …24.0/22, 28.0/22, 32.0/22, 36.0/22 | baseline ครบ 200 host ทีละ 40 |", "| `cidr_filters` แบ่งช่วง IP ให้แต่ละก้อนไม่เกิน 100 host | baseline ครบทุก host ทีละก้อน |"),
+ ("| `cidr_filters` {id.orig_h: 10.70.20.0/22}, …24.0/22, 28.0/22, 32.0/22, 36.0/22 (sum_fields อย่างเดียว ไม่ใส่ distinct_fields ในรอบนี้ เพราะ output จะยาว 40 host × ปลายทาง 9 ตัว) | baseline ครบ 200 host ทีละ 40 |", "| `cidr_filters` แบ่งช่วง IP ให้แต่ละก้อนไม่เกิน 100 host (sum_fields อย่างเดียว ไม่ใส่ distinct_fields ในรอบนี้ เพราะ output จะยาวมาก) | baseline ครบทุก host ทีละก้อน |"),
  ("(ขอ 201 จะได้ error `max_groups 1..100`) และกลุ่มเรียงตาม count มากไปน้อย ดังนั้น host ที่มี connection **น้อยกว่า** เครื่องปกติจะหลุดจาก 100 อันดับแรกเสมอ ต้องแบ่งถามด้วย CIDR", "(ขอเกินจะได้ error `max_groups 1..100`) และกลุ่มเรียงตาม count มากไปน้อย ผู้เรียนต้องคิดเองว่า host แบบไหนจะหลุดจาก 100 อันดับแรก และจะถามอย่างไรให้ครบทุก host"),
  ("mean จะโดนลากขึ้นเป็น 58,163 (×2) และ stddev จะพังทันที", "mean และ stddev จะเปลี่ยนไปมาก (ลองคำนวณทั้งสองแบบ)"),
  ("ตารางข้างบนแสดงว่าตัวที่คนมักเลือกก่อน (connection count) เป็นตัวเดียวที่พลาด", "ตารางที่ทำเองจะบอกว่า metric ที่คนมักเลือกก่อนจับได้หรือไม่"),

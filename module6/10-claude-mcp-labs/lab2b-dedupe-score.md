@@ -37,7 +37,7 @@ score = base(severity) + 8*asset_crit + min(10, 2*(repeats-1)) clamp 0..100, rou
 2. Claude เขียนโค้ด → `spark_save_job` ชื่อใหม่ (`module7_lab2b_offense_v1.py`; แก้แล้วต้องเป็น v2 ไม่ทับ)
 3. `spark_validate_job` (ได้แค่ valid_python + imports_pyspark; **ไม่มี** `log_skill_validate_spark_job` เพราะไม่มี policy สำหรับงานนี้)
 4. `hdfs_mkdir` → `spark_submit_job` (argv = curated parquet, offenses path, report path) → `spark_job_status` จน SUCCEEDED
-5. `hdfs_read_text` report, `hdfs_query_records` บน offenses (group_by signature, route; sum event_count; distinct window_start, destination_ip) เพื่อตรวจผลรวมด้วย tool อิสระ
+5. `hdfs_read_text` report, `hdfs_query_records` บน offenses (group_by signature, route; sum event_count; distinct window_start, destination_ip) เพื่อตรวจผลรวมด้วย tool อิสระ — ใช้ได้ต่อเมื่อโค้ดเขียน offenses ด้วย `coalesce(1)` ให้เป็น part file เดียว ถ้าปล่อยให้ Spark เขียนหลาย part (เช่น 39 ไฟล์) tool จะคืน `Expected an HDFS file` เมื่อชี้ที่ directory
 6. `hdfs_sha256` ทั้ง report และ offenses
 
 ## เฉลย (รันจริง 2026-11-02 job `291d645c-75c3-4e96-9862-0a1555474f41`, code sha256 `9ec912f1…`, 15 วินาที)
@@ -59,6 +59,8 @@ score = base(severity) + 8*asset_crit + min(10, 2*(repeats-1)) clamp 0..100, rou
 
 offense แรก: fingerprint `cd71af772d9c38bb` window 00:00–00:09 event_count 10 raw_score 127 → magnitude 100 → escalate
 
+**รันซ้ำ 2026-11-03** (job `b8d8a9ff…`, โค้ดเขียนใหม่โดยไม่ดูโค้ดเฉลย sha `b0e07fdc…`): ทำนาย 39 ก่อน submit แล้วได้ 39 / 88.53 / 12-25-2 / raw 123–127 / magnitude 100 / escalate 39 / fingerprint แรก cd71af772d9c38bb เท่ากันทุกค่า ทั้งที่โค้ดคนละชุด แสดงว่าผลถูกกำหนดโดยข้อมูลและสูตร ไม่ใช่โค้ดเฉพาะครั้ง
+
 **บทเรียนหลักของ lab นี้** สูตร 7.2 กับข้อมูลนี้ให้ magnitude 100 ทุกรายการ เพราะ severity 1 ของ Suricata แปลงเป็น base 85 บวก asset_crit 4×8 = 32 ก็เกิน 100 แล้วก่อนคิด burst — score จึง**ไม่แยกลำดับความสำคัญ**ระหว่าง beacon 10 ครั้ง กับ SSH 4 ครั้ง ผู้เรียนต้องเสนอว่าจะแก้อย่างไร (ลด base, ใช้ severity ของ Suricata ตรง ๆ ที่ 1 = สูงสุด, ถ่วงด้วย event_count แบบ log, หรือใช้ fp_rate จาก label เมื่อมี)
 
 ## จุดที่คนต้องทำ
@@ -72,5 +74,6 @@ offense แรก: fingerprint `cd71af772d9c38bb` window 00:00–00:09 event_cou
 
 - เรียก `F.all(...)` หรือ API ที่ไม่มี → ต้องดู reference ก่อน
 - ใช้ sliding window ด้วย Python UDF + deque บน Spark → ช้าและผิด semantics ของ distributed; ให้ Claude อธิบายว่าทำไมเลือก fixed window และผลต่างคืออะไร
+- เขียน offenses โดยไม่ `coalesce(1)` → ได้ part file เท่าจำนวน offense แล้ว `hdfs_query_records`/`hdfs_sha256` ใช้กับ directory ไม่ได้ ต้องชี้ทีละไฟล์หรือเขียนใหม่ (เกิดจริงตอนรันซ้ำ 2026-11-03)
 - แก้โค้ดแล้ว save ทับชื่อเดิม → snapshot ของ job เก่าหายไม่ได้ (server เก็บ) แต่ผิดกติกา repair discipline ของ skill
 - บอกว่า "ลด alert ได้ 88% ดีมาก" โดยไม่พูดถึงว่า TP หลุดกี่ % — ชุดนี้ไม่มี label จึง**วัดไม่ได้** ต้องรายงานว่าวัดไม่ได้ ไม่ใช่สรุปว่าดี

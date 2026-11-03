@@ -33,7 +33,7 @@
 1. `hdfs_list` → `hdfs_read_text` part-*.txt → `hdfs_sha256`
 2. `log_skill_validate_report` (ซ้ำ เพื่อให้แน่ใจว่าไฟล์ที่อ่านคือฉบับที่ผ่าน)
 3. Artifact (HTML dashboard) — ตัวเลขจาก JSON โดยตรง
-4. skill pdf (Bash + reportlab/weasyprint) → ไฟล์ PDF ในโฟลเดอร์งานของผู้เรียน
+4. skill pdf (Bash + reportlab/weasyprint ถ้ามี; เครื่องผู้สอน 2026-11-03 ไม่มีทั้งสอง ใช้ matplotlib `PdfPages` แทนได้ ต้องใช้ฟอนต์ที่มีทั้งไทยและละติน เช่น `/System/Library/Fonts/Supplemental/Ayuthaya.ttf` ส่วน ThonburiUI.ttc ไม่มี glyph ละติน) → ไฟล์ PDF ในโฟลเดอร์งานของผู้เรียน
 
 ## บันทึกคำตอบ
 

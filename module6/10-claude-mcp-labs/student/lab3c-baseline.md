@@ -41,7 +41,7 @@ lab 3 เริ่มจาก alert ของ Suricata ซึ่งต้อง
 | 1 | `hdfs_query_records` | ไม่มี group_by, `distinct_fields` [id.orig_h, id.resp_h, id.resp_p, proto], `sum_fields` [orig_bytes, resp_bytes], `time_field` ts | ภาพรวมทั้งไฟล์: จำนวน conn, ช่วงเวลา, host ต้นทาง/ปลายทาง, พอร์ต |
 | 2 | `hdfs_query_records` | `group_by` [id.resp_p] + distinct id.orig_h | พอร์ตใดมี host ต้นทางหลายตัว พอร์ตใดมาจาก host น้อยตัว |
 | 3 | `hdfs_query_records` | `group_by` [id.orig_h], `max_groups` 100 | อ่าน `group_count` และ `groups_truncated` ก่อนสรุป — ได้มาครบทุกกลุ่มไหม |
-| 4 | `hdfs_query_records` ×5 | `cidr_filters` แบ่งช่วง IP ให้แต่ละก้อนไม่เกิน 100 host | baseline ครบทุก host ทีละก้อน |
+| 4 | `hdfs_query_records` ×5 | `cidr_filters` แบ่งช่วง IP ให้แต่ละก้อนไม่เกิน 100 host (sum_fields อย่างเดียว ไม่ใส่ distinct_fields ในรอบนี้ เพราะ output จะยาวมาก) | baseline ครบทุก host ทีละก้อน |
 | 5 | `hdfs_query_records` | `filters` {id.orig_h: [10.70.0.66]}, `group_by` [id.resp_p] | โปรไฟล์ของ host ที่สงสัย |
 
 ขั้น 3 → 4 คือจุดที่ Claude ต้องรู้ข้อจำกัดของ tool: `max_groups` สูงสุด 100 (ขอเกินจะได้ error `max_groups 1..100`) และกลุ่มเรียงตาม count มากไปน้อย ผู้เรียนต้องคิดเองว่า host แบบไหนจะหลุดจาก 100 อันดับแรก และจะถามอย่างไรให้ครบทุก host

@@ -33,11 +33,13 @@
 1. `hdfs_list` → `hdfs_read_text` part-*.txt → `hdfs_sha256`
 2. `log_skill_validate_report` (ซ้ำ เพื่อให้แน่ใจว่าไฟล์ที่อ่านคือฉบับที่ผ่าน)
 3. Artifact (HTML dashboard) — ตัวเลขจาก JSON โดยตรง
-4. skill pdf (Bash + reportlab/weasyprint) → ไฟล์ PDF ในโฟลเดอร์ module6/10-claude-mcp-labs/outputs/
+4. skill pdf (Bash + reportlab/weasyprint ถ้ามี; เครื่องผู้สอน 2026-11-03 ไม่มีทั้งสอง ใช้ matplotlib `PdfPages` แทนได้ ต้องใช้ฟอนต์ที่มีทั้งไทยและละติน เช่น `/System/Library/Fonts/Supplemental/Ayuthaya.ttf` ส่วน ThonburiUI.ttc ไม่มี glyph ละติน) → ไฟล์ PDF ในโฟลเดอร์ module6/10-claude-mcp-labs/outputs/
 
-## เฉลยที่คาด
+## เฉลย (รันจริง 2026-11-03)
 
 ตัวเลขต้องตรงกับ lab 2: total 340, parsed 340, failed 0, signature 120/120/100, destination 10.70.0.53 = 120, 203.0.113.66 = 120, severity critical 340, job 30d2a9d4…, report sha256 08e4e229… (ไฟล์ใน HDFS) / 538c5ef1… (ที่ validate_report คำนวณจาก JSON ที่ parse แล้ว — ให้ผู้เรียนอธิบายว่าทำไมสองค่านี้ต่างกัน)
+
+ผลรันจริง 2026-11-03: `outputs/lab5-executive-summary-claude-verify.pdf` (1 หน้า: KPI 3 ช่อง, bar chart 3 signature, ตารางปลายทางครบ 27 รายการ, job_id, sha256 สองค่า) และ `outputs/lab5-dashboard-claude-verify.html` ตัวเลขทุกตัวตรงกับ report ของ job `2237ad28…` (รันซ้ำ lab 2 วันเดียวกัน report byte-identical กับ job `30d2a9d4…`)
 
 narrative ที่ Claude เขียนต้องใช้คำว่า "rule ตรง" ไม่ใช่ "ถูกโจมตี" และไม่เติมตัวเลขที่ไม่มีใน report (เช่น "คิดเป็น x% ของ traffic" ต้องมาจาก lab 3 ไม่ใช่เดา)
 

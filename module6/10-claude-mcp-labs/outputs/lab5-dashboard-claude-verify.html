@@ -1,0 +1,16 @@
+<!doctype html><html lang="th"><head><meta charset="utf-8"><title>IDS alert dashboard</title>
+<style>body{font-family:system-ui,sans-serif;max-width:900px;margin:24px auto;padding:0 16px;color:#222}.kpi{display:flex;gap:16px}.kpi div{flex:1;border:1px solid #bbb;border-radius:8px;padding:12px;text-align:center}.kpi b{font-size:28px;display:block}table{border-collapse:collapse;width:100%}td,th{border-bottom:1px solid #ddd;padding:4px 8px;text-align:left}.bar{background:#4a6fa5;height:18px;display:inline-block}small{color:#555}</style></head><body>
+<h1>IDS alert 24 ส.ค. 2026 (00:00 ถึง 02:44 UTC)</h1>
+<p><small>ที่มา ids-report-v1 job 2237ad28-67e1-4054-a30e-f917a3ce9876 ทุกตัวเลขอ่านจาก report JSON โดยตรง</small></p>
+<div class="kpi"><div><b>340</b>alert ทั้งหมด (total_records)</div><div><b>340</b>parse ได้ (parsed)</div><div><b>0</b>parse ไม่ได้ (failed)</div></div>
+<h2>alert ตาม rule ที่ตรง (top_signatures)</h2>
+<table><tr><td>LAB13 Coherent C2 DNS</td><td><span class="bar" style="width:240px"></span> 120</td></tr>
+<tr><td>LAB13 Coherent Outbound Transfer</td><td><span class="bar" style="width:240px"></span> 120</td></tr>
+<tr><td>LAB13 Coherent East-West Remote Service</td><td><span class="bar" style="width:200px"></span> 100</td></tr></table>
+<h2>ปลายทาง (top_destination_ips ครบ 27 รายการ)</h2>
+<table><tr><th>destination_ip</th><th>alert</th></tr>
+<tr><td>10.70.0.53</td><td>120</td></tr><tr><td>203.0.113.66</td><td>120</td></tr>
+<tr><td>10.70.1.1 ถึง 10.70.1.25 (25 host)</td><td>4 ต่อ host รวม 100</td></tr></table>
+<p>ความหมาย: rule ตรง (rule hit) ทั้ง 340 รายการ alert_action = allowed คือ IDS เห็นแต่ไม่ block รายงานไม่ยืนยันว่าเกิด incident และไม่มี MTTD/MTTR เพราะชุดข้อมูลไม่มี ticket</p>
+<p><small>report sha256 ไฟล์ใน HDFS 08e4e2290f0e7da14c362c9972cc4cfae433fa1b069b99e8cdeaae621c0f1031 | sha256 ที่ validate_report คำนวณจาก JSON 538c5ef1ec1e444280e22a3e1fd4d60cf8d7ca53018b65f66e102051a2f1fd3c</small></p>
+</body></html>

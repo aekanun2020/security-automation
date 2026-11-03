@@ -39,7 +39,7 @@
 | 3 | `spark_save_job` filename, code | spark | `sha256` ต้องเท่ากับข้อ 2 |
 | 4 | `hdfs_mkdir` /m6-10/<ชื่อ>/lab2-ids | spark | คืน physical path `/mcp/m6-10/...` |
 | 5 | `spark_validate_job` | spark | valid_python, imports_pyspark |
-| 6 | `log_skill_validate_spark_job` (code) | skill | `matches_trusted_template: true` + 15 checks |
+| 6 | `log_skill_validate_spark_job` (code) | skill | `matches_trusted_template: true` + checks 16 รายการ |
 | 7 | `spark_submit_job` arguments = [physical input, physical curated, physical report], idempotency_key, expected_sha256 | spark | status RUNNING, job_id |
 | 8 | `spark_job_status` (วนจนกว่าจะไม่ใช่ RUNNING) | spark | **SUCCEEDED** exit_code 0 |
 | 9 | `hdfs_list` report dir → `hdfs_read_text` part-*.txt | spark | JSON 1 บรรทัด |

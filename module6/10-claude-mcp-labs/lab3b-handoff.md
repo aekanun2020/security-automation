@@ -75,6 +75,8 @@ caveats 4 ข้อ: rule hit ไม่ใช่ incident; PCAP สังเค�
 
 parent_evidence: PCAP sha256 fa9d5c21… (ตรงกับ lab 3), unique conversations 100,000, raw view records รวม 300,460 ซึ่ง "ไม่ใช่ event เฉพาะที่บวกกันได้" (overlapping views)
 
+**รันซ้ำ 2026-11-03** (job `064d91bc…`, 7 วินาที): sha ทุกจุดเท่าเดิม report ใหม่ a803c6b7… = รอบ 2026-08-20 และ `hdfs_sha256` ของ 5 ไฟล์ใน `/generic-security/coherent-pcap-correlation-20260820041327/input/` ตรงกับ `source_sha256` ใน timeline/corroboration ทุกตัว (ca45f68b…, aa1067e7…, 3b547b6d…, 51196fb5…, 95bcc6b2…)
+
 ## จุดที่คนต้องทำ
 
 - ตัดสินใจ **confirm หรือ dismiss** — handoff ให้แค่ needs-review; MCP ไม่เคยประกาศ incident (caveat ข้อ 1)

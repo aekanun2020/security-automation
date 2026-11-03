@@ -41,7 +41,7 @@ lab 3 เริ่มจาก alert ของ Suricata ซึ่งต้อง
 | 1 | `hdfs_query_records` | ไม่มี group_by, `distinct_fields` [id.orig_h, id.resp_h, id.resp_p, proto], `sum_fields` [orig_bytes, resp_bytes], `time_field` ts | ภาพรวมทั้งไฟล์: 201 host ต้นทาง, 207 ปลายทาง, 6 พอร์ต |
 | 2 | `hdfs_query_records` | `group_by` [id.resp_p] + distinct id.orig_h | พอร์ต 80 มี 200 host; พอร์ตอื่นทั้งหมดมาจาก host เดียว |
 | 3 | `hdfs_query_records` | `group_by` [id.orig_h], `max_groups` 100 | `groups_truncated: true`, 201 กลุ่ม แต่ได้มา 100 — **host ผิดปกติไม่อยู่ในนี้** |
-| 4 | `hdfs_query_records` ×5 | `cidr_filters` {id.orig_h: 10.70.20.0/22}, …24.0/22, 28.0/22, 32.0/22, 36.0/22 | baseline ครบ 200 host ทีละ 40 |
+| 4 | `hdfs_query_records` ×5 | `cidr_filters` {id.orig_h: 10.70.20.0/22}, …24.0/22, 28.0/22, 32.0/22, 36.0/22 (sum_fields อย่างเดียว ไม่ใส่ distinct_fields ในรอบนี้ เพราะ output จะยาว 40 host × ปลายทาง 9 ตัว) | baseline ครบ 200 host ทีละ 40 |
 | 5 | `hdfs_query_records` | `filters` {id.orig_h: [10.70.0.66]}, `group_by` [id.resp_p] | โปรไฟล์ของ host ที่สงสัย |
 
 ขั้น 3 → 4 คือจุดที่ Claude ต้องรู้ข้อจำกัดของ tool: `max_groups` สูงสุด 100 (ขอ 201 จะได้ error `max_groups 1..100`) และกลุ่มเรียงตาม count มากไปน้อย ดังนั้น host ที่มี connection **น้อยกว่า** เครื่องปกติจะหลุดจาก 100 อันดับแรกเสมอ ต้องแบ่งถามด้วย CIDR
