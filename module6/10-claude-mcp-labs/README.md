@@ -59,6 +59,8 @@ Claude Desktop ── ดึง feed / ทำ PDF / Artifact (ออกเน็
 
 ทุก lab มี 5 ส่วน: โจทย์ → prompt → ลำดับ tool ที่ควรเห็น → เฉลย → จุดที่คนต้องทำ และปิดท้ายด้วย "Claude ผิดตรงไหนได้บ้าง"
 
+ภาพรวมก่อนลงมือ: [SIEM 10 ฟังก์ชัน — before & after ด้วย MCP](siem-10-functions-before-after.md) ให้ผู้เรียนเห็นว่าแต่ละขั้น (collection → parsing → normalization → … → case management) รับอะไรเข้าและคืนอะไรออก ด้วยข้อมูลจริงจากชุด incident-lab และผลรัน lab 1–3b เทียบกับชื่อเรียกใน QRadar
+
 ## หัวข้อตาม course outline ที่ครอบคลุม
 
 | หัวข้อ | lab | ครอบคลุม | ยังขาด |
