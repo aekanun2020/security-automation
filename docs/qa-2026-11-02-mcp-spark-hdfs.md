@@ -277,3 +277,57 @@ alert ประเภท phishing เข้ามา
 - 10 Case management: ไม่มี ไม่มี ticket, assignment, state
 
 สรุปคือ MCP ชุดนี้คือ SIEM แบบ batch ที่ขาดหัว (real-time collection) และขาดท้าย (case management) ตรงกับที่บันทึกใน Q&A ข้อ gap ก่อนหน้า
+
+## Q19 — ใน mcp server for sec. skill มีอะไรบ้าง
+
+เรียก `log_skill_list` และ `log_skill_list_drafts` จริงแล้ว (ไม่ได้ตอบจากความจำ) ผลตรงกับเฉลยใน lab0: **23 skills (parser 12, workflow 11), draft 0**
+
+**กลุ่ม parser (12 skill, 21 parser id, สถานะ approved ทั้งหมด)**
+
+| skill | vendor / รูปแบบ | log type |
+| --- | --- | --- |
+| parse-paloalto-panos-logs | PAN-OS 11.x, CSV syslog | traffic |
+| parse-fortinet-fortigate-logs | FortiGate 7.x (+ pcap-sim), key=value syslog | traffic |
+| parse-huawei-security-logs | Huawei VRP 8.x, regex syslog | system |
+| parse-zeek-connection-logs | Zeek 7.x conn.log JSON | traffic |
+| parse-zeek-dns-logs | Zeek 6/7 dns.log JSON | dns |
+| parse-zeek-c2-dns-logs | Zeek DNS JSON (bounded) | c2_dns |
+| parse-zeek-lateral-conn-logs | Zeek conn JSON (bounded) | lateral_movement |
+| parse-suricata-eve-alerts | Suricata 7.0.10 EVE JSON | ids |
+| parse-netflow-v5-logs | NetFlow v5 decoder JSON | traffic |
+| parse-netflow-v5-exfil-logs | NetFlow v5 JSON (3 profile: course, plain, pcap-course) | exfil_netflow |
+| parse-security-correlation-evidence | evidence envelope JSON (4 profile, v1/v2, รวม adversarial) | correlation |
+| parse-security-investigation-report | investigation-report-v1/v2 envelope | investigation_handoff |
+
+**กลุ่ม workflow (11 skill)**
+
+- **วิเคราะห์ตาม log type ด้วย Spark:** analyze-security-logs-with-spark (firewall ทุก vendor → security-report-v1), analyze-dns-logs-with-spark (dns-report-v1), analyze-ids-alerts-with-spark (ids-report-v1), analyze-system-logs-with-spark (system-event-report-v1)
+- **detection เฉพาะเรื่อง (threshold ตายตัว + allowlist):** analyze-c2-dns-with-spark (DNS beacon), analyze-exfiltration-netflow-with-spark (outbound asymmetric volume), analyze-lateral-movement-with-spark (internal remote-service fan-out)
+- **ต่อสายหลักฐาน:** correlate-security-evidence-with-spark (C2 → exfil → lateral ตาม asset + time window), build-security-investigation-handoff-with-spark (แปลง correlation report เป็น handoff-v1 โดยไม่ติดต่อ SIEM)
+- **ออกแบบ/เขียนเอง:** normalize-security-logs (canonical schema สำหรับออกแบบ parser ใหม่), author-debug-pyspark-security-jobs (ให้ model เขียน PySpark เองแล้ว dry-run/ซ่อม แทนใช้ renderer)
+
+**Draft:** 0 รายการ ยังไม่มี skill ที่รอ review
+
+ลำดับใช้งานที่ skill ออกแบบไว้คือ parser → analyze → (detection ×3) → correlate → handoff ซึ่งตรงกับ lab 1 ถึง lab 5 ในโฟลเดอร์ [module6/10-claude-mcp-labs](module6/10-claude-mcp-labs/README.md)
+
+## Q20 — อันนี้ใช่มั้ยที่ตรงกับ D ... อะไรของ Qradar
+
+ใช่ครับ D ที่หมายถึงคือ **DSM (Device Support Module)** ของ QRadar ซึ่งใน glossary ของโปรเจคนิยามไว้ว่า "parser สำเร็จรูปของ QRadar สำหรับ log แต่ละยี่ห้อ" ([docs/glossary.md:16](docs/glossary.md:16)) และ skill กลุ่ม parser ใน log-skill server ก็เล่นบทเดียวกันนี้
+
+เทียบกันตรง ๆ
+
+| QRadar | log-skill server |
+| --- | --- |
+| DSM หนึ่งตัวต่อ vendor/product (PAN-OS, FortiGate, Huawei…) | skill `parse-*` หนึ่งตัวต่อ vendor เช่น parse-paloalto-panos-logs, parse-fortinet-fortigate-logs |
+| DSM ระบุ firmware ที่รองรับ | parser id ระบุ `firmware` เช่น PAN-OS 11.x, FortiOS 7.x, Suricata 7.0.10 |
+| DSM map ฟิลด์ vendor เข้า normalized event (QID, src, dst, usrName…) | skill normalize-security-logs คือ canonical security-event schema ที่ทุก parser ต้อง map เข้า |
+| DSM Editor / Log Source Extension สำหรับ source ที่ไม่มี DSM | log_skill_save_draft สร้าง parser ใหม่เป็น draft รอคน review แล้ว promote ผ่าน Git |
+| auto-update รายสัปดาห์จาก IBM | status `approved` ที่ล็อกไว้ใน repo ไม่มี auto-update |
+
+จุดที่ต่างและควรบอกผู้เรียน
+
+- **DSM แค่ parse แต่ server นี้มี workflow ต่อท้ายด้วย** กลุ่ม analyze-* และ correlate-* เทียบได้กับ custom rule + offense ของ QRadar มากกว่า DSM
+- **Zeek และ Suricata มี parser ที่นี่ แต่ QRadar DSM list ไม่มี** ตามที่ตารางเปรียบเทียบบันทึกไว้ ([docs/elastic-siem-vs-qradar.md:24](docs/elastic-siem-vs-qradar.md:24)) ส่วนนี้จึงเป็น gap G1 ที่ lab ออกแบบมาปิด
+- **ไม่มี auto-detect** QRadar ดู event ประมาณ 25 บรรทัดแล้วเลือก DSM เอง แต่ที่นี่ Claude ต้องเรียก log_skill_resolve เพื่อเลือก parser จาก sample ก่อน
+
+สรุปสั้น ๆ คือ parser skill 12 ตัว = DSM แบบที่โปรเจคสร้างเอง ส่วน workflow 11 ตัวอยู่เหนือระดับ DSM แล้ว
