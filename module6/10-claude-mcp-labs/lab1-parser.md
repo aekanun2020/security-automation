@@ -18,7 +18,7 @@ SIEM ไม่มี parser สำหรับทุกแหล่ง (gap G1) 
 | 4 | หลัง parse แล้ว เราเห็นอะไรที่ก่อน parse ไม่เห็น ใครคุยกับใคร กี่โมง rule อะไรยิง รุนแรงแค่ไหน | ผล `log_skill_test_parser`: `event_time`, `source_ip`, `destination_ip`, `destination_port`, `signature`, `severity` และฟิลด์ดิบที่ `event_time` แปลงมา |
 | 5 | ฟิลด์ที่ vendor มีแต่ schema กลางของเราไม่มี (เช่น alert_id) หายไปไหม ถ้าต้องใช้ทีหลังจะเอาจากไหน | `vendor_fields` ใน record ที่ parse แล้ว |
 | 6 | ถ้า log บรรทัดหนึ่งขาดฟิลด์สำคัญ SIEM ควรเดาค่าให้ หรือทิ้งบรรทัดนั้นแล้วบอกเรา ระบบนี้ทำแบบไหน | ส่วน `validation.required_output` ใน YAML ของ parser + ผล test_parser ของบรรทัด sshd |
-| 7 | ถ้าจะเพิ่ม parser สำหรับ sshd เอง ใครเป็นคนอนุมัติ และต้องทดสอบกับอะไรก่อนใช้จริง | (ขั้น 3 ไม่บังคับ) `log_skill_save_draft` + `log_skill_test_parser` กับ auth.log ทั้ง 44 บรรทัด + `log_skill_list_drafts` |
+| 7 | ถ้าจะเพิ่ม parser สำหรับ sshd เอง ใครเป็นคนอนุมัติ ต้องทดสอบกับอะไรก่อนใช้จริง และเอาไปใช้กับ workflow ที่มีได้เลยไหม | (ขั้น 3 ไม่บังคับ) `log_skill_save_draft` + `log_skill_list_drafts` + `log_skill_get_draft` อ่าน YAML; `log_skill_test_parser` รับเฉพาะ skill ที่ publish แล้ว draft จึงต้องทดสอบ regex นอก server กับ auth.log ทั้ง 44 บรรทัด; ข้อจำกัดเทียบ template ของ `analyze-system-logs-with-spark` |
 
 ## prompt ที่ผู้เรียนพิมพ์
 
@@ -45,7 +45,7 @@ Mar  1 02:10:00 server sshd[2824]: Failed password for invalid user admin from 1
 2. `hdfs_read_lines` (path virtual, limit 3)
 3. `log_skill_resolve` (sample = บรรทัด Suricata) → selected parser
 4. `log_skill_test_parser` (skill, parser_id, samples = 2 บรรทัด)
-5. (ขั้น 3) `log_skill_get` ของ parser ที่คล้ายกัน เช่น parse-huawei-security-logs เพื่อดูรูปแบบ YAML → `log_skill_save_draft`
+5. (ขั้น 3) `log_skill_get` ของ parser ที่คล้ายกัน เช่น parse-huawei-security-logs เพื่อดูรูปแบบ YAML → `log_skill_save_draft` → `log_skill_list_drafts` (`log_skill_test_parser` กับ draft จะ error จึงต้องทดสอบ regex ด้วย Python บนเครื่อง)
 
 ## เฉลย (รันจริง 2026-11-02)
 
@@ -70,16 +70,35 @@ Mar  1 02:10:00 server sshd[2824]: Failed password for invalid user admin from 1
 - `validation.required_output` 8 ฟิลด์ ถ้าขาดตัวใด record จะเป็น `failed` ไม่ใช่เติมศูนย์
 - ฟิลด์ที่ไม่อยู่ใน canonical schema ถูกเก็บใน `vendor_fields` ไม่ทิ้ง
 
-**ขั้น 3** ยังไม่มีเฉลย (ไม่ได้รัน) ผลที่คาด: `save_draft` คืน draft และ `list_drafts` เพิ่มจาก 0 เป็น 1 ผู้สอนต้องรีวิว YAML ก่อน promote
+**ขั้น 3** (รันจริง 2026-11-03 โดยผู้เรียนทดลอง) `save_draft` สำเร็จ `list_drafts` เพิ่มจาก 0 เป็น 1: skill `parse-linux-sshd-auth`, parser id `linux-sshd-auth`, version 0.1.0, status draft, sha256 ของ draft `4055c8d1…`
+
+สิ่งที่ Claude ทำ: อ่าน `parse-huawei-security-logs` เป็นแบบ (regex_syslog ตัวเดียวที่ approved) แล้วเขียน YAML ที่ `format: regex_syslog`, `log_type: system`, detection token `sshd[`, จับ Failed password / Accepted password / Accepted publickey, IPv4 และ IPv6, `<PRI>` มีหรือไม่มีก็ได้, `required_output` 3 ฟิลด์ (event_time, device_name, message) และเก็บ user, client_ip, client_port ไว้ใน `vendor_fields` ไม่ใช่ฟิลด์ traffic เพราะ schema ของ system event ห้าม
+
+ข้อค้นพบที่เฉลยเดิมคาดผิด:
+
+1. **`log_skill_test_parser` ใช้กับ draft ไม่ได้** คืน error path `/skills/parse-linux-sshd-auth/SKILL.md` (ผู้สอนลองซ้ำแล้วได้ผลเดียวกัน) tool นี้อ่านเฉพาะ skill ที่ publish แล้ว Claude จึงทดสอบ regex ด้วย Python บนเครื่อง 7 กรณีแทน (บรรทัดโจทย์, root, Accepted password, publickey + PRI + IPv6, และ 3 กรณีที่ต้องไม่ match) และประกาศเองว่ายังไม่ได้ทดสอบกับ Spark
+2. **regex แบบ `(?P<name>)` ของ Python ใช้กับ Spark ได้** เพราะ template `spark_system_event_report_job.py.tmpl` แปลงเป็น `(` ก่อนส่งให้ `regexp_extract` และใช้ `groupindex` ของ Python หา index ข้อกังวลเรื่อง Java regex ที่ Claude ยกมาจึงตกไป
+3. **draft นี้รันผ่าน `analyze-system-logs-with-spark` ไม่ได้** ซึ่ง Claude ระบุถูก: template เรียก `count_table("severity")` แต่ parser ไม่ map `severity` → job จะ FAILED; ตัวนับ login เทียบ `event_id` กับ `LOGIN_SUCCESS`/`LOGIN_FAIL` (ค่า Huawei) จึงนับได้ 0; template เขียน vendor_fields ลง Parquet แค่ 5 ตัว `auth_user`/`client_ip`/`client_port` จะหาย Claude เลือกไม่บิด parser ให้เข้ากับ template ("จะกลายเป็นข้อมูลปลอม") ซึ่งเป็นการตัดสินใจที่ถูก
+
+ประเด็นที่ผู้รีวิวต้องยกก่อน promote (ยังไม่ได้แก้ draft ยังเป็น 0.1.0):
+
+- **ไม่มีปี** `event_time` เป็น `Mon d HH:MM:SS` template parse ด้วย `MMM d HH:mm:ss` ปีจึงไม่จริง ตรงกับข้อค้นพบที่ 3 ของ smoke-test M5.2 (ปี 0001)
+- **`<PRI>` ถูกจับแต่ไม่ถอด** ถ้าถอดเป็น severity = PRI mod 8 (RFC 5424 ที่ M5.2 สอน) จะได้คอลัมน์ `severity` ที่ template ต้องการโดยไม่ต้องแก้ workflow แต่บรรทัดที่ไม่มี PRI ก็ยังว่าง
+- **วันเลขเดียวมีช่องว่างสองช่อง** (`Mar  1`) regex จับได้ แต่ `to_timestamp(..., "MMM d HH:mm:ss")` ของ Spark อาจคืน null ทำให้ record เป็น `failed` ทั้งที่ regex ผ่าน ต้องทดสอบกับ auth.log 44 บรรทัดจริงบน Spark ก่อนสรุป (ยังไม่ได้ทดสอบ)
+- **ใช้กับ lab brute-force (ตัวอย่าง 2.1) ยังไม่ได้** เพราะ client_ip อยู่ใน vendor_fields และไม่ถึง Parquet ต้องมี workflow เวอร์ชันใหม่ที่นับ Failed password ต่อ client_ip ตามที่ Claude เสนอ
+- **ยังไม่ครอบคลุม** `Invalid user … from …`, `pam_unix`, `sshd-session` (OpenSSH 9.8+), RFC3339, journald (Claude เขียนไว้ใน draft เอง)
+
+สถานะ: draft คงไว้ ไม่ promote จนกว่าจะทดสอบบน Spark และตัดสินเรื่อง severity
 
 ## จุดที่คนต้องทำ
 
 - ยืนยันความหมายของฟิลด์ เช่น `source_ip` ของ IDS คือฝั่งที่เริ่ม connection ไม่ใช่ฝั่งที่ถูกโจมตีเสมอไป
 - ตรวจ % บรรทัดที่ parse ได้เทียบ ground truth (lab 2 จะให้ตัวเลข 340/340)
-- รีวิวและ promote draft ผ่าน Git — Claude ทำแทนไม่ได้
+- รีวิวและ promote draft ผ่าน Git — Claude ทำแทนไม่ได้ รายการที่ต้องดูใน YAML: `required_output` ครบไหม, ฟิลด์สำคัญของ use case (client_ip) ไปอยู่ที่ไหนและถึง Parquet ไหม, timestamp มีปีไหม, มี severity ให้ workflow ไหม, regex ทดสอบกับไฟล์จริงบน Spark แล้วหรือแค่ Python
 
 ## Claude ผิดตรงไหนได้บ้าง
 
 - บอกว่า "ไม่มี parser" โดยไม่เรียก resolve
 - เลือก netflow parser เพราะ score 30 "ก็ยังมีคะแนน" → ชี้ว่า parse_success เป็น false
-- ในขั้น 3 เขียน regex จากความจำโดยไม่ทดสอบกับ 44 บรรทัดจริง → บังคับให้ test_parser กับ sample ทั้งไฟล์ (≤ 100 บรรทัด)
+- ในขั้น 3 เขียน regex จากความจำโดยไม่ทดสอบกับ 44 บรรทัดจริง → `log_skill_test_parser` ใช้กับ draft ไม่ได้ จึงต้องให้ Claude ทดสอบ regex ด้วย Python กับ auth.log ทั้งไฟล์ และแยกให้ชัดว่า "ผ่านใน Python" ไม่เท่ากับ "ผ่านบน Spark" (to_timestamp และคอลัมน์ที่ template ต้องการ)
+- ในขั้น 3 บิด parser ให้ผ่าน template ที่มีอยู่ เช่น map `Failed password` เป็น `LOGIN_FAIL` หรือยัด client_ip ลงฟิลด์ traffic → ได้รายงานที่ดูสวยแต่ความหมายผิด ให้ Claude ประกาศข้อจำกัดแทน
