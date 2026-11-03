@@ -16,9 +16,9 @@
 
 ## ขอบเขตรอบเดิมและการเปลี่ยนแปลง upstream
 
-รายงานนี้ปิดผลเฉพาะรอบที่ผู้ใช้อนุมัติ ณ pin `22c935f62e4c4b75d0973f566a7b853302983a8c` ระหว่าง fetch ก่อน push พบว่า `origin/main` เปลี่ยนไปเป็น `ca1e625b39f03c2c413c1e3d92c9f5460998ee1f` โดย upstream แก้ smoke script ทั้งสองใน `d71bf29a76efe93f63e0932c67e34d7175da7702` และ [ใบงานปัจจุบัน](../../queue/001-queue-smoke-test.md) re-pin ไป commit นั้นพร้อมตั้ง `approved: no` แล้ว Codex ไม่รันหรือประเมินใบงานฉบับใหม่
+รายงานนี้ปิดผลเฉพาะรอบที่ผู้ใช้อนุมัติ ณ pin `22c935f62e4c4b75d0973f566a7b853302983a8c` ระหว่าง fetch ก่อน push พบว่า `origin/main` เปลี่ยนไปเป็น `ca1e625b39f03c2c413c1e3d92c9f5460998ee1f` โดย upstream แก้ smoke script ทั้งสองใน `d71bf29a76efe93f63e0932c67e34d7175da7702` และ [ใบงานปัจจุบัน](../../../queue/001-queue-smoke-test.md) re-pin ไป commit นั้นพร้อมตั้ง `approved: no` แล้ว Codex ไม่รันหรือประเมินใบงานฉบับใหม่
 
-upstream เก็บ [ประวัติรอบเดิม](blocked/2026-11-02T1548-run1/README.md) ไว้แล้ว รายงานนี้และผลใน results/001.md จึงต้องอ่านเป็นผลของ pin เดิมเท่านั้น `after` ใน hashes.json เป็น hash จากไฟล์บนดิสก์ที่ pin เดิมก่อน rebase ไม่ใช่ hash ของ harness ฉบับใหม่ การ resolve conflict เก็บ LOG ทุกบรรทัดจาก upstream และเพิ่มบรรทัดผลของรอบเดิมเพียงหนึ่งบรรทัด การเปลี่ยน script ใน upstream ไม่ใช่การแก้ไขโดย Codex ในใบงานนี้
+upstream เก็บ [ประวัติรอบเดิม](claude-archive/README.md) ไว้แล้ว รายงานนี้และผลใน results/001.md จึงต้องอ่านเป็นผลของ pin เดิมเท่านั้น `after` ใน hashes.json เป็น hash จากไฟล์บนดิสก์ที่ pin เดิมก่อน rebase ไม่ใช่ hash ของ harness ฉบับใหม่ การ resolve conflict เก็บ LOG ทุกบรรทัดจาก upstream และเพิ่มบรรทัดผลของรอบเดิมเพียงหนึ่งบรรทัด การเปลี่ยน script ใน upstream ไม่ใช่การแก้ไขโดย Codex ในใบงานนี้
 
 ## หลักฐานและข้อจำกัด
 
@@ -40,7 +40,7 @@ Smoke-test 4/7 และ 4/16; sample 44/121/698/109/302; SCANNER ตรงต�
 
 Codex เรียกเครือข่ายเฉพาะ git origin ของ repository นี้และ pip bootstrap จาก PyPI (`pypi.org` และไฟล์แจกจ่ายของ PyPI) ไม่เรียกโมเดลภายนอกหรือบริการเสียเงิน ไม่ใช้ API key ไม่สมัครบริการ และไม่ดาวน์โหลด dataset ค่าใช้จ่ายบริการที่ Codex เรียกใช้ในใบงานนี้ 0 USD ไม่มีการตรวจ packet เครือข่ายอิสระ คำรับรองนี้แยกจากตัวเลขที่ตรวจได้จากไฟล์
 
-ไม่แก้ไฟล์ tracked ใน module และไม่สร้าง branch งาน ส่งผลผ่าน `main` เฉพาะ [results/001.md](../../results/001.md), รายงานนี้ และเพิ่ม LOG หนึ่งบรรทัดโดยเก็บประวัติเดิมทั้งหมด ค่า commit สำหรับการเผยแพร่รายงานตรวจจาก Git history ของไฟล์; task branch/head เป็น null เพราะไม่มี code commit
+ไม่แก้ไฟล์ tracked ใน module และไม่สร้าง branch งาน ส่งผลผ่าน `main` เฉพาะ [results/001.md](../../../results/001.md), รายงานนี้ และเพิ่ม LOG หนึ่งบรรทัดโดยเก็บประวัติเดิมทั้งหมด ค่า commit สำหรับการเผยแพร่รายงานตรวจจาก Git history ของไฟล์; task branch/head เป็น null เพราะไม่มี code commit
 
 ## ข้อเสนอ
 

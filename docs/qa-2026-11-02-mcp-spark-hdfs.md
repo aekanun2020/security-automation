@@ -310,11 +310,11 @@ alert ประเภท phishing เข้ามา
 
 **Draft:** 0 รายการ ยังไม่มี skill ที่รอ review
 
-ลำดับใช้งานที่ skill ออกแบบไว้คือ parser → analyze → (detection ×3) → correlate → handoff ซึ่งตรงกับ lab 1 ถึง lab 5 ในโฟลเดอร์ [module6/10-claude-mcp-labs](module6/10-claude-mcp-labs/README.md)
+ลำดับใช้งานที่ skill ออกแบบไว้คือ parser → analyze → (detection ×3) → correlate → handoff ซึ่งตรงกับ lab 1 ถึง lab 5 ในโฟลเดอร์ [module6/10-claude-mcp-labs](../module6/10-claude-mcp-labs/README.md)
 
 ## Q20 — อันนี้ใช่มั้ยที่ตรงกับ D ... อะไรของ Qradar
 
-ใช่ครับ D ที่หมายถึงคือ **DSM (Device Support Module)** ของ QRadar ซึ่งใน glossary ของโปรเจคนิยามไว้ว่า "parser สำเร็จรูปของ QRadar สำหรับ log แต่ละยี่ห้อ" ([docs/glossary.md:16](docs/glossary.md:16)) และ skill กลุ่ม parser ใน log-skill server ก็เล่นบทเดียวกันนี้
+ใช่ครับ D ที่หมายถึงคือ **DSM (Device Support Module)** ของ QRadar ซึ่งใน glossary ของโปรเจคนิยามไว้ว่า "parser สำเร็จรูปของ QRadar สำหรับ log แต่ละยี่ห้อ" ([docs/glossary.md:16](glossary.md)) และ skill กลุ่ม parser ใน log-skill server ก็เล่นบทเดียวกันนี้
 
 เทียบกันตรง ๆ
 
@@ -329,7 +329,7 @@ alert ประเภท phishing เข้ามา
 จุดที่ต่างและควรบอกผู้เรียน
 
 - **DSM แค่ parse แต่ server นี้มี workflow ต่อท้ายด้วย** กลุ่ม analyze-* และ correlate-* เทียบได้กับ custom rule + offense ของ QRadar มากกว่า DSM
-- **Zeek และ Suricata มี parser ที่นี่ แต่ QRadar DSM list ไม่มี** ตามที่ตารางเปรียบเทียบบันทึกไว้ ([docs/elastic-siem-vs-qradar.md:24](docs/elastic-siem-vs-qradar.md:24)) ส่วนนี้จึงเป็น gap G1 ที่ lab ออกแบบมาปิด
+- **Zeek และ Suricata มี parser ที่นี่ แต่ QRadar DSM list ไม่มี** ตามที่ตารางเปรียบเทียบบันทึกไว้ ([docs/elastic-siem-vs-qradar.md:24](elastic-siem-vs-qradar.md)) ส่วนนี้จึงเป็น gap G1 ที่ lab ออกแบบมาปิด
 - **ไม่มี auto-detect** QRadar ดู event ประมาณ 25 บรรทัดแล้วเลือก DSM เอง แต่ที่นี่ Claude ต้องเรียก log_skill_resolve เพื่อเลือก parser จาก sample ก่อน
 
 สรุปสั้น ๆ คือ parser skill 12 ตัว = DSM แบบที่โปรเจคสร้างเอง ส่วน workflow 11 ตัวอยู่เหนือระดับ DSM แล้ว
@@ -338,7 +338,7 @@ alert ประเภท phishing เข้ามา
 
 **สรุป: remote repo มีครบทุกหัวข้อที่ต้องสอน** ตามเกณฑ์ "มีครึ่งเดียวก็นับว่ามี" และ origin/main ตรงกับเครื่อง local ทุก commit ไม่มีงานค้าง push
 
-หัวข้อที่ต้องสอนตาม [README.md](README.md) คือ 9 หัวข้อใน Module 5–6 บวกแทร็ก lab M6.10 ทุกหัวข้อมีโฟลเดอร์, README และส่วนในรายงาน research พร้อมตัวอย่างโค้ดอยู่บน remote แล้ว แต่ระดับความพร้อมต่างกัน
+หัวข้อที่ต้องสอนตาม [README.md](../README.md) คือ 9 หัวข้อใน Module 5–6 บวกแทร็ก lab M6.10 ทุกหัวข้อมีโฟลเดอร์, README และส่วนในรายงาน research พร้อมตัวอย่างโค้ดอยู่บน remote แล้ว แต่ระดับความพร้อมต่างกัน
 
 | หัวข้อ | สิ่งที่มีบน remote | ระดับ |
 | --- | --- | --- |
@@ -356,6 +356,6 @@ alert ประเภท phishing เข้ามา
 **ช่องว่างที่เหลือ** ซึ่งไม่ทำให้หัวข้อใดหลุดเกณฑ์ แต่ควรรู้ก่อนสอน
 
 - **M5.3 ถึง M6.4 ยกเว้น M5.1 และ M5.2** โค้ดยังอยู่ในรายงาน research เท่านั้น ยังไม่ได้แยกเป็นไฟล์และยังไม่ได้ smoke test ตามที่ README ของแต่ละหัวข้อระบุไว้เอง
-- **lab 4 enrich และ lab 5 report** ใน M6.10 ยังเป็นร่าง ไม่มีเฉลยจากการรันจริง ส่วน [lab-design-by-gap.md](docs/lab-design-by-gap.md) ระบุเองว่า G5 Sigma และ G6 ML ยังไม่บรรลุ
+- **lab 4 enrich และ lab 5 report** ใน M6.10 ยังเป็นร่าง ไม่มีเฉลยจากการรันจริง ส่วน [lab-design-by-gap.md](lab-design-by-gap.md) ระบุเองว่า G5 Sigma และ G6 ML ยังไม่บรรลุ
 - **codex-queue** มีใบงาน ELK 002–016 แต่ทำเสร็จจริงแค่ 001 และ 002 ถูกอนุมัติแล้วแต่ยังไม่มีผล จึงยังไม่มี Elastic SIEM สำหรับคาบถัดไป
 - **repo ไม่มี .evtx ตัวอย่าง** ทำให้ตัวอย่าง 2.2 และ 2.2b ของ M5.2 ยังไม่เคยรันกับไฟล์จริง

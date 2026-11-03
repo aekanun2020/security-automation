@@ -2,7 +2,7 @@
 
 Codex ประเมินใหม่จาก output ของการรันครั้งนี้เอง เวลา 2026-11-02T17:42:34+07:00 ไม่ใช้ผลตัดสินจากโมเดลภายนอก ผลเกณฑ์ (1)–(5): **PASS 4, FAIL 1**; ค่าใช้จ่ายบริการภายนอกที่เรียกใช้ 0 USD
 
-ทดสอบบน branch `main` ที่ pin `d71bf29a76efe93f63e0932c67e34d7175da7702` ใน clone ใหม่ `/private/tmp/security-automation-001-r2.ifZNjy` หลัง `git fetch origin main` และตรวจว่า pin เป็น ancestor ของ `origin/main` งานนี้ไม่มี branch งานหรือ code commit ตามข้อยกเว้นของ [ใบงานที่อนุมัติ](../../queue/001-queue-smoke-test.md); `branch` และ `head` ใน manifest เป็น `null`
+ทดสอบบน branch `main` ที่ pin `d71bf29a76efe93f63e0932c67e34d7175da7702` ใน clone ใหม่ `/private/tmp/security-automation-001-r2.ifZNjy` หลัง `git fetch origin main` และตรวจว่า pin เป็น ancestor ของ `origin/main` งานนี้ไม่มี branch งานหรือ code commit ตามข้อยกเว้นของ [ใบงานที่อนุมัติ](../../../queue/001-queue-smoke-test.md); `branch` และ `head` ใน manifest เป็น `null`
 
 | ข้อ | คำสั่งที่รัน | เกณฑ์ | ค่าที่ได้จริง | ผล | Output |
 | --- | --- | --- | --- | --- | --- |
@@ -36,7 +36,7 @@ workspace เดิมถูก sandbox ปฏิเสธ `git fetch origin mai
 
 ## ประวัติแยกจากการประเมินครั้งนี้
 
-[รายงาน FAIL รอบ 1](round1-FAIL/README.md) และ [ผลรอบ 1](../../results/001-round1-FAIL.md) เป็นหลักฐานย้อนหลังที่ upstream เก็บแยกไว้ ไม่ใช่ผลรันที่ pin รอบ 2 นี้ ไม่มีการแก้ไขหลักฐานรอบเดิม
+[รายงาน FAIL รอบ 1](../round1-FAIL/README.md) และ [ผลรอบ 1](../../../results/001-round1-FAIL.md) เป็นหลักฐานย้อนหลังที่ upstream เก็บแยกไว้ ไม่ใช่ผลรันที่ pin รอบ 2 นี้ ไม่มีการแก้ไขหลักฐานรอบเดิม
 
 ## ข้อเสนอ
 
