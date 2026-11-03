@@ -13,7 +13,7 @@ lab 2 ใช้ template ที่เชื่อถือได้ lab นี�
 ## prompt ที่ผู้เรียนพิมพ์
 
 ```
-เขียน PySpark ที่อ่าน curated parquet ของ lab 2 แล้วทำตามตัวอย่าง 7.2 ใน docs/python-security-automation-research.md:
+เขียน PySpark ที่อ่าน curated parquet ของ lab 2 ที่ /m6-10/<ชื่อ>/lab2-ids/curated แล้วทำ dedupe + score ตามสูตรนี้ (ตัวอย่าง 7.2 ของรายงาน research):
 fingerprint = sha256 ของ signature_id|source_ip|destination_ip ตัด 16 ตัว, window 600 วินาที,
 score = base(severity) + 8*asset_crit + min(10, 2*(repeats-1)) clamp 0..100, route <25 auto-close / >=60 escalate / อื่น queue
 ให้ ASSET_CRIT ของ 10.70.0.66 = 4 ค่าอื่น 2 เขียน offenses เป็น JSON lines และ report สรุป

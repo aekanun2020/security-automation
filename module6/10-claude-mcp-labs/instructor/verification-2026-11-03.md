@@ -17,8 +17,8 @@
 
 | สิ่งที่เฉลยระบุ | ที่รันได้จริง | ผล |
 | --- | --- | --- |
-| ขั้น 1 resolve sshd → selected null, candidates [], unknown_format true | ตรงทุกฟิลด์ | ✅ |
-| ขั้น 2 resolve Suricata: suricata-eve-alert-json-v1 score 100 conf 1.0 parse_success true "6 fingerprint" | ตรง; reasons = "6 content fingerprint(s) matched", "deterministic parser accepted sample" | ✅ |
+| ขั้น 2 (เดิมขั้น 1) resolve sshd → selected null, candidates [], unknown_format true | ตรงทุกฟิลด์ | ✅ |
+| ขั้น 1 (เดิมขั้น 2) resolve Suricata: suricata-eve-alert-json-v1 score 100 conf 1.0 parse_success true "6 fingerprint" | ตรง; reasons = "6 content fingerprint(s) matched", "deterministic parser accepted sample" | ✅ |
 | netflow-v5-* 4 ตัว score 30 conf 0.3 parse_success false | 4 ตัว: pcap-course-exfil, netflow-v5-json-v1, exfil-json-v1, course-exfil ทุกตัว 30/0.3/false "3 fingerprint" | ✅ |
 | test_parser 2 sample passed 1 failed 1 | total 2 passed 1 failed 1 | ✅ |
 | event_time 2026-08-24T00:00:00+00:00, 10.70.0.66 → 10.70.0.53:53, signature LAB13 Coherent C2 DNS, severity 1, vendor_fields alert_id + pcap_count | ตรงทุกค่า (ts 1787529600.0 → 2026-08-24T00:00:00+00:00) | ✅ |

@@ -12,16 +12,17 @@ SIEM ไม่มี parser สำหรับทุกแหล่ง (gap G1) 
 
 ## prompt ที่ผู้เรียนพิมพ์
 
-ขั้นที่ 1 (ไม่มี parser):
-```
-log บรรทัดนี้ใช้ parser ไหนใน skill server
-Mar  1 02:10:00 server sshd[2824]: Failed password for invalid user admin from 198.51.100.1 port 40000 ssh2
-```
-
-ขั้นที่ 2 (มี parser):
+ขั้นที่ 1 (alert ตัวแรกของคืนนั้น มี parser):
 ```
 อ่าน 3 บรรทัดแรกของ /student/agentic-siem/incident-lab/input/coherent-pcap-suricata-alerts-340.jsonl
-แล้วหาว่าใช้ parser ไหน ทดสอบ parser กับบรรทัดแรกและบรรทัด sshd ข้างบนพร้อมกัน
+แล้วหาว่าใช้ parser ไหนใน skill server
+```
+
+ขั้นที่ 2 (log ที่ SIEM ไม่รู้จัก ไม่มี parser):
+```
+แล้ว log บรรทัดนี้ล่ะ ใช้ parser ไหน
+Mar  1 02:10:00 server sshd[2824]: Failed password for invalid user admin from 198.51.100.1 port 40000 ssh2
+ทดสอบ parser ของ Suricata กับบรรทัดแรกของไฟล์เมื่อกี้และบรรทัด sshd นี้พร้อมกัน
 ```
 
 ขั้นที่ 3 (ท้าทาย ไม่บังคับ):
@@ -35,20 +36,20 @@ Mar  1 02:10:00 server sshd[2824]: Failed password for invalid user admin from 1
 
 | # | พิมพ์ถาม Claude | คำตอบต้องอ้างอะไร | ประเภท |
 | --- | --- | --- | --- |
-| 1 | log บรรทัดนี้ (sshd) SIEM ของเรา parse ได้ไหม และจะรู้ได้อย่างไรว่า "ไม่มี parser" ไม่ใช่ "parse ผิด" | `log_skill_resolve` กับบรรทัด sshd: `selected`, `candidates`, `unknown_format` | ตรวจ |
-| 2 | log ของ Suricata เข้าได้ แต่แน่ใจแค่ไหนว่าเลือก parser ถูกตัว | ตาราง candidates จาก `log_skill_resolve`: score, confidence, `parse_success` | ตรวจ |
-| 3 | parser ตัวอื่นที่ได้คะแนนบ้าง ทำไมไม่เอา ถ้าเอาจะเกิดอะไร | `parse_success` ของ candidate ที่ score ต่ำ | ตรวจ |
-| 4 | หลัง parse แล้ว เราเห็นอะไรที่ก่อน parse ไม่เห็น ใครคุยกับใคร กี่โมง rule อะไรยิง รุนแรงแค่ไหน | ผล `log_skill_test_parser`: `event_time`, `source_ip`, `destination_ip`, `destination_port`, `signature`, `severity` และฟิลด์ดิบ `ts` ที่ `event_time` แปลงมา | ตรวจ |
-| 5 | ฟิลด์ที่ vendor มีแต่ schema กลางของเราไม่มี (เช่น alert_id) หายไปไหม ถ้าต้องใช้ทีหลังจะเอาจากไหน | `vendor_fields` ใน record ที่ parse แล้ว | ตรวจ |
+| 1 | log ของ Suricata เข้าได้ แต่แน่ใจแค่ไหนว่าเลือก parser ถูกตัว | ตาราง candidates จาก `log_skill_resolve`: score, confidence, `parse_success` | ตรวจ |
+| 2 | parser ตัวอื่นที่ได้คะแนนบ้าง ทำไมไม่เอา ถ้าเอาจะเกิดอะไร | `parse_success` ของ candidate ที่ score ต่ำ | ตรวจ |
+| 3 | หลัง parse แล้ว เราเห็นอะไรที่ก่อน parse ไม่เห็น ใครคุยกับใคร กี่โมง rule อะไรยิง รุนแรงแค่ไหน | ผล `log_skill_test_parser`: `event_time`, `source_ip`, `destination_ip`, `destination_port`, `signature`, `severity` และฟิลด์ดิบ `ts` ที่ `event_time` แปลงมา | ตรวจ |
+| 4 | ฟิลด์ที่ vendor มีแต่ schema กลางของเราไม่มี (เช่น alert_id) หายไปไหม ถ้าต้องใช้ทีหลังจะเอาจากไหน | `vendor_fields` ใน record ที่ parse แล้ว | ตรวจ |
+| 5 | log บรรทัดนี้ (sshd) SIEM ของเรา parse ได้ไหม และจะรู้ได้อย่างไรว่า "ไม่มี parser" ไม่ใช่ "parse ผิด" | `log_skill_resolve` กับบรรทัด sshd: `selected`, `candidates`, `unknown_format` | ตรวจ |
 | 6 | ถ้า log บรรทัดหนึ่งขาดฟิลด์สำคัญ SIEM ควรเดาค่าให้ หรือทิ้งบรรทัดนั้นแล้วบอกเรา ระบบนี้ทำแบบไหน | ส่วน `validation.required_output` ใน YAML ของ parser + ผล test_parser ของบรรทัด sshd | ตัดสิน |
 | 7 | ถ้าจะเพิ่ม parser สำหรับ sshd เอง ใครเป็นคนอนุมัติ ต้องทดสอบกับอะไรก่อนใช้จริง และเอาไปใช้กับ workflow ที่มีได้เลยไหม | (ขั้น 3 ไม่บังคับ) `log_skill_save_draft` + `log_skill_list_drafts` + `log_skill_get_draft` อ่าน YAML; `log_skill_test_parser` รับเฉพาะ skill ที่ publish แล้ว draft จึงต้องทดสอบ regex นอก server กับ auth.log ทั้ง 44 บรรทัด; ข้อจำกัดเทียบ template ของ `analyze-system-logs-with-spark` | ตัดสิน |
 
 ## ลำดับ tool ที่ควรเห็น
 
-1. `log_skill_resolve` (sample = บรรทัด sshd) → อ่านค่า `selected`, `candidates`, `unknown_format`
-2. `hdfs_read_lines` (path virtual, limit 3)
-3. `log_skill_resolve` (sample = บรรทัด Suricata) → selected parser
-4. `log_skill_test_parser` (skill, parser_id, samples = 2 บรรทัด)
+1. `hdfs_read_lines` (path virtual, limit 3)
+2. `log_skill_resolve` (sample = บรรทัด Suricata) → selected parser
+3. `log_skill_resolve` (sample = บรรทัด sshd) → อ่านค่า `selected`, `candidates`, `unknown_format`
+4. `log_skill_test_parser` (skill, parser_id, samples = 2 บรรทัด) → passed 1 failed 1
 5. (ขั้น 3) `log_skill_get` ของ parser ที่คล้ายกัน เช่น parse-huawei-security-logs เพื่อดูรูปแบบ YAML → `log_skill_save_draft` → `log_skill_list_drafts` (`log_skill_test_parser` กับ draft จะ error จึงต้องทดสอบ regex ด้วย Python บนเครื่อง)
 
 ## บันทึกคำตอบ
