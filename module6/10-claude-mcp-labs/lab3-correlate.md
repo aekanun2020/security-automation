@@ -6,6 +6,23 @@
 
 alert จาก IDS บอกว่า "มี rule ตรง" แต่ยังไม่ใช่หลักฐาน ผู้เรียนต้องให้ Claude (1) สรุปรูปแบบเวลาของ alert แต่ละ signature (2) จับคู่ alert กับ connection จริงใน Zeek ด้วย 5-tuple (3) ยืนยันระดับ packet ใน PCAP และ (4) วัดปริมาณข้อมูลที่ออกไป โดยไม่ใช้ Spark เลย (ทุก tool เป็น HDFS scan)
 
+## สิ่งที่ต้องค้นให้ได้
+
+ผู้เรียนต้องตอบทุกข้อเป็นลายลักษณ์อักษร และทุกคำตอบต้องชี้กลับไปที่ผลของ tool (ชื่อ tool + ฟิลด์หรือบรรทัดที่อ่านมา) ไม่รับคำตอบที่ Claude สรุปให้โดยไม่มี tool รองรับ คำตอบอยู่ในส่วนเฉลยด้านล่าง
+
+| # | คำถาม | หลักฐานที่ต้องแสดง |
+| --- | --- | --- |
+| 1 | alert 340 รายการมาจาก source_ip กี่ตัว คือใคร | `hdfs_query_records` group_by source_ip |
+| 2 | signature 3 ตัว แต่ละตัวมี count เท่าไร ปลายทางคือใคร พอร์ตและ protocol อะไร ช่วงเวลาเริ่ม–จบ | `hdfs_query_records` group_by [signature, source_ip] + time_field |
+| 3 | mean interval และ stddev ของแต่ละ signature เป็นเท่าไร stddev 0 บอกอะไร | สถิติเวลาจาก query เดียวกัน + เทียบ CV ของตัวอย่าง 2.6 |
+| 4 | correlate ได้ `matched_pairs`, `unmatched_left`, `unmatched_right` เท่าไร unmatched_right คือ traffic อะไร | ผล `hdfs_correlate_records` |
+| 5 | East-West มี 100 alert แต่จับคู่ได้กี่ conn ทำไมจำนวนไม่เท่ากัน | `matched_cohorts` + นิยาม 5-tuple |
+| 6 | ก่อน correlate ต้องรู้ชื่อฟิลด์จริงของ Zeek conn ว่าอะไร (ip/port/proto) ได้มาจากไหน | `hdfs_read_lines` 2 บรรทัดแรก |
+| 7 | Outbound Transfer ส่งข้อมูลไปที่ใด byte ออกรวมเท่าไร byte เข้ารวมเท่าไร อัตราส่วนบอกรูปแบบอะไร | `hdfs_query_records` filters + sum_fields orig_bytes/resp_bytes |
+| 8 | ใน PCAP มีกี่ packet ที่ตรง filter ทำไมไม่เท่ากับจำนวน conn (120) frame แรกเลขอะไร เวลาใด | `hdfs_pcap_packets` display_filter |
+| 9 | `interpretation` ที่ tool คืนมาว่าอะไร ทำไม alert กับ conn จึงไม่ใช่หลักฐานอิสระสองชิ้น | ฟิลด์ interpretation ของ correlate + ที่มาของไฟล์ทั้ง 2 |
+| 10 | 3 ระยะนี้เป็นเหตุการณ์เดียวกันหรือไม่ ใช้อะไรตัดสิน และ tool ตัดสินให้หรือเปล่า | asset เดียวกัน + ลำดับเวลา + ข้อความ `no incident verdict` |
+
 ## prompt ที่ผู้เรียนพิมพ์
 
 ```

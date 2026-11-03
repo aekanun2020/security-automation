@@ -6,6 +6,21 @@
 
 SIEM ไม่มี parser สำหรับทุกแหล่ง (gap G1) ผู้เรียนต้องให้ Claude หาว่า log ที่ได้มามี parser รองรับหรือไม่ ถ้ามี ทดสอบให้เห็นฟิลด์ที่ normalize แล้ว ถ้าไม่มี ร่าง parser ใหม่เป็น draft
 
+## สิ่งที่ต้องค้นให้ได้
+
+ผู้เรียนต้องตอบทุกข้อเป็นลายลักษณ์อักษร และทุกคำตอบต้องชี้กลับไปที่ผลของ tool (ชื่อ tool + ฟิลด์หรือบรรทัดที่อ่านมา) ไม่รับคำตอบที่ Claude สรุปให้โดยไม่มี tool รองรับ คำตอบอยู่ในส่วนเฉลยด้านล่าง
+
+| # | คำถาม | หลักฐานที่ต้องแสดง |
+| --- | --- | --- |
+| 1 | บรรทัด sshd มี parser รองรับไหม `resolve` คืนค่าอะไรใน `selected`, `candidates`, `unknown_format` | JSON ที่ `log_skill_resolve` คืน (ขั้น 1) |
+| 2 | บรรทัด Suricata ได้ parser ตัวไหน score และ confidence เท่าไร | ตาราง candidates จาก `log_skill_resolve` (ขั้น 2) |
+| 3 | parser กลุ่ม netflow ได้ score 30 ทำไมจึงใช้ไม่ได้ | ฟิลด์ `parse_success` ของ candidate นั้น |
+| 4 | parser ที่เลือกใช้ fingerprint กี่ตัว, mapping กี่ฟิลด์, `required_output` กี่ฟิลด์ | YAML จาก `log_skill_get` ของ skill parser |
+| 5 | บรรทัด Suricata แรกหลัง parse ได้ `event_time`, `source_ip` → `destination_ip:port`, `signature`, `severity` เป็นค่าอะไร และ `event_time` แปลงมาจากฟิลด์ดิบใด | ผล `log_skill_test_parser` record ที่ `parse_status: parsed` |
+| 6 | ฟิลด์ที่ไม่อยู่ใน canonical schema (เช่น `alert_id`, `pcap_count`) ไปอยู่ที่ใด ถูกทิ้งไหม | โครง record ที่ parse แล้ว |
+| 7 | ถ้า record ขาดฟิลด์ใน `required_output` จะเกิดอะไร เติมศูนย์หรือเป็น `failed` | ส่วน `validation` ใน YAML + ผล test_parser ของบรรทัด sshd |
+| 8 | (ขั้น 3 ไม่บังคับ) draft parser ที่ร่าง เมื่อ test กับ auth.log ทั้ง 44 บรรทัด ผ่านกี่บรรทัด และ `list_drafts` เพิ่มจากเท่าไรเป็นเท่าไร | ผล `log_skill_test_parser` ทั้งไฟล์ + `log_skill_list_drafts` ก่อน/หลัง |
+
 ## prompt ที่ผู้เรียนพิมพ์
 
 ขั้นที่ 1 (ไม่มี parser):

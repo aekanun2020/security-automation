@@ -6,6 +6,24 @@
 
 lab 3 ได้หลักฐาน 3 ระยะบน asset เดียวกัน ขั้นต่อไปใน SOC คือส่งต่อให้ทีม investigation เป็นเอกสารมาตรฐาน (handoff) ที่ระบุ asset, ลำดับเวลา, หลักฐานประกอบ, สิ่งที่ analyst ต้องทำ และข้อจำกัด skill server มี template ที่ผลิต `security-investigation-handoff-v2` จาก correlation report แบบ deterministic — ผู้เรียนต้องพิสูจน์ความ deterministic นั้นด้วย sha256
 
+## สิ่งที่ต้องค้นให้ได้
+
+ผู้เรียนต้องตอบทุกข้อเป็นลายลักษณ์อักษร และทุกคำตอบต้องชี้กลับไปที่ผลของ tool (ชื่อ tool + ฟิลด์หรือบรรทัดที่อ่านมา) ไม่รับคำตอบที่ Claude สรุปให้โดยไม่มี tool รองรับ คำตอบอยู่ในส่วนเฉลยด้านล่าง
+
+| # | คำถาม | หลักฐานที่ต้องแสดง |
+| --- | --- | --- |
+| 1 | input events.log ระบุ candidate อะไร: asset_id, ip, ช่วงเวลา sequence, ช่วงห่าง c2→exfil และ exfil→lateral กี่วินาที, supporting roles กี่รายการ | `hdfs_read_text` events.log ฟิลด์ `investigation_candidates[0]` |
+| 2 | contract handoff v2 ผูกค่าคงที่อะไรไว้บ้าง (canonical_sha256, asset, priority, disposition) แล้วใช้กับ incident อื่นได้ไหม | `log_skill_read_resource` references/security-investigation-handoff-contract-v2.json |
+| 3 | render ด้วย skill ชื่ออะไร parser อะไร ได้ code_sha256 เท่าไร และ policy validate บังคับประโยคใดต้องมี/ห้ามมี | `log_skill_render_spark_job` + `log_skill_validate_spark_job` |
+| 4 | sha256 ของ report ที่ได้ใหม่กับ report รอบ 2026-08-20 ตรงกันไหม ขนาดไฟล์เท่าไร นี่พิสูจน์อะไร | `hdfs_sha256` ทั้ง 2 ไฟล์ |
+| 5 | case_id, priority, disposition, verdict ของ case คืออะไร verdict นี้แปลว่า "ยืนยันถูกโจมตี" หรือไม่ | report JSON |
+| 6 | timeline มีกี่รายการ แต่ละรายการเกิดเวลาใด มาจาก contract ต้นทางใด | report JSON `timeline` |
+| 7 | corroboration มีกี่รายการ รายการใด `simulation: true` และนับเป็นหลักฐานอิสระได้ไหม | report JSON `corroboration` |
+| 8 | caveats 4 ข้อคืออะไร | report JSON `caveats` |
+| 9 | `raw_view_records` 300,460 เป็น "จำนวน event" ได้ไหม report บอกไว้ว่าอย่างไร | report JSON `parent_evidence` |
+| 10 | source_sha256 ของหลักฐานใน timeline ตรงกับไฟล์ input ของรอบ correlation ทั้ง 5 ไฟล์ไหม | `hdfs_sha256` ของไฟล์ใน `/generic-security/coherent-pcap-correlation-20260820041327/input/` เทียบค่าใน report |
+| 11 | analyst ต้องทำอะไร 3 ข้อ และข้อใดที่ MCP ทำแทนไม่ได้ | report JSON `analyst_actions` |
+
 ## สายงานเต็มที่ server ออกแบบ (ผู้เรียนควรเห็นภาพ)
 
 ```

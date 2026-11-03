@@ -6,6 +6,24 @@
 
 ให้ Claude สร้างรายงานสรุป alert ตาม contract `ids-report-v1` โดยใช้ Spark job ที่ render จาก template ที่เชื่อถือได้ ผู้เรียนต้องตรวจทุกจุดที่ server ให้หลักฐาน: sha256 ของโค้ด, สถานะ job, และ report ผ่าน contract
 
+## สิ่งที่ต้องค้นให้ได้
+
+ผู้เรียนต้องตอบทุกข้อเป็นลายลักษณ์อักษร และทุกคำตอบต้องชี้กลับไปที่ผลของ tool (ชื่อ tool + ฟิลด์หรือบรรทัดที่อ่านมา) ไม่รับคำตอบที่ Claude สรุปให้โดยไม่มี tool รองรับ คำตอบอยู่ในส่วนเฉลยด้านล่าง
+
+| # | คำถาม | หลักฐานที่ต้องแสดง |
+| --- | --- | --- |
+| 1 | ต้อง render ด้วย skill ชื่ออะไรจึงได้โค้ด ถ้าใส่ชื่อ workflow skill จะได้ error ว่าอะไร และ server เลือก `workflow_skill` ให้เองว่าอะไร | ผล `log_skill_render_spark_job` ทั้งรอบที่ผิดและรอบที่ถูก |
+| 2 | sha256 ของโค้ดที่ 4 จุด (render, save, validate expected, snapshot ของ job) มีค่าอะไร ตรงกันทุกจุดไหม | ค่าจาก `log_skill_render_spark_job`, `spark_save_job`, `log_skill_validate_spark_job`, `spark_job_status` |
+| 3 | argument 3 ตัวที่ส่งให้ job คืออะไร เป็น path แบบใด | argument ใน `spark_submit_job` |
+| 4 | job ใช้เวลาเท่าไร สถานะสุดท้ายและ exit_code คืออะไร | `spark_job_status` ครั้งสุดท้าย (เวลา submit → เวลาจบ) |
+| 5 | `total_records`, `parsed`, `failed` เท่าไร | report JSON ที่อ่านด้วย `hdfs_read_text` |
+| 6 | `event_time_min` → `event_time_max` ครอบคลุมช่วงใด | report JSON |
+| 7 | top_signatures 3 ตัวและจำนวนของแต่ละตัว | report JSON |
+| 8 | alert ทั้งหมดมาจาก source_ip กี่ตัว และ destination_ip 2 อันดับแรกคือใคร ที่เหลืออีกกี่ host ละกี่ alert | report JSON `top_source_ips`, `top_destination_ips` |
+| 9 | `alert_action` มีค่าอะไรบ้าง และหมายความว่า IDS ทำอะไรกับ traffic นั้น | report JSON + นิยามใน skill |
+| 10 | sha256 ของ report มี 2 ค่า (ไฟล์ใน HDFS กับที่ `validate_report` คืน) ทำไมต่างกัน | `hdfs_sha256` เทียบ `report_sha256` ของ `log_skill_validate_report` |
+| 11 | ในโค้ด PySpark ที่ render บรรทัดใดทำให้ record กลายเป็น `failed` และทำไมเขียน output ด้วย `errorifexists` | อ่านโค้ดจาก `spark_read_job` ระบุเลขบรรทัด |
+
 ## prompt ที่ผู้เรียนพิมพ์
 
 ```

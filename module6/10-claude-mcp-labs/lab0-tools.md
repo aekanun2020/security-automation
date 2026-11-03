@@ -6,6 +6,19 @@
 
 ก่อนสั่งงาน ผู้เรียนต้องรู้ว่า Claude ทำอะไรได้ผ่าน MCP บ้าง และกติกาที่ server บังคับคืออะไร
 
+## สิ่งที่ต้องค้นให้ได้
+
+ผู้เรียนต้องตอบทุกข้อเป็นลายลักษณ์อักษร และทุกคำตอบต้องชี้กลับไปที่ผลของ tool (ชื่อ tool + ฟิลด์หรือบรรทัดที่อ่านมา) ไม่รับคำตอบที่ Claude สรุปให้โดยไม่มี tool รองรับ คำตอบอยู่ในส่วนเฉลยด้านล่าง
+
+| # | คำถาม | หลักฐานที่ต้องแสดง |
+| --- | --- | --- |
+| 1 | spark-hdfs server มี tool กี่ตัว แบ่งได้กี่กลุ่ม และ tool ใดอ่านไฟล์ได้ไม่เกินกี่ MB | รายชื่อ tool จาก ToolSearch จัดกลุ่มเอง + ข้อจำกัดจาก description ของ `hdfs_read_text` |
+| 2 | log-skill server มี skill กี่ตัว แยกเป็น parser กี่ตัว workflow กี่ตัว และ draft กี่ตัว | ผล `log_skill_list` และ `log_skill_list_drafts` (ไม่ใช่เดาจากชื่อ) |
+| 3 | มี tool ใดไหมที่ *รัน* โค้ดของ skill ได้ แล้ว `log_skill_read_resource` คืนอะไร | description ของ tool และ instruction ของ server |
+| 4 | virtual path กับ physical path ต่างกันอย่างไร ยกตัวอย่างค่าที่ `hdfs_mkdir` คืนมา และ path แบบไหนห้ามส่งกลับเข้า HDFS tool | instruction ของ spark-hdfs server + ผล `hdfs_mkdir` จริง 1 ครั้ง |
+| 5 | ก่อน `spark_submit_job` ต้องเรียก tool อะไรบ้างตามลำดับ และสถานะใดที่ถือว่า job สำเร็จ | instruction ของ server (save → validate → submit → status SUCCEEDED) |
+| 6 | ทำไม Claude ต้องโหลด schema (ToolSearch) ก่อน จึงเรียก tool ได้ | ข้อความ error หรือ step แรกที่เห็นในแชท |
+
 ## prompt ที่ผู้เรียนพิมพ์
 
 ```
