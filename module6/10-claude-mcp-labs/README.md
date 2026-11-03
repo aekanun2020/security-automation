@@ -56,6 +56,7 @@ Claude Desktop ── ดึง feed / ทำ PDF / Artifact (ออกเน็
 | [5 รายงาน](lab5-report.md) | G4 | ทำ dashboard และ PDF จาก report | ⏳ ร่าง |
 | [2b dedupe/score](lab2b-dedupe-score.md) | G2 | เขียน PySpark เองตามตัวอย่าง 7.2 (ไม่มี template) แล้วคนตรวจโค้ด | ✅ รันจริง job 291d645c: 340 → 39 offense, score ชน 100 ทุกตัว |
 | [3b investigation handoff](lab3b-handoff.md) | — | สร้าง handoff-v2 จาก correlation report แล้วพิสูจน์ determinism | ✅ รันจริง job 2b6283c3: sha256 ตรงกับรอบ 20 ส.ค. |
+| [3c baseline](lab3c-baseline.md) | G6 (ขั้นก่อน ML) | สร้าง baseline จาก Zeek conn แล้วหา host ที่ผิดโดยไม่ใช้ signature | ✅ รันจริง 2026-11-03: query อย่างเดียว ไม่มี Spark job; 10.70.0.66 byte ออก 212× ของ baseline แต่ connection น้อยกว่า baseline |
 
 ทุก lab มี 5 ส่วน: โจทย์ → prompt → ลำดับ tool ที่ควรเห็น → เฉลย → จุดที่คนต้องทำ และปิดท้ายด้วย "Claude ผิดตรงไหนได้บ้าง"
 
@@ -66,7 +67,7 @@ Claude Desktop ── ดึง feed / ทำ PDF / Artifact (ออกเน็
 | หัวข้อ | lab | ครอบคลุม | ยังขาด |
 | --- | --- | --- | --- |
 | M5.2 Log Analysis Automation | 1, 2, 3 | ✔ parse, canonical schema, Zeek, PCAP, batch analytics | Drain3, EVTX, Sigma |
-| M6.2 Automated Alert Processing | 2, 3 | ◐ aggregate, correlate | dedupe/score (2b), Jira |
+| M6.2 Automated Alert Processing | 2, 3, 3c | ◐ aggregate, correlate, baseline anomaly | dedupe/score (2b), Jira |
 | M5.4 API Integration | 0, 4 | ◐ MCP เป็น API contract, feed สาธารณะ | OAuth2, HMAC, Wazuh API |
 | M5.5 Threat Intelligence | 4 | ◐ ingest feed, match กับ log | STIX, TAXII, MISP |
 | M6.3 Automated Reporting | 5 | ✔ report contract → PDF/dashboard | Navigator layer |
@@ -79,7 +80,7 @@ Claude Desktop ── ดึง feed / ทำ PDF / Artifact (ออกเน็
 
 ## ลำดับสอนที่แนะนำ (ครึ่งวัน)
 
-0 (20 นาที) → 1 (30) → 2 (45) → พัก → 3 (45) → 3b (40) → 2b (60) → 4/5 ถ้าเหลือเวลา เหตุผล: 3b ต่อจาก 3 โดยตรงและเร็ว (9 วินาที) ส่วน 2b ต้องการให้ผู้เรียนอ่านโค้ดจึงวางท้าย
+0 (20 นาที) → 1 (30) → 2 (45) → พัก → 3 (45) → 3c (30) → 3b (40) → 2b (60) → 4/5 ถ้าเหลือเวลา เหตุผล: 3c ใช้ไฟล์เดียวกับ 3 และตอบคำถาม "ถ้าไม่มี signature จะเจอไหม" ก่อนส่งต่อเป็น case ใน 3b ซึ่งต่อจาก 3 โดยตรงและเร็ว (9 วินาที) ส่วน 2b ต้องการให้ผู้เรียนอ่านโค้ดจึงวางท้าย
 
 ## ก่อนสอน
 

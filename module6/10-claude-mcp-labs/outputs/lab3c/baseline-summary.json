@@ -1,0 +1,15 @@
+{
+  "run_date": "2026-11-03",
+  "method": "hdfs_query_records only (no Spark job); baseline partitioned with cidr_filters /22 x5 because max_groups caps at 100",
+  "input": {"virtual_path": "/student/agentic-siem/incident-lab/input/coherent-pcap-zeek-conn-100k.jsonl", "sha256": "82736842b7831d314d37a60aae1becde703d07e046160091d1a6c45d9999e273", "bytes": 37114964, "records": 100000},
+  "whole_file": {"orig_bytes": 11690870, "resp_bytes": 207560, "distinct_orig_h": 201, "distinct_resp_h": 207, "resp_ports": [22, 53, 80, 443, 445, 3389], "first_utc": "2026-08-24T00:00:00+00:00", "last_utc": "2026-08-24T04:43:06.7+00:00"},
+  "baseline_population": {"hosts": 200, "cidrs": ["10.70.20.0/22", "10.70.24.0/22", "10.70.28.0/22", "10.70.32.0/22", "10.70.36.0/22"], "conns_total": 99735, "conns_per_host": [498, 499], "orig_bytes_per_host_min": 28331, "orig_bytes_per_host_max": 28388, "orig_bytes_per_host_mean": 28368.9, "resp_bytes_per_host": [996, 998], "distinct_resp_h_per_host": 9, "distinct_resp_p_per_host": 1, "resp_port": 80, "resp_hosts": "198.51.100.x (180)"},
+  "outlier": {"host": "10.70.0.66", "conns": 265, "orig_bytes": 6017085, "resp_bytes": 8090, "distinct_resp_h": 27, "distinct_resp_p": 5, "orig_bytes_ratio_to_baseline_mean": 212.1, "share_of_network_orig_bytes_pct": 51.5, "rank_by_conns": "201 of 201",
+    "by_port": {"443": {"conns": 120, "orig_bytes": 6010330, "resp_bytes": 240, "dst": "203.0.113.66", "mean_interval_s": 10.0, "stddev_s": 0.0},
+                "53": {"conns": 120, "orig_bytes": 5880, "resp_bytes": 7800, "dst": "10.70.0.53", "mean_interval_s": 60.0, "stddev_s": 0.0},
+                "22": {"conns": 9, "orig_bytes": 315, "resp_bytes": 18, "dst_hosts": 9},
+                "3389": {"conns": 8, "orig_bytes": 280, "resp_bytes": 16, "dst_hosts": 8},
+                "445": {"conns": 8, "orig_bytes": 280, "resp_bytes": 16, "dst_hosts": 8}}},
+  "tool_limits_hit": ["max_groups 1..100 (asked 201)", "Missing field service at line 121 (distinct on a field absent from some records fails the query)", "groups sorted by count desc so a below-baseline host is absent from a truncated top-100"],
+  "interpretation": "Computed record statistics only; no incident verdict (tool wording). Zeek conn and Suricata alerts share the same parent PCAP; independent method, not independent evidence."
+}

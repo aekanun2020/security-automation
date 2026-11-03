@@ -106,7 +106,7 @@ date=2026-08-24 time=00:00:00 devname="FGT-LAB-SIM-01" devid="SYNTHETIC0000001" 
 
 ## 6. Correlation / Analytics
 
-**Correlation คือ** การสร้างสัญญาณจากความสัมพันธ์ระหว่าง event ที่ event เดียวบอกไม่ได้ ตัวอย่างในเอกสารนี้แสดง 3 แบบ: join ข้ามแหล่งด้วย key ร่วม (5-tuple) และเวลาใกล้กัน (alert 340 ↔ conn 100,000 จับคู่ได้ 340 คู่), แบบแผนเวลา (stddev 0 = ยิงเป็นจังหวะคงที่) และ sequence คือ A แล้ว B แล้ว C ภายในเวลาที่กำหนดบน asset เดียว (C2 → exfil → lateral ห่างไม่เกิน 1800 s ซึ่งเป็น input ของข้อ 10) ส่วนแบบ threshold ใน window อยู่ในข้อ 7 นิยามเต็มนอกกรอบตัวอย่าง: [glossary หมวด 6](../../docs/glossary.md#6-ฟังก์ชันของ-siem)
+**Correlation คือ** การสร้างสัญญาณจากความสัมพันธ์ระหว่าง event ที่ event เดียวบอกไม่ได้ ตัวอย่างในเอกสารนี้แสดง 3 แบบ: join ข้ามแหล่งด้วย key ร่วม (5-tuple) และเวลาใกล้กัน (alert 340 ↔ conn 100,000 จับคู่ได้ 340 คู่), แบบแผนเวลา (stddev 0 = ยิงเป็นจังหวะคงที่) และ sequence คือ A แล้ว B แล้ว C ภายในเวลาที่กำหนดบน asset เดียว (C2 → exfil → lateral ห่างไม่เกิน 1800 s ซึ่งเป็น input ของข้อ 10) ส่วนแบบ threshold ใน window อยู่ในข้อ 7 และแบบ baseline (ไม่ใช้ signature) อยู่ใน [lab 3c](lab3c-baseline.md) นิยามเต็มนอกกรอบตัวอย่าง: [glossary หมวด 6](../../docs/glossary.md#6-ฟังก์ชันของ-siem)
 
 **QRadar:** Custom Rules Engine (CRE) ทำงาน streaming · **MCP:** `hdfs_correlate_records` (join สองไฟล์ด้วย key + เวลา), `hdfs_query_records` (สถิติเวลา), Spark workflow correlate-security-evidence-with-spark · **lab:** 3, 3b
 
