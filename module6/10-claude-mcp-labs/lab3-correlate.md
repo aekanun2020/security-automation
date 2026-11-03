@@ -8,20 +8,18 @@ alert จาก IDS บอกว่า "มี rule ตรง" แต่ยั�
 
 ## สิ่งที่ต้องค้นให้ได้
 
-ผู้เรียนต้องตอบทุกข้อเป็นลายลักษณ์อักษร และทุกคำตอบต้องชี้กลับไปที่ผลของ tool (ชื่อ tool + ฟิลด์หรือบรรทัดที่อ่านมา) ไม่รับคำตอบที่ Claude สรุปให้โดยไม่มี tool รองรับ คำตอบอยู่ในส่วนเฉลยด้านล่าง
+คำถามข้างล่างคือสิ่งที่ analyst จะถามกันเมื่อเจอเรื่องนี้หน้า SIEM ผู้เรียนต้องตอบทุกข้อเป็นลายลักษณ์อักษร คอลัมน์ขวาบอกว่าคำตอบต้องมาจากผลของ tool ใด (ระบุชื่อ tool และฟิลด์ที่อ่านค่ามา) ไม่รับคำตอบที่ Claude สรุปให้โดยไม่มี tool รองรับ ข้อที่เป็นการตัดสินใจไม่มีคำตอบตายตัวแต่ต้องอ้างตัวเลขที่ค้นได้ คำตอบอยู่ในส่วนเฉลยด้านล่าง
 
-| # | คำถาม | หลักฐานที่ต้องแสดง |
+| # | คำถามที่คุยกันใน SOC | ค้นจากอะไร |
 | --- | --- | --- |
-| 1 | alert 340 รายการมาจาก source_ip กี่ตัว คือใคร | `hdfs_query_records` group_by source_ip |
-| 2 | signature 3 ตัว แต่ละตัวมี count เท่าไร ปลายทางคือใคร พอร์ตและ protocol อะไร ช่วงเวลาเริ่ม–จบ | `hdfs_query_records` group_by [signature, source_ip] + time_field |
-| 3 | mean interval และ stddev ของแต่ละ signature เป็นเท่าไร stddev 0 บอกอะไร | สถิติเวลาจาก query เดียวกัน + เทียบ CV ของตัวอย่าง 2.6 |
-| 4 | correlate ได้ `matched_pairs`, `unmatched_left`, `unmatched_right` เท่าไร unmatched_right คือ traffic อะไร | ผล `hdfs_correlate_records` |
-| 5 | East-West มี 100 alert แต่จับคู่ได้กี่ conn ทำไมจำนวนไม่เท่ากัน | `matched_cohorts` + นิยาม 5-tuple |
-| 6 | ก่อน correlate ต้องรู้ชื่อฟิลด์จริงของ Zeek conn ว่าอะไร (ip/port/proto) ได้มาจากไหน | `hdfs_read_lines` 2 บรรทัดแรก |
-| 7 | Outbound Transfer ส่งข้อมูลไปที่ใด byte ออกรวมเท่าไร byte เข้ารวมเท่าไร อัตราส่วนบอกรูปแบบอะไร | `hdfs_query_records` filters + sum_fields orig_bytes/resp_bytes |
-| 8 | ใน PCAP มีกี่ packet ที่ตรง filter ทำไมไม่เท่ากับจำนวน conn (120) frame แรกเลขอะไร เวลาใด | `hdfs_pcap_packets` display_filter |
-| 9 | `interpretation` ที่ tool คืนมาว่าอะไร ทำไม alert กับ conn จึงไม่ใช่หลักฐานอิสระสองชิ้น | ฟิลด์ interpretation ของ correlate + ที่มาของไฟล์ทั้ง 2 |
-| 10 | 3 ระยะนี้เป็นเหตุการณ์เดียวกันหรือไม่ ใช้อะไรตัดสิน และ tool ตัดสินให้หรือเปล่า | asset เดียวกัน + ลำดับเวลา + ข้อความ `no incident verdict` |
+| 1 | alert 340 รายการนี้เรื่องเดียวกันไหม มาจากเครื่องเดียวหรือหลายเครื่อง | `hdfs_query_records` alerts group_by source_ip |
+| 2 | เครื่องนั้นทำอะไรบ้าง เรียงตามเวลา มีกี่ระยะ แต่ละระยะเริ่มและจบเมื่อไร ไปหาใคร | `hdfs_query_records` group_by [signature, source_ip] + time_field: count, ปลายทาง, พอร์ต, protocol, เวลาเริ่ม–จบ |
+| 3 | จังหวะแบบนี้คนทำหรือโปรแกรมทำ | mean interval และ stddev ของแต่ละระยะ (เทียบ CV ของตัวอย่าง 2.6) |
+| 4 | ที่ IDS ร้อง มี connection จริงรองรับไหม หรือเป็น alert ลอย ๆ | `hdfs_correlate_records` alert ↔ Zeek conn ด้วย 5-tuple: `matched_pairs`, `unmatched_left`, `unmatched_right` (ต้องอ่านชื่อฟิลด์จริงของ Zeek ด้วย `hdfs_read_lines` ก่อน) |
+| 5 | ทำไม lateral มี 100 alert แต่ connection แค่ 25 IDS นับซ้ำหรือเราเข้าใจผิด | `matched_cohorts` + นิยาม 5-tuple |
+| 6 | ข้อมูลออกไปเท่าไร ไปที่ไหน เป็นการอัปโหลดหรือดาวน์โหลด และใน packet จริงเห็นอย่างนั้นไหม | `hdfs_query_records` conn ไปปลายทางนั้น sum orig_bytes/resp_bytes + `hdfs_pcap_packets` (จำนวน packet ≠ จำนวน conn) |
+| 7 | alert กับ conn มาจาก sensor เดียวกัน แล้วเรามีหลักฐานกี่ชิ้นจริง ๆ | ฟิลด์ `interpretation` ที่ correlate คืน + ที่มาของไฟล์ทั้งสอง (PCAP เดียวกัน) |
+| 8 | ตอนนี้เรียกว่า incident ได้ไหม ถ้ายัง ขาดอะไร และใครต้องตัดสิน | ข้อ 1–7 รวมกัน + ข้อความ `no incident verdict` ของ tool |
 
 ## prompt ที่ผู้เรียนพิมพ์
 

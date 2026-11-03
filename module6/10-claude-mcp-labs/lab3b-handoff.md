@@ -8,21 +8,18 @@ lab 3 ได้หลักฐาน 3 ระยะบน asset เดียว�
 
 ## สิ่งที่ต้องค้นให้ได้
 
-ผู้เรียนต้องตอบทุกข้อเป็นลายลักษณ์อักษร และทุกคำตอบต้องชี้กลับไปที่ผลของ tool (ชื่อ tool + ฟิลด์หรือบรรทัดที่อ่านมา) ไม่รับคำตอบที่ Claude สรุปให้โดยไม่มี tool รองรับ คำตอบอยู่ในส่วนเฉลยด้านล่าง
+คำถามข้างล่างคือสิ่งที่ analyst จะถามกันเมื่อเจอเรื่องนี้หน้า SIEM ผู้เรียนต้องตอบทุกข้อเป็นลายลักษณ์อักษร คอลัมน์ขวาบอกว่าคำตอบต้องมาจากผลของ tool ใด (ระบุชื่อ tool และฟิลด์ที่อ่านค่ามา) ไม่รับคำตอบที่ Claude สรุปให้โดยไม่มี tool รองรับ ข้อที่เป็นการตัดสินใจไม่มีคำตอบตายตัวแต่ต้องอ้างตัวเลขที่ค้นได้ คำตอบอยู่ในส่วนเฉลยด้านล่าง
 
-| # | คำถาม | หลักฐานที่ต้องแสดง |
+| # | คำถามที่คุยกันใน SOC | ค้นจากอะไร |
 | --- | --- | --- |
-| 1 | input events.log ระบุ candidate อะไร: asset_id, ip, ช่วงเวลา sequence, ช่วงห่าง c2→exfil และ exfil→lateral กี่วินาที, supporting roles กี่รายการ | `hdfs_read_text` events.log ฟิลด์ `investigation_candidates[0]` |
-| 2 | contract handoff v2 ผูกค่าคงที่อะไรไว้บ้าง (canonical_sha256, asset, priority, disposition) แล้วใช้กับ incident อื่นได้ไหม | `log_skill_read_resource` references/security-investigation-handoff-contract-v2.json |
-| 3 | render ด้วย skill ชื่ออะไร parser อะไร ได้ code_sha256 เท่าไร และ policy validate บังคับประโยคใดต้องมี/ห้ามมี | `log_skill_render_spark_job` + `log_skill_validate_spark_job` |
-| 4 | sha256 ของ report ที่ได้ใหม่กับ report รอบ 2026-08-20 ตรงกันไหม ขนาดไฟล์เท่าไร นี่พิสูจน์อะไร | `hdfs_sha256` ทั้ง 2 ไฟล์ |
-| 5 | case_id, priority, disposition, verdict ของ case คืออะไร verdict นี้แปลว่า "ยืนยันถูกโจมตี" หรือไม่ | report JSON |
-| 6 | timeline มีกี่รายการ แต่ละรายการเกิดเวลาใด มาจาก contract ต้นทางใด | report JSON `timeline` |
-| 7 | corroboration มีกี่รายการ รายการใด `simulation: true` และนับเป็นหลักฐานอิสระได้ไหม | report JSON `corroboration` |
-| 8 | caveats 4 ข้อคืออะไร | report JSON `caveats` |
-| 9 | `raw_view_records` 300,460 เป็น "จำนวน event" ได้ไหม report บอกไว้ว่าอย่างไร | report JSON `parent_evidence` |
-| 10 | source_sha256 ของหลักฐานใน timeline ตรงกับไฟล์ input ของรอบ correlation ทั้ง 5 ไฟล์ไหม | `hdfs_sha256` ของไฟล์ใน `/generic-security/coherent-pcap-correlation-20260820041327/input/` เทียบค่าใน report |
-| 11 | analyst ต้องทำอะไร 3 ข้อ และข้อใดที่ MCP ทำแทนไม่ได้ | report JSON `analyst_actions` |
+| 1 | จะส่งเรื่องนี้ต่อให้ทีม investigation ต้องบอกเขาอะไรบ้าง เครื่องไหน เกิดอะไร เมื่อไร มีหลักฐานอะไร | `hdfs_read_text` events.log ฟิลด์ `investigation_candidates[0]` + report handoff: asset, ip, timeline, evidence |
+| 2 | เรื่องนี้ด่วนแค่ไหน และสถานะตอนนี้คืออะไร ยืนยันแล้วหรือรอคนตรวจ | report: `priority`, `disposition`, `verdict` |
+| 3 | 3 เหตุการณ์ (DNS beacon, ส่งข้อมูลออก, ไล่ต่อเครื่องอื่น) ห่างกันเท่าไร ถือเป็นเรื่องเดียวกันไหม | `timeline` 3 รายการ + ช่วงห่าง c2→exfil, exfil→lateral ใน candidate |
+| 4 | หลักฐานประกอบ 2 ชิ้น ชิ้นไหนของจริง ชิ้นไหนจำลอง สรุปแล้วนับได้กี่ชิ้น | `corroboration` ฟิลด์ `simulation` |
+| 5 | ถ้ามีคนถามว่า "หลักฐานนี้ถูกแก้มาหรือเปล่า" เราตอบด้วยอะไร | `source_sha256` ใน timeline เทียบ `hdfs_sha256` ของไฟล์ต้นทาง 5 ไฟล์ + sha256 ของ report ใหม่เทียบรอบ 2026-08-20 |
+| 6 | ตัวเลข 300,460 record ในรายงาน เอาไปบอกผู้บริหารว่า "มี event สามแสน" ได้ไหม | `parent_evidence.raw_view_records` และคำอธิบายในรายงานเรื่อง overlapping views |
+| 7 | ทีมที่รับต่อต้องทำอะไรบ้าง และอะไรที่ระบบทำแทนไม่ได้ | `analyst_actions` 3 ข้อ + `caveats` |
+| 8 | template ที่ผลิตเอกสารนี้ ใช้กับเคสอื่นได้ไหม ถ้าไม่ได้ ต้องทำอะไร | `log_skill_read_resource` contract v2: ค่าคงที่ที่ผูกกับ asset เดียว |
 
 ## สายงานเต็มที่ server ออกแบบ (ผู้เรียนควรเห็นภาพ)
 

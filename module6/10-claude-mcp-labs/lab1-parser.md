@@ -8,18 +8,17 @@ SIEM ไม่มี parser สำหรับทุกแหล่ง (gap G1) 
 
 ## สิ่งที่ต้องค้นให้ได้
 
-ผู้เรียนต้องตอบทุกข้อเป็นลายลักษณ์อักษร และทุกคำตอบต้องชี้กลับไปที่ผลของ tool (ชื่อ tool + ฟิลด์หรือบรรทัดที่อ่านมา) ไม่รับคำตอบที่ Claude สรุปให้โดยไม่มี tool รองรับ คำตอบอยู่ในส่วนเฉลยด้านล่าง
+คำถามข้างล่างคือสิ่งที่ analyst จะถามกันเมื่อเจอเรื่องนี้หน้า SIEM ผู้เรียนต้องตอบทุกข้อเป็นลายลักษณ์อักษร คอลัมน์ขวาบอกว่าคำตอบต้องมาจากผลของ tool ใด (ระบุชื่อ tool และฟิลด์ที่อ่านค่ามา) ไม่รับคำตอบที่ Claude สรุปให้โดยไม่มี tool รองรับ ข้อที่เป็นการตัดสินใจไม่มีคำตอบตายตัวแต่ต้องอ้างตัวเลขที่ค้นได้ คำตอบอยู่ในส่วนเฉลยด้านล่าง
 
-| # | คำถาม | หลักฐานที่ต้องแสดง |
+| # | คำถามที่คุยกันใน SOC | ค้นจากอะไร |
 | --- | --- | --- |
-| 1 | บรรทัด sshd มี parser รองรับไหม `resolve` คืนค่าอะไรใน `selected`, `candidates`, `unknown_format` | JSON ที่ `log_skill_resolve` คืน (ขั้น 1) |
-| 2 | บรรทัด Suricata ได้ parser ตัวไหน score และ confidence เท่าไร | ตาราง candidates จาก `log_skill_resolve` (ขั้น 2) |
-| 3 | parser กลุ่ม netflow ได้ score 30 ทำไมจึงใช้ไม่ได้ | ฟิลด์ `parse_success` ของ candidate นั้น |
-| 4 | parser ที่เลือกใช้ fingerprint กี่ตัว, mapping กี่ฟิลด์, `required_output` กี่ฟิลด์ | YAML จาก `log_skill_get` ของ skill parser |
-| 5 | บรรทัด Suricata แรกหลัง parse ได้ `event_time`, `source_ip` → `destination_ip:port`, `signature`, `severity` เป็นค่าอะไร และ `event_time` แปลงมาจากฟิลด์ดิบใด | ผล `log_skill_test_parser` record ที่ `parse_status: parsed` |
-| 6 | ฟิลด์ที่ไม่อยู่ใน canonical schema (เช่น `alert_id`, `pcap_count`) ไปอยู่ที่ใด ถูกทิ้งไหม | โครง record ที่ parse แล้ว |
-| 7 | ถ้า record ขาดฟิลด์ใน `required_output` จะเกิดอะไร เติมศูนย์หรือเป็น `failed` | ส่วน `validation` ใน YAML + ผล test_parser ของบรรทัด sshd |
-| 8 | (ขั้น 3 ไม่บังคับ) draft parser ที่ร่าง เมื่อ test กับ auth.log ทั้ง 44 บรรทัด ผ่านกี่บรรทัด และ `list_drafts` เพิ่มจากเท่าไรเป็นเท่าไร | ผล `log_skill_test_parser` ทั้งไฟล์ + `log_skill_list_drafts` ก่อน/หลัง |
+| 1 | log บรรทัดนี้ (sshd) SIEM ของเรา parse ได้ไหม และจะรู้ได้อย่างไรว่า "ไม่มี parser" ไม่ใช่ "parse ผิด" | `log_skill_resolve` กับบรรทัด sshd: `selected`, `candidates`, `unknown_format` |
+| 2 | log ของ Suricata เข้าได้ แต่แน่ใจแค่ไหนว่าเลือก parser ถูกตัว | ตาราง candidates จาก `log_skill_resolve`: score, confidence, `parse_success` |
+| 3 | parser ตัวอื่นที่ได้คะแนนบ้าง ทำไมไม่เอา ถ้าเอาจะเกิดอะไร | `parse_success` ของ candidate ที่ score ต่ำ |
+| 4 | หลัง parse แล้ว เราเห็นอะไรที่ก่อน parse ไม่เห็น ใครคุยกับใคร กี่โมง rule อะไรยิง รุนแรงแค่ไหน | ผล `log_skill_test_parser`: `event_time`, `source_ip`, `destination_ip`, `destination_port`, `signature`, `severity` และฟิลด์ดิบที่ `event_time` แปลงมา |
+| 5 | ฟิลด์ที่ vendor มีแต่ schema กลางของเราไม่มี (เช่น alert_id) หายไปไหม ถ้าต้องใช้ทีหลังจะเอาจากไหน | `vendor_fields` ใน record ที่ parse แล้ว |
+| 6 | ถ้า log บรรทัดหนึ่งขาดฟิลด์สำคัญ SIEM ควรเดาค่าให้ หรือทิ้งบรรทัดนั้นแล้วบอกเรา ระบบนี้ทำแบบไหน | ส่วน `validation.required_output` ใน YAML ของ parser + ผล test_parser ของบรรทัด sshd |
+| 7 | ถ้าจะเพิ่ม parser สำหรับ sshd เอง ใครเป็นคนอนุมัติ และต้องทดสอบกับอะไรก่อนใช้จริง | (ขั้น 3 ไม่บังคับ) `log_skill_save_draft` + `log_skill_test_parser` กับ auth.log ทั้ง 44 บรรทัด + `log_skill_list_drafts` |
 
 ## prompt ที่ผู้เรียนพิมพ์
 

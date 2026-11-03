@@ -8,16 +8,16 @@
 
 ## สิ่งที่ต้องค้นให้ได้
 
-ผู้เรียนต้องตอบทุกข้อเป็นลายลักษณ์อักษร และทุกคำตอบต้องชี้กลับไปที่ผลของ tool (ชื่อ tool + ฟิลด์หรือบรรทัดที่อ่านมา) ไม่รับคำตอบที่ Claude สรุปให้โดยไม่มี tool รองรับ คำตอบอยู่ในส่วนเฉลยด้านล่าง
+คำถามข้างล่างคือสิ่งที่ analyst จะถามกันเมื่อเจอเรื่องนี้หน้า SIEM ผู้เรียนต้องตอบทุกข้อเป็นลายลักษณ์อักษร คอลัมน์ขวาบอกว่าคำตอบต้องมาจากผลของ tool ใด (ระบุชื่อ tool และฟิลด์ที่อ่านค่ามา) ไม่รับคำตอบที่ Claude สรุปให้โดยไม่มี tool รองรับ ข้อที่เป็นการตัดสินใจไม่มีคำตอบตายตัวแต่ต้องอ้างตัวเลขที่ค้นได้ คำตอบอยู่ในส่วนเฉลยด้านล่าง
 
-| # | คำถาม | หลักฐานที่ต้องแสดง |
+| # | คำถามที่คุยกันใน SOC | ค้นจากอะไร |
 | --- | --- | --- |
-| 1 | spark-hdfs server มี tool กี่ตัว แบ่งได้กี่กลุ่ม และ tool ใดอ่านไฟล์ได้ไม่เกินกี่ MB | รายชื่อ tool จาก ToolSearch จัดกลุ่มเอง + ข้อจำกัดจาก description ของ `hdfs_read_text` |
-| 2 | log-skill server มี skill กี่ตัว แยกเป็น parser กี่ตัว workflow กี่ตัว และ draft กี่ตัว | ผล `log_skill_list` และ `log_skill_list_drafts` (ไม่ใช่เดาจากชื่อ) |
-| 3 | มี tool ใดไหมที่ *รัน* โค้ดของ skill ได้ แล้ว `log_skill_read_resource` คืนอะไร | description ของ tool และ instruction ของ server |
-| 4 | virtual path กับ physical path ต่างกันอย่างไร ยกตัวอย่างค่าที่ `hdfs_mkdir` คืนมา และ path แบบไหนห้ามส่งกลับเข้า HDFS tool | instruction ของ spark-hdfs server + ผล `hdfs_mkdir` จริง 1 ครั้ง |
-| 5 | ก่อน `spark_submit_job` ต้องเรียก tool อะไรบ้างตามลำดับ และสถานะใดที่ถือว่า job สำเร็จ | instruction ของ server (save → validate → submit → status SUCCEEDED) |
-| 6 | ทำไม Claude ต้องโหลด schema (ToolSearch) ก่อน จึงเรียก tool ได้ | ข้อความ error หรือ step แรกที่เห็นในแชท |
+| 1 | ถ้าจะให้ Claude ช่วยงาน SOC ผ่าน MCP ชุดนี้ มันทำอะไรแทนเราได้บ้าง และอะไรยังต้องเป็นคนทำ | รายชื่อ tool ทั้งสอง server จัดกลุ่มตามหน้าที่ (เก็บ, อ่าน, วิเคราะห์, รัน job, เขียน parser) จาก ToolSearch และ `log_skill_list` |
+| 2 | parser ที่มีให้ ครอบคลุม log ของเราไหม (firewall, IDS, flow, DNS, Windows, Linux) อะไรขาด | `log_skill_list` แยก parser กับ workflow |
+| 3 | ถ้า Claude บอกว่า "job เสร็จแล้ว ผลเป็นแบบนี้" เราจะเชื่อได้เมื่อไร | กติกาของ server: `spark_job_status` ต้อง SUCCEEDED และ report ต้องผ่าน `log_skill_validate_report` |
+| 4 | ของที่ Claude รันไปแล้ว อีกเดือนย้อนดูได้ไหมว่าใช้โค้ดไหนกับไฟล์ไหน | snapshot โค้ด, sha256, idempotency key ที่ `spark_job_status` และ `spark_list_jobs` เก็บไว้ |
+| 5 | มีทางที่ Claude จะเขียนหรือรันโค้ดอะไรก็ได้บนคลัสเตอร์ของเราไหม | `log_skill_read_resource` คืนแค่ text, parser ใหม่เป็น draft ต้อง promote ผ่าน Git, template ต้องผ่าน `log_skill_validate_spark_job` |
+| 6 | ทำไมบางครั้ง Claude สั่ง Spark แล้ว job หาไฟล์ไม่เจอ ทั้งที่ไฟล์อยู่ใน HDFS | virtual path กับ physical path ที่ `hdfs_mkdir` คืนมา และกติกาว่า path แบบไหนส่งให้ใครได้ |
 
 ## prompt ที่ผู้เรียนพิมพ์
 
