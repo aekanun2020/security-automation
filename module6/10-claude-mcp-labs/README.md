@@ -31,18 +31,52 @@ Claude Desktop ── ดึง feed / ทำ PDF / Artifact (ออกเน็
 
 ## ข้อมูลที่ใช้ทุก lab
 
-ชุด `incident-lab` ใน HDFS (`/student/agentic-siem/incident-lab/input/`) มาจาก PCAP เดียวกัน จึง correlate ข้ามแหล่งได้
+ชุด `incident-lab` ใน HDFS (`/student/agentic-siem/incident-lab/input/`) คือเครือข่ายจำลองหนึ่งแห่งที่ถูกบันทึกโดยอุปกรณ์ 5 ชนิดพร้อมกันในช่วง 2026-08-24 00:00–04:43 UTC ทุกไฟล์ถูกสร้างจาก PCAP ไฟล์เดียว (ฟิลด์ `evidence_origin="pcap-derived"`, `parentuid` ชี้กลับไป Zeek uid) จึง correlate ข้ามแหล่งได้ด้วย key เดียวกัน แต่ก็แปลว่า**ไม่มีไฟล์ไหนเป็นหลักฐานอิสระจากไฟล์อื่น** (ดู caveat ใน lab 3 และ 3b)
 
-| ไฟล์ | ขนาด | parser ที่มีใน skill server |
+### เครือข่ายในชุดข้อมูล
+
+```
+            internet (ที่อยู่สมมติตาม RFC 5737)
+   198.51.100.x ×180 เว็บเซิร์ฟเวอร์ปกติ (TEST-NET-2)        203.0.113.66:443 ปลายทาง exfil (TEST-NET-3)
+            │                                                        │
+            └──────────────────────── wan ───────────────────────────┘
+                     FGT-LAB-SIM-01  firewall (log ⑥)
+                     192.0.2.66      router / NetFlow exporter (log ⑤)
+                     sensor บน tap/SPAN → PCAP ① → Zeek conn ③, Zeek dns ④, Suricata ②
+                                      lan
+   ┌───────────────────┬──────────────────────┬─────────────────────────┬────────────────────────────┐
+   10.70.0.66          10.70.0.53             10.70.1.1–25             10.70.20.x … 10.70.39.x
+   เครื่องที่สงสัย       DNS resolver ภายใน     server segment            200 เครื่องผู้ใช้ (10 ต่อ /24)
+   (asset-066)                                SSH 22 / SMB 445 / RDP 3389   HTTP ไป 198.51.100.x
+```
+
+| ที่อยู่ | บทบาท | ที่มาของข้อสรุป |
 | --- | --- | --- |
-| coherent-course-100k.pcap | 61 MB | ค้นด้วย `hdfs_pcap_packets` |
-| coherent-pcap-suricata-alerts-340.jsonl | 154 KB | suricata-eve-alert-json-v1 |
-| coherent-pcap-zeek-conn-100k.jsonl | 37 MB | zeek-conn-json-v1 |
-| coherent-pcap-zeek-dns-120.jsonl | 52 KB | zeek-dns-json-v1 |
-| coherent-pcap-netflow-v5-100k.jsonl | 54 MB | netflow-v5-pcap-course-exfil-json-v1 |
-| coherent-pcap-fortigate-100k.log | 48 MB | fortinet-fortigate-pcap-sim-7x |
+| 10.70.0.66 | workstation ที่เรื่องราวทั้งหมดเกิดขึ้น handoff เรียกว่า asset-066 | ทุก alert 340 รายการ, conn 265 รายการ |
+| 10.70.0.53 | DNS resolver ภายใน ตอบ A record ให้ 10.70.0.66 | zeek dns: `id.resp_h` 10.70.0.53, `answers` 203.0.113.66 |
+| 10.70.1.1–25 | server segment ที่ถูกไล่ต่อ SSH (9 เครื่อง), SMB (8), RDP (8) | conn + FortiGate policy SIM-EAST-WEST-REMOTE-SERVICE |
+| 10.70.20.0–10.70.39.0 (/24 ×20) | 200 เครื่องผู้ใช้ปกติ แต่ละเครื่อง ~499 HTTP conn ตลอด 4 ชม. 43 นาที | lab 3c baseline |
+| 198.51.100.x (180 host) | เว็บเซิร์ฟเวอร์ภายนอกที่ traffic ปกติไปหา | FortiGate policy SIM-BENIGN-WEB lan→wan |
+| 203.0.113.66 | ปลายทาง exfil และเป็นคำตอบของโดเมน C2 ด้วย | zeek dns `answers` + conn พอร์ต 443 |
+| 192.0.2.66 | router ที่ export NetFlow (engine_id 66, interface 1→2, AS 64512→64496) | netflow `exporter` |
+| FGT-LAB-SIM-01 | firewall ระหว่าง lan กับ wan และระหว่าง segment ภายใน (ทุก conn ผ่าน) | fortigate `devname`, `srcintf`/`dstintf` |
 
-เรื่องราวในข้อมูล (ผู้สอนรู้ ผู้เรียนต้องค้นเอง): host `10.70.0.66` ทำ C2 DNS beacon ทุก 60 วินาที (02:00 ชม.) → ส่งข้อมูลออก `203.0.113.66:443` ทุก 10 วินาที (20 นาที) → scan SSH ไป `10.70.1.0/24` (4 นาที) ทั้งหมดอยู่ใน 2026-08-24 00:00–02:44 UTC
+### ไฟล์ทั้ง 6 และ "ทำไมต้องมี log นี้"
+
+| # | ไฟล์ | ขนาด | มาจากอุปกรณ์ไหน อยู่ตรงไหน | บันทึกอะไร (ฟิลด์เด่น) | ตอบคำถามอะไรที่ไฟล์อื่นตอบไม่ได้ | ใช้ใน lab | parser |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| ① | coherent-course-100k.pcap | 61 MB | sensor บน tap/SPAN ที่เห็นทุก segment | ทุก packet ของ 100,000 conversation | หลักฐานระดับต่ำสุด: payload, handshake, ลำดับ packet ใช้เมื่อ log ข้างบนขัดกันหรือต้องพิสูจน์ว่า session เกิดจริง เป็น "ไฟล์แม่" ของอีก 5 ไฟล์ | 3 (ขั้น 5) | — ค้นด้วย `hdfs_pcap_packets` |
+| ② | coherent-pcap-suricata-alerts-340.jsonl | 154 KB | IDS (Suricata 7) อ่าน PCAP เดียวกันด้วย rule 3 ตัว (sid 1300101–1300103) | signature, category, severity, 5-tuple, alert_action, alert_id | **ชื่อของพฤติกรรม** ตามที่คนเขียน rule ไว้ เป็นจุดเริ่มของ SOC แต่มีแค่สิ่งที่มี rule: 340 alert จาก 100,000 conn และทุก alert เป็น `allowed` (เห็นแต่ไม่ block) | 1, 2, 2b, 3 | suricata-eve-alert-json-v1 |
+| ③ | coherent-pcap-zeek-conn-100k.jsonl | 37 MB | sensor เดียวกับ ① (Zeek 7) | 1 บรรทัดต่อ connection: uid, 5-tuple, orig/resp bytes และ packets, conn_state, duration | **ใครคุยกับใคร เท่าไร ทั้งเครือข่าย** รวม 99,735 conn ปกติที่ไม่มี alert ขาดไฟล์นี้จะไม่มี baseline, ไม่รู้ปริมาณ byte ออก และ join อะไรไม่ได้ (uid คือ key ร่วมของทุกไฟล์) | 3, 3c | zeek-conn-json-v1 |
+| ④ | coherent-pcap-zeek-dns-120.jsonl | 52 KB | sensor เดียวกัน มุมมอง DNS | query, qtype, rcode, answers, TTL ทั้ง 120 บรรทัดคือ 10.70.0.66 ถาม `c2-course.evidence.example.test` A ได้ 203.0.113.66 TTL 60 | **คุยเรื่องอะไร**: conn.log บอกแค่ว่ามี UDP 53 ไป resolver ไฟล์นี้บอกชื่อโดเมนและคำตอบ จึงเป็นตัวเชื่อมระยะ 1 (beacon) เข้ากับระยะ 2 (exfil ไป IP ที่โดเมนนั้น resolve ได้) | 3b (เป็น input ของ c2-detection), 1 | zeek-dns-json-v1 |
+| ⑤ | coherent-pcap-netflow-v5-100k.jsonl | 54 MB | router 192.0.2.66 ที่อยู่ระหว่าง lan กับ wan export NetFlow v5 | 1 flow ต่อ conn ทิศทางเดียว: bytes, packets, interface เข้า/ออก, AS, tcp_flags ไม่มี payload ไม่มี conn_state | **มุมมองของอุปกรณ์เครือข่ายเมื่อไม่มี sensor**: องค์กรส่วนใหญ่มี NetFlow ก่อนมี Zeek ใน QRadar คือ QFlow / ตาราง flows เทียบกับ ③ จะเห็นว่า conversation เดียวกันแต่ฟิลด์น้อยกว่าและแยกทิศ | 3b (input ของ exfiltration-detection) | netflow-v5-pcap-course-exfil-json-v1 |
+| ⑥ | coherent-pcap-fortigate-100k.log | 48 MB | firewall FGT-LAB-SIM-01 ที่ทุก conn ผ่าน (lan→wan และ lan→lan) | key=value ของ FortiOS: srcintf/dstintf, policyname, action, sentbyte/rcvdbyte, app, parentuid | **อุปกรณ์เดียวที่ตัดสินใจได้**: บอกว่า policy ไหนอนุญาต (SIM-BENIGN-WEB 99,735, SIM-OUTBOUND-TRANSFER 120, SIM-EAST-WEST-REMOTE-SERVICE 25, SIM-C2-DNS-PASS 120 ทั้งหมด accept) sensor บอกได้ว่าเกิดอะไร firewall บอกได้ว่า**ทำไมถึงผ่าน** และเป็น format vendor จริงสำหรับฝึก parser | 1 (format kv), 3b (firewall_sim corroboration) | fortinet-fortigate-pcap-sim-7x |
+
+**ทำไมต้อง 6 แหล่ง** แต่ละแหล่งตอบคำถามคนละข้อ: ② ชื่อของพฤติกรรม, ③ ใครคุยกับใครเท่าไร, ④ คุยเรื่องอะไร, ⑤ มุมมอง router, ⑥ ทำไมถึงผ่าน, ① หลักฐานสุดท้าย lab 3 ต้องใช้ ②+③+① ถึงจะตอบได้ว่า "alert นี้เป็น connection จริงไหม ส่งออกไปกี่ byte" และ lab 3b ต้องใช้ ④+⑤+③ ถึงจะร้อย 3 ระยะเป็นลำดับเดียวบน asset เดียว
+
+**สิ่งที่บอกว่าเป็นข้อมูลสังเคราะห์** (ผู้เรียนควรสังเกตเอง): ที่อยู่ภายนอกทั้งหมดอยู่ในช่วง RFC 5737, `devid="SYNTHETIC0000001"`, `simulation="true"`, โดเมน `.example.test`, signature ชื่อ "LAB13 …", baseline 200 เครื่องส่ง byte เท่ากันเกือบเป๊ะ และทุกระยะของการโจมตีมี stddev ของช่วงเวลาเป็น 0
+
+**เรื่องราวในข้อมูล** (ผู้สอนรู้ ผู้เรียนต้องค้นเอง): host `10.70.0.66` ถาม DNS โดเมน C2 ทุก 60 วินาที (00:00–01:59) → ส่งข้อมูลออก `203.0.113.66:443` ทุก 10 วินาที รวม 6.0 MB (02:10–02:29) → ไล่ต่อ SSH/SMB/RDP ไป `10.70.1.1–25` ทุก 30 วินาทีต่อพอร์ต (02:40–02:44) ขณะที่ traffic ปกติของ 200 เครื่องวิ่งไป 198.51.100.x ตลอด 00:00–04:43
 
 ## รายการ lab
 
