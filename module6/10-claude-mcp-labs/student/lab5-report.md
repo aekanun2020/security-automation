@@ -20,7 +20,7 @@
 
 | # | พิมพ์ถาม Claude | คำตอบต้องอ้างอะไร | ประเภท |
 | --- | --- | --- | --- |
-| 1 | ผู้บริหารถามว่า "ช่วงนี้เกิดอะไรขึ้น" ตอบด้วยตัวเลขอะไร 3 ตัว | report JSON: `total_records`, `parsed`, `failed` ตรงกับ lab 2 | ตรวจ |
+| 1 | ผู้บริหารถามว่า "ช่วงนี้เกิดอะไรขึ้น" ตอบด้วยตัวเลขอะไร 3 ตัว | report JSON: `total_records`, `parse_quality.parsed`, `parse_quality.failed` ตรงกับ lab 2 | ตรวจ |
 | 2 | rule ไหนยิงบ่อย เครื่องไหนโดนบ่อย | report JSON: `top_signatures`, `top_destination_ips` | ตรวจ |
 | 3 | 25 เครื่องที่โดน lateral แต่ละเครื่องแค่ 4 alert ควรขึ้น chart ไหม ถ้าตัดออกจะเสียอะไร | `top_destination_ips` เทียบ chart ใน dashboard | ตัดสิน |
 | 4 | ถ้าผู้ตรวจสอบถาม ตัวเลขทุกตัวในรายงานชี้กลับไปข้อมูลต้นทางได้ไหม | ตารางจับคู่ตัวเลขใน PDF ↔ field ใน JSON + sha256 ของ report + job_id | ตรวจ |

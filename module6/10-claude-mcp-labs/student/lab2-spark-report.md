@@ -22,9 +22,9 @@
 | --- | --- | --- | --- |
 | 1 | alert 340 รายการใน 3 ชั่วโมงนี้ สรุปแล้วเห็นภาพอะไร rule ไหนยิงมากสุด เป็นพฤติกรรมประเภทไหน | report JSON: `top_signatures`, `top_categories`, `severity_summary` | ตรวจ |
 | 2 | มาจากเครื่องเดียวหรือหลายเครื่อง ไปหาใครบ้าง | report JSON: `top_source_ips`, `top_destination_ips` (รวม host ที่โดนทีละน้อย) | ตรวจ |
-| 3 | alert พวกนี้ถูก block แล้ว หรือ IDS แค่เห็นแล้วปล่อยผ่าน | report JSON: `alert_action` | ตรวจ |
+| 3 | alert พวกนี้ถูก block แล้ว หรือ IDS แค่เห็นแล้วปล่อยผ่าน | report JSON: `top_alert_actions` | ตรวจ |
 | 4 | เริ่มกี่โมง จบกี่โมง ตอนนี้ยังเกิดอยู่ไหม | report JSON: `event_time_min`, `event_time_max` เทียบเวลาปัจจุบันของข้อมูล | ตรวจ |
-| 5 | log ทุกบรรทัดถูกนับครบไหม มีบรรทัดที่ parse ไม่ได้แล้วหลุดจากรายงานหรือเปล่า | report JSON: `total_records`, `parsed`, `failed` | ตรวจ |
+| 5 | log ทุกบรรทัดถูกนับครบไหม มีบรรทัดที่ parse ไม่ได้แล้วหลุดจากรายงานหรือเปล่า | report JSON: `total_records`, `parse_quality.parsed`, `parse_quality.failed` | ตรวจ |
 | 6 | รายงานนี้เชื่อได้แค่ไหน โค้ดที่รันคือโค้ดที่ตรวจแล้วจริงไหม รันเมื่อไร ใครตรวจ | sha256 ของโค้ดที่ render, save, validate expected, snapshot ของ job ต้องตรงกัน + job_id, เวลา, สถานะ SUCCEEDED + `log_skill_validate_report` | ตรวจ |
 | 7 | ทำไมคุณต้องลองสองรอบกว่าจะ render โค้ดได้ และเราควรให้มันแก้ template เองไหม | error ของ `log_skill_render_spark_job` รอบแรก + `matches_trusted_template` ของ `log_skill_validate_spark_job` | ตัดสิน |
 | 8 | ถ้าพรุ่งนี้ต้องทำรายงานเดิมอีก จะได้ผลเดิมไหม และทำไมระบบห้ามเขียนทับ output เก่า | idempotency_key ใน `spark_submit_job` + พฤติกรรม `errorifexists` ในโค้ด | ตรวจ |

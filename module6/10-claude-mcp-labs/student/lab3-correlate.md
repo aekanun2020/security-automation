@@ -25,8 +25,8 @@ alert "Outbound Transfer" ส่งข้อมูลไปไหน กี่ b
 | --- | --- | --- | --- |
 | 1 | alert 340 รายการนี้เรื่องเดียวกันไหม มาจากเครื่องเดียวหรือหลายเครื่อง | `hdfs_query_records` alerts group_by source_ip | ตรวจ |
 | 2 | เครื่องนั้นทำอะไรบ้าง เรียงตามเวลา มีกี่ระยะ แต่ละระยะเริ่มและจบเมื่อไร ไปหาใคร | `hdfs_query_records` group_by [signature, source_ip] + time_field: count, ปลายทาง, พอร์ต, protocol, เวลาเริ่ม–จบ | ตรวจ |
-| 3 | จังหวะแบบนี้คนทำหรือโปรแกรมทำ | mean interval และ stddev ของแต่ละระยะ (เทียบ CV ของตัวอย่าง 2.6) | ตรวจ |
-| 4 | ที่ IDS ร้อง มี connection จริงรองรับไหม หรือเป็น alert ลอย ๆ | `hdfs_correlate_records` alert ↔ Zeek conn ด้วย 5-tuple: `matched_pairs`, `unmatched_left`, `unmatched_right` (ต้องอ่านชื่อฟิลด์จริงของ Zeek ด้วย `hdfs_read_lines` ก่อน) | ตรวจ |
+| 3 | จังหวะแบบนี้คนทำหรือโปรแกรมทำ | `time.mean_interval_seconds` และ `time.population_stddev_seconds` ของแต่ละระยะ (เทียบ CV ของตัวอย่าง 2.6) | ตรวจ |
+| 4 | ที่ IDS ร้อง มี connection จริงรองรับไหม หรือเป็น alert ลอย ๆ | `hdfs_correlate_records` alert ↔ Zeek conn ด้วย 5-tuple: `matched_pairs`, `matched_right_records`, `unmatched_left_records`, `unmatched_right_records` (ต้องอ่านชื่อฟิลด์จริงของ Zeek ด้วย `hdfs_read_lines` ก่อน) | ตรวจ |
 | 5 | ทำไม lateral มี 100 alert แต่ connection แค่ 25 IDS นับซ้ำหรือเราเข้าใจผิด | `matched_cohorts` + นิยาม 5-tuple | ตรวจ |
 | 6 | ข้อมูลออกไปเท่าไร ไปที่ไหน เป็นการอัปโหลดหรือดาวน์โหลด และใน packet จริงเห็นอย่างนั้นไหม | `hdfs_query_records` conn ไปปลายทางนั้น sum orig_bytes/resp_bytes + `hdfs_pcap_packets` (จำนวน packet ≠ จำนวน conn) | ตรวจ |
 | 7 | alert กับ conn มาจาก sensor เดียวกัน แล้วเรามีหลักฐานกี่ชิ้นจริง ๆ | ฟิลด์ `interpretation` ที่ correlate คืน + ที่มาของไฟล์ทั้งสอง (PCAP เดียวกัน) | ตัดสิน |

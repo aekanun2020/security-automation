@@ -23,7 +23,7 @@ score = base(severity) + 8*asset_crit + min(10, 2*(repeats-1)) clamp 0..100, rou
 
 | # | พิมพ์ถาม Claude | คำตอบต้องอ้างอะไร | ประเภท |
 | --- | --- | --- | --- |
-| 1 | alert 340 รายการ ถ้าต้องเปิดดูทีละอันคงไม่ไหว รวมเป็นเรื่อง (offense) ได้กี่เรื่อง | report: `alerts_in`, `offenses_out`, `reduction_pct` + `hdfs_query_records` บน offenses ตรวจว่า sum event_count = alerts_in | ตรวจ |
+| 1 | alert 340 รายการ ถ้าต้องเปิดดูทีละอันคงไม่ไหว รวมเป็นเรื่อง (offense) ได้กี่เรื่อง | report: `alerts_in`, `offenses_out`, `reduction_pct` + `hdfs_query_records` บน offenses (ต้องเป็น part file เดียว คือโค้ด coalesce(1)) ตรวจว่า sum event_count = alerts_in | ตรวจ |
 | 2 | ก่อนรัน เราเดาได้ไหมว่าจะเหลือกี่เรื่อง จากจังหวะของ alert แต่ละชนิดและขนาด window | สถิติ interval จาก lab 3 หารด้วย window 600 s ต่อ signature | ตรวจ |
 | 3 | เรื่องไหนควรขึ้นหัวคิว beacon DNS 120 ครั้ง, ส่งข้อมูลออก 6 MB, หรือ SSH ไป 25 เครื่อง ระบบจัดให้เราแบบไหน | report: `by_signature`, `by_route`, `raw_score` และ `magnitude` ของแต่ละ offense | ตรวจ |
 | 4 | ทำไม score ของทุกเรื่องเท่ากันหมด แล้ว analyst จะเรียงลำดับงานอย่างไร | สูตรในโค้ด: base(severity) + 8×asset_crit ชนเพดาน 100 ก่อนคิด burst | ตัดสิน |

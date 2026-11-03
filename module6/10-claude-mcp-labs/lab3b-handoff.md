@@ -38,7 +38,7 @@ lab นี้ทำเฉพาะขั้นสุดท้าย ขั้น
 | 3 | 3 เหตุการณ์ (DNS beacon, ส่งข้อมูลออก, ไล่ต่อเครื่องอื่น) ห่างกันเท่าไร ถือเป็นเรื่องเดียวกันไหม | `timeline` 3 รายการ + ช่วงห่าง c2→exfil, exfil→lateral ใน candidate | ตัดสิน |
 | 4 | หลักฐานประกอบ 2 ชิ้น ชิ้นไหนของจริง ชิ้นไหนจำลอง สรุปแล้วนับได้กี่ชิ้น | `corroboration` ฟิลด์ `simulation` | ตรวจ |
 | 5 | ถ้ามีคนถามว่า "หลักฐานนี้ถูกแก้มาหรือเปล่า" เราตอบด้วยอะไร | `source_sha256` ใน timeline เทียบ `hdfs_sha256` ของไฟล์ต้นทาง 5 ไฟล์ + sha256 ของ report ใหม่เทียบรอบ 2026-08-20 | ตรวจ |
-| 6 | ตัวเลข 300,460 record ในรายงาน เอาไปบอกผู้บริหารว่า "มี event สามแสน" ได้ไหม | `parent_evidence.raw_view_records` และคำอธิบายในรายงานเรื่อง overlapping views | ตัดสิน |
+| 6 | ตัวเลข 300,460 record ในรายงาน เอาไปบอกผู้บริหารว่า "มี event สามแสน" ได้ไหม | `parent_evidence.raw_view_records`, `total_raw_view_records`, `unique_parent_conversations` และ `semantics` (overlapping views) | ตัดสิน |
 | 7 | ทีมที่รับต่อต้องทำอะไรบ้าง และอะไรที่ระบบทำแทนไม่ได้ | `analyst_actions` 3 ข้อ + `caveats` | ตรวจ |
 | 8 | template ที่ผลิตเอกสารนี้ ใช้กับเคสอื่นได้ไหม ถ้าไม่ได้ ต้องทำอะไร | `log_skill_read_resource` contract v2: ค่าคงที่ที่ผูกกับ asset เดียว | ตัดสิน |
 
