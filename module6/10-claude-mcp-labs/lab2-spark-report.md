@@ -6,22 +6,6 @@
 
 ให้ Claude สร้างรายงานสรุป alert ตาม contract `ids-report-v1` โดยใช้ Spark job ที่ render จาก template ที่เชื่อถือได้ ผู้เรียนต้องตรวจทุกจุดที่ server ให้หลักฐาน: sha256 ของโค้ด, สถานะ job, และ report ผ่าน contract
 
-## สิ่งที่ต้องค้นให้ได้
-
-คำถามข้างล่างคือสิ่งที่ analyst จะถามกันเมื่อเจอเรื่องนี้หน้า SIEM ผู้เรียนต้องตอบทุกข้อเป็นลายลักษณ์อักษร คอลัมน์ขวาบอกว่าคำตอบต้องมาจากผลของ tool ใด (ระบุชื่อ tool และฟิลด์ที่อ่านค่ามา) ไม่รับคำตอบที่ Claude สรุปให้โดยไม่มี tool รองรับ ข้อที่เป็นการตัดสินใจไม่มีคำตอบตายตัวแต่ต้องอ้างตัวเลขที่ค้นได้ คำตอบอยู่ในส่วนเฉลยด้านล่าง
-
-| # | คำถามที่คุยกันใน SOC | ค้นจากอะไร |
-| --- | --- | --- |
-| 1 | alert 340 รายการใน 3 ชั่วโมงนี้ สรุปแล้วเห็นภาพอะไร rule ไหนยิงมากสุด เป็นพฤติกรรมประเภทไหน | report JSON: `top_signatures`, `top_categories`, `severity_summary` |
-| 2 | มาจากเครื่องเดียวหรือหลายเครื่อง ไปหาใครบ้าง | report JSON: `top_source_ips`, `top_destination_ips` (รวม host ที่โดนทีละน้อย) |
-| 3 | alert พวกนี้ถูก block แล้ว หรือ IDS แค่เห็นแล้วปล่อยผ่าน | report JSON: `alert_action` |
-| 4 | เริ่มกี่โมง จบกี่โมง ตอนนี้ยังเกิดอยู่ไหม | report JSON: `event_time_min`, `event_time_max` เทียบเวลาปัจจุบันของข้อมูล |
-| 5 | log ทุกบรรทัดถูกนับครบไหม มีบรรทัดที่ parse ไม่ได้แล้วหลุดจากรายงานหรือเปล่า | report JSON: `total_records`, `parsed`, `failed` |
-| 6 | รายงานนี้เชื่อได้แค่ไหน โค้ดที่รันคือโค้ดที่ตรวจแล้วจริงไหม รันเมื่อไร ใครตรวจ | sha256 ของโค้ดที่ render, save, validate expected, snapshot ของ job ต้องตรงกัน + job_id, เวลา, สถานะ SUCCEEDED + `log_skill_validate_report` |
-| 7 | ทำไม Claude ต้องลองสองรอบกว่าจะ render โค้ดได้ และเราควรให้มันแก้ template เองไหม | error ของ `log_skill_render_spark_job` รอบแรก + `matches_trusted_template` ของ `log_skill_validate_spark_job` |
-| 8 | ถ้าพรุ่งนี้ต้องทำรายงานเดิมอีก จะได้ผลเดิมไหม และทำไมระบบห้ามเขียนทับ output เก่า | idempotency_key ใน `spark_submit_job` + พฤติกรรม `errorifexists` ในโค้ด |
-| 9 | รายงานนี้บอกได้ไหมว่าเกิด incident | report บอกสถิติ ไม่มี verdict (กติกาข้อ 5 ของ skill) |
-
 ## prompt ที่ผู้เรียนพิมพ์
 
 ```
@@ -29,6 +13,22 @@
 ด้วย parser suricata-eve-alert-json-v1 เขียน output ไว้ที่ /m6-10/<ชื่อผู้เรียน>/lab2-ids
 ให้ validate ทั้งก่อน submit และ validate report หลังจบ แล้วสรุปตัวเลขให้ดู
 ```
+
+## คำถามที่ถาม Claude ต่อ
+
+เมื่อ prompt แรกทำงานเสร็จ ให้พิมพ์คำถามข้างล่างถาม Claude ต่อทีละข้อ เหมือนถามเพื่อนร่วมทีมหน้า SIEM งานของผู้เรียนไม่ใช่ไปค้นเอง แต่คือตรวจคำตอบ Claude ต้องอ้างได้ว่าคำตอบมาจาก tool ใดและฟิลด์ใด (คอลัมน์ "คำตอบต้องอ้างอะไร") ถ้าตอบโดยไม่เรียก tool หรือไม่บอกที่มา ให้สั่งว่า "อ่านจาก tool แล้วบอกฟิลด์ที่ใช้" และสุ่มเทียบตัวเลขอย่างน้อย 1 ค่าต่อ lab กับ output ดิบด้วยตาตัวเอง ข้อที่ประเภทเป็น **ตัดสิน** Claude เสนอได้ แต่คนเป็นผู้ตัดสินและเขียนเหตุผลเอง คำตอบที่คาดอยู่ในส่วนเฉลยด้านล่าง
+
+| # | พิมพ์ถาม Claude | คำตอบต้องอ้างอะไร | ประเภท |
+| --- | --- | --- | --- |
+| 1 | alert 340 รายการใน 3 ชั่วโมงนี้ สรุปแล้วเห็นภาพอะไร rule ไหนยิงมากสุด เป็นพฤติกรรมประเภทไหน | report JSON: `top_signatures`, `top_categories`, `severity_summary` | ตรวจ |
+| 2 | มาจากเครื่องเดียวหรือหลายเครื่อง ไปหาใครบ้าง | report JSON: `top_source_ips`, `top_destination_ips` (รวม host ที่โดนทีละน้อย) | ตรวจ |
+| 3 | alert พวกนี้ถูก block แล้ว หรือ IDS แค่เห็นแล้วปล่อยผ่าน | report JSON: `alert_action` | ตรวจ |
+| 4 | เริ่มกี่โมง จบกี่โมง ตอนนี้ยังเกิดอยู่ไหม | report JSON: `event_time_min`, `event_time_max` เทียบเวลาปัจจุบันของข้อมูล | ตรวจ |
+| 5 | log ทุกบรรทัดถูกนับครบไหม มีบรรทัดที่ parse ไม่ได้แล้วหลุดจากรายงานหรือเปล่า | report JSON: `total_records`, `parsed`, `failed` | ตรวจ |
+| 6 | รายงานนี้เชื่อได้แค่ไหน โค้ดที่รันคือโค้ดที่ตรวจแล้วจริงไหม รันเมื่อไร ใครตรวจ | sha256 ของโค้ดที่ render, save, validate expected, snapshot ของ job ต้องตรงกัน + job_id, เวลา, สถานะ SUCCEEDED + `log_skill_validate_report` | ตรวจ |
+| 7 | ทำไมคุณต้องลองสองรอบกว่าจะ render โค้ดได้ และเราควรให้มันแก้ template เองไหม | error ของ `log_skill_render_spark_job` รอบแรก + `matches_trusted_template` ของ `log_skill_validate_spark_job` | ตัดสิน |
+| 8 | ถ้าพรุ่งนี้ต้องทำรายงานเดิมอีก จะได้ผลเดิมไหม และทำไมระบบห้ามเขียนทับ output เก่า | idempotency_key ใน `spark_submit_job` + พฤติกรรม `errorifexists` ในโค้ด | ตรวจ |
+| 9 | รายงานนี้บอกได้ไหมว่าเกิด incident | report บอกสถิติ ไม่มี verdict (กติกาข้อ 5 ของ skill) | ตัดสิน |
 
 ## ลำดับ tool ที่ควรเห็น (11 ขั้น)
 

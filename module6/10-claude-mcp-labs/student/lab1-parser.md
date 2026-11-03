@@ -6,20 +6,6 @@
 
 SIEM ไม่มี parser สำหรับทุกแหล่ง (gap G1) ผู้เรียนต้องให้ Claude หาว่า log ที่ได้มามี parser รองรับหรือไม่ ถ้ามี ทดสอบให้เห็นฟิลด์ที่ normalize แล้ว ถ้าไม่มี ร่าง parser ใหม่เป็น draft
 
-## สิ่งที่ต้องค้นให้ได้
-
-คำถามข้างล่างคือสิ่งที่ analyst จะถามกันเมื่อเจอเรื่องนี้หน้า SIEM ผู้เรียนต้องตอบทุกข้อเป็นลายลักษณ์อักษร คอลัมน์ขวาบอกว่าคำตอบต้องมาจากผลของ tool ใด (ระบุชื่อ tool และฟิลด์ที่อ่านค่ามา) ไม่รับคำตอบที่ Claude สรุปให้โดยไม่มี tool รองรับ ข้อที่เป็นการตัดสินใจไม่มีคำตอบตายตัวแต่ต้องอ้างตัวเลขที่ค้นได้ บันทึกคำตอบในส่วน "บันทึกคำตอบ" ด้านล่าง
-
-| # | คำถามที่คุยกันใน SOC | ค้นจากอะไร |
-| --- | --- | --- |
-| 1 | log บรรทัดนี้ (sshd) SIEM ของเรา parse ได้ไหม และจะรู้ได้อย่างไรว่า "ไม่มี parser" ไม่ใช่ "parse ผิด" | `log_skill_resolve` กับบรรทัด sshd: `selected`, `candidates`, `unknown_format` |
-| 2 | log ของ Suricata เข้าได้ แต่แน่ใจแค่ไหนว่าเลือก parser ถูกตัว | ตาราง candidates จาก `log_skill_resolve`: score, confidence, `parse_success` |
-| 3 | parser ตัวอื่นที่ได้คะแนนบ้าง ทำไมไม่เอา ถ้าเอาจะเกิดอะไร | `parse_success` ของ candidate ที่ score ต่ำ |
-| 4 | หลัง parse แล้ว เราเห็นอะไรที่ก่อน parse ไม่เห็น ใครคุยกับใคร กี่โมง rule อะไรยิง รุนแรงแค่ไหน | ผล `log_skill_test_parser`: `event_time`, `source_ip`, `destination_ip`, `destination_port`, `signature`, `severity` และฟิลด์ดิบที่ `event_time` แปลงมา |
-| 5 | ฟิลด์ที่ vendor มีแต่ schema กลางของเราไม่มี (เช่น alert_id) หายไปไหม ถ้าต้องใช้ทีหลังจะเอาจากไหน | `vendor_fields` ใน record ที่ parse แล้ว |
-| 6 | ถ้า log บรรทัดหนึ่งขาดฟิลด์สำคัญ SIEM ควรเดาค่าให้ หรือทิ้งบรรทัดนั้นแล้วบอกเรา ระบบนี้ทำแบบไหน | ส่วน `validation.required_output` ใน YAML ของ parser + ผล test_parser ของบรรทัด sshd |
-| 7 | ถ้าจะเพิ่ม parser สำหรับ sshd เอง ใครเป็นคนอนุมัติ ต้องทดสอบกับอะไรก่อนใช้จริง และเอาไปใช้กับ workflow ที่มีได้เลยไหม | (ขั้น 3 ไม่บังคับ) `log_skill_save_draft` + `log_skill_list_drafts` + `log_skill_get_draft` อ่าน YAML; `log_skill_test_parser` รับเฉพาะ skill ที่ publish แล้ว draft จึงต้องทดสอบ regex นอก server กับ auth.log ทั้ง 44 บรรทัด; ข้อจำกัดเทียบ template ของ `analyze-system-logs-with-spark` |
-
 ## prompt ที่ผู้เรียนพิมพ์
 
 ขั้นที่ 1 (ไม่มี parser):
@@ -39,6 +25,20 @@ Mar  1 02:10:00 server sshd[2824]: Failed password for invalid user admin from 1
 ร่าง parser skill ใหม่ชื่อ parse-linux-sshd-auth สำหรับบรรทัด sshd แบบนี้ เป็น draft
 ```
 
+## คำถามที่ถาม Claude ต่อ
+
+เมื่อ prompt แรกทำงานเสร็จ ให้พิมพ์คำถามข้างล่างถาม Claude ต่อทีละข้อ เหมือนถามเพื่อนร่วมทีมหน้า SIEM งานของผู้เรียนไม่ใช่ไปค้นเอง แต่คือตรวจคำตอบ Claude ต้องอ้างได้ว่าคำตอบมาจาก tool ใดและฟิลด์ใด (คอลัมน์ "คำตอบต้องอ้างอะไร") ถ้าตอบโดยไม่เรียก tool หรือไม่บอกที่มา ให้สั่งว่า "อ่านจาก tool แล้วบอกฟิลด์ที่ใช้" และสุ่มเทียบตัวเลขอย่างน้อย 1 ค่าต่อ lab กับ output ดิบด้วยตาตัวเอง ข้อที่ประเภทเป็น **ตัดสิน** Claude เสนอได้ แต่คนเป็นผู้ตัดสินและเขียนเหตุผลเอง บันทึกในส่วน "บันทึกคำตอบ" ด้านล่าง
+
+| # | พิมพ์ถาม Claude | คำตอบต้องอ้างอะไร | ประเภท |
+| --- | --- | --- | --- |
+| 1 | log บรรทัดนี้ (sshd) SIEM ของเรา parse ได้ไหม และจะรู้ได้อย่างไรว่า "ไม่มี parser" ไม่ใช่ "parse ผิด" | `log_skill_resolve` กับบรรทัด sshd: `selected`, `candidates`, `unknown_format` | ตรวจ |
+| 2 | log ของ Suricata เข้าได้ แต่แน่ใจแค่ไหนว่าเลือก parser ถูกตัว | ตาราง candidates จาก `log_skill_resolve`: score, confidence, `parse_success` | ตรวจ |
+| 3 | parser ตัวอื่นที่ได้คะแนนบ้าง ทำไมไม่เอา ถ้าเอาจะเกิดอะไร | `parse_success` ของ candidate ที่ score ต่ำ | ตรวจ |
+| 4 | หลัง parse แล้ว เราเห็นอะไรที่ก่อน parse ไม่เห็น ใครคุยกับใคร กี่โมง rule อะไรยิง รุนแรงแค่ไหน | ผล `log_skill_test_parser`: `event_time`, `source_ip`, `destination_ip`, `destination_port`, `signature`, `severity` และฟิลด์ดิบที่ `event_time` แปลงมา | ตรวจ |
+| 5 | ฟิลด์ที่ vendor มีแต่ schema กลางของเราไม่มี (เช่น alert_id) หายไปไหม ถ้าต้องใช้ทีหลังจะเอาจากไหน | `vendor_fields` ใน record ที่ parse แล้ว | ตรวจ |
+| 6 | ถ้า log บรรทัดหนึ่งขาดฟิลด์สำคัญ SIEM ควรเดาค่าให้ หรือทิ้งบรรทัดนั้นแล้วบอกเรา ระบบนี้ทำแบบไหน | ส่วน `validation.required_output` ใน YAML ของ parser + ผล test_parser ของบรรทัด sshd | ตัดสิน |
+| 7 | ถ้าจะเพิ่ม parser สำหรับ sshd เอง ใครเป็นคนอนุมัติ ต้องทดสอบกับอะไรก่อนใช้จริง และเอาไปใช้กับ workflow ที่มีได้เลยไหม | (ขั้น 3 ไม่บังคับ) `log_skill_save_draft` + `log_skill_list_drafts` + `log_skill_get_draft` อ่าน YAML; `log_skill_test_parser` รับเฉพาะ skill ที่ publish แล้ว draft จึงต้องทดสอบ regex นอก server กับ auth.log ทั้ง 44 บรรทัด; ข้อจำกัดเทียบ template ของ `analyze-system-logs-with-spark` | ตัดสิน |
+
 ## ลำดับ tool ที่ควรเห็น
 
 1. `log_skill_resolve` (sample = บรรทัด sshd) → อ่านค่า `selected`, `candidates`, `unknown_format`
@@ -49,17 +49,17 @@ Mar  1 02:10:00 server sshd[2824]: Failed password for invalid user admin from 1
 
 ## บันทึกคำตอบ
 
-กรอกให้ครบทุกข้อตามเลขในตาราง "สิ่งที่ต้องค้นให้ได้" ค่าทุกค่าต้องชี้กลับไปที่ tool และฟิลด์ที่อ่านมา ข้อที่เป็นการตัดสินใจให้เขียนคำตัดสินและเหตุผล
+กรอกทีละข้อตามเลขในตาราง "คำถามที่ถาม Claude ต่อ" คอลัมน์ 2 คือสิ่งที่ Claude ตอบ (ย่อได้ แต่ตัวเลขต้องตรง) คอลัมน์ 3 คือ tool และฟิลด์ที่ Claude อ้าง ถ้า Claude ไม่อ้าง ให้สั่งถามใหม่ก่อนกรอก คอลัมน์ 4: ข้อประเภท ตรวจ ให้เขียนว่าเทียบกับ output ดิบแล้วตรงไหม (อย่างน้อย 1 ข้อต่อ lab ต้องเทียบจริง) ข้อประเภท ตัดสิน ให้เขียนคำตัดสินของตัวเองและเหตุผล
 
-| # | คำตอบ | tool → ฟิลด์/บรรทัดที่อ่านค่ามา |
-| --- | --- | --- |
-| 1 | | |
-| 2 | | |
-| 3 | | |
-| 4 | | |
-| 5 | | |
-| 6 | | |
-| 7 | | |
+| # | Claude ตอบว่า | อ้าง tool → ฟิลด์ | ตรวจแล้วตรงไหม / ตัดสินว่าอย่างไร |
+| --- | --- | --- | --- |
+| 1 | | | |
+| 2 | | | |
+| 3 | | | |
+| 4 | | | |
+| 5 | | | |
+| 6 | | | |
+| 7 | | | |
 
 ## จุดที่คนต้องทำ
 
