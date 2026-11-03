@@ -102,6 +102,25 @@ flowchart TB
 
 **เรื่องราวในข้อมูล** (ผู้สอนรู้ ผู้เรียนต้องค้นเอง): host `10.70.0.66` ถาม DNS โดเมน C2 ทุก 60 วินาที (00:00–01:59) → ส่งข้อมูลออก `203.0.113.66:443` ทุก 10 วินาที รวม 6.0 MB (02:10–02:29) → ไล่ต่อ SSH/SMB/RDP ไป `10.70.1.1–25` ทุก 30 วินาทีต่อพอร์ต (02:40–02:44) ขณะที่ traffic ปกติของ 200 เครื่องวิ่งไป 198.51.100.x ตลอด 00:00–04:43
 
+## SIEM 10 ฟังก์ชัน before & after
+
+MCP ชุดนี้ทำหน้าที่ของ SIEM ได้กี่ขั้น ตารางนี้สรุปว่าแต่ละขั้นรับอะไรเข้า (before) และคืนอะไรออก (after) ด้วยข้อมูลจริงจาก incident-lab ตัวอย่างเต็ม บรรทัด raw จริง และนิยามของแต่ละขั้นอยู่ใน [siem-10-functions-before-after.md](siem-10-functions-before-after.md) ส่วนนิยามเต็มตามวงการและชื่อเรียกใน QRadar อยู่ใน [glossary หมวด 6](../../docs/glossary.md#6-ฟังก์ชันของ-siem)
+
+| # | ฟังก์ชัน | before | after | lab | รันจริง |
+| --- | --- | --- | --- | --- | --- |
+| 1 | Collection | ไฟล์นอก HDFS | 6 ไฟล์ใต้ `/mcp/student/.../input/` | 0, 4 | ✅ วางไว้ล่วงหน้า (ไม่มี real-time) |
+| 2 | Parsing | FortiGate key=value 1 บรรทัด | 24 ฟิลด์ + raw_event; บรรทัด sshd → failed | 1 | ✅ |
+| 3 | Normalization | `srcip` / `id.orig_h` / `source_ip` จาก 3 vendor | `source_ip` ชื่อเดียว; ค่า `17` กับ `udp` ยังไม่รวม | 1, 3 | ✅ |
+| 4 | Enrichment | IP เปล่า | Feodo/KEV: matched 0 (คาด); asset_crit 4 ใน 2b | 4, 2b | ⏳ lab 4 / ✅ 2b |
+| 5 | Storage | JSONL 154 KB | Parquet 31 KB ไม่มี index | 2 | ✅ job 30d2a9d4 |
+| 6 | Correlation | alert 340 กับ conn 100,000 แยกกัน | matched_pairs 340, stddev 0.0; baseline 200 host → 10.70.0.66 ส่ง 212× | 3, 3c, 3b | ✅ |
+| 7 | Alerting | alert 340 | offense 39 (ลด 88.5%) magnitude 100 ทุกตัว | 2b | ✅ job 291d645c |
+| 8 | Investigation | "ส่งไปไหน กี่ byte" | 6,010,330 byte ไป 203.0.113.66:443, 480 packet ใน PCAP | 3 | ✅ |
+| 9 | Reporting | Parquet 340 แถว | ids-report-v1 ผ่าน validate; dashboard/PDF | 2, 5 | ✅ / ⏳ PDF |
+| 10 | Case management | correlation report | handoff needs-review ไม่มี owner/state | 3b | ✅ แต่ไม่ใช่ case |
+
+สองขั้นที่ MCP ทำแทนไม่ได้คือ 1 (รับ log แบบ real-time) และ 10 (จัดการ case) จึงเป็น SIEM แบบ batch ที่ขาดหัวและขาดท้าย
+
 ## รายการ lab
 
 | lab | gap | ผู้เรียนสั่ง Claude ว่า | สถานะเฉลย |
@@ -117,8 +136,6 @@ flowchart TB
 | [3c baseline](lab3c-baseline.md) | G6 (ขั้นก่อน ML) | สร้าง baseline จาก Zeek conn แล้วหา host ที่ผิดโดยไม่ใช้ signature | ✅ รันจริง 2026-11-03: query อย่างเดียว ไม่มี Spark job; 10.70.0.66 byte ออก 212× ของ baseline แต่ connection น้อยกว่า baseline |
 
 ทุก lab มี 5 ส่วน: โจทย์ → prompt → ลำดับ tool ที่ควรเห็น → เฉลย → จุดที่คนต้องทำ และปิดท้ายด้วย "Claude ผิดตรงไหนได้บ้าง"
-
-ภาพรวมก่อนลงมือ: [SIEM 10 ฟังก์ชัน — before & after ด้วย MCP](siem-10-functions-before-after.md) ให้ผู้เรียนเห็นว่าแต่ละขั้น (collection → parsing → normalization → … → case management) รับอะไรเข้าและคืนอะไรออก ด้วยข้อมูลจริงจากชุด incident-lab และผลรัน lab 1–3b เทียบกับชื่อเรียกใน QRadar
 
 ## หัวข้อตาม course outline ที่ครอบคลุม
 
