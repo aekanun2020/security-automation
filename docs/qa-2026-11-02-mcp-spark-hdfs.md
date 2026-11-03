@@ -210,27 +210,70 @@ gap: G1 ✔, G2 ◐, G3 ✔, G4 ✔, G5 ✗, G6 ✗ วัตถุประส�
 
 เรื่องราวคือ kill chain C2 → exfiltration → lateral movement ตรงกับ profile host-threat-sequence ของ skill correlate ข้อย้ำ: ข้อมูล synthetic (203.0.113.66 อยู่ใน TEST-NET-3) และ alert คือ rule ตรง ไม่ใช่ข้อพิสูจน์ incident
 
-## Q17 — SOAR คืออะไร (ถาม 2026-11-03)
+## Q17 — SOAR คืออะไร
 
-SOAR = Security Orchestration, Automation and Response ระบบที่รับ alert จาก SIEM แล้วทำต่อแทนคนตาม **playbook** (ลำดับ if/then ที่เขียนไว้ก่อน) แยกเป็น orchestration (ร้อยเครื่องมือหลายตัวเป็นสายเดียว SIEM → TI → EDR → firewall → ticket), automation (งานซ้ำที่คนเคยทำ เช่น ดึง whois/VT, เปิด ticket, แจ้ง Slack) และ response (ลงมือจริง block IP, isolate host, disable บัญชี) ตัวอย่างผลิตภัณฑ์: IBM QRadar SOAR (Resilient), Splunk SOAR (Phantom), Cortex XSOAR, open source Shuffle / TheHive+Cortex / n8n
+**SOAR** ย่อจาก **Security Orchestration, Automation and Response** คือระบบที่รับ alert จาก SIEM (เช่น QRadar) แล้ว "ทำต่อ" แทนคนตามขั้นตอนที่กำหนดไว้ล่วงหน้า
 
-เทียบกับแทร็ก M6.10: ส่วน decision logic ของ playbook มีแล้ว (lab 2b dedupe, risk score, route auto-close/queue/escalate), enrichment อยู่ใน lab 4, รายงาน/handoff ใน lab 2, 3b, 5 แต่ไม่มี orchestration ข้ามเครื่องมือ (มี MCP แค่ 2 ตัว), ไม่มี response ลงมือจริง และไม่มี playbook ที่รันซ้ำได้โดยไม่มีคน ทุกรอบคนสั่ง Claude และตรวจเอง จึงคงสถานะ **M6.1 SOAR ✗** ใน coverage table วิธีสอนที่ใกล้สุดคือชี้ว่า route จาก lab 2b คือ input ที่ SOAR จะรับไปเลือก playbook โดยคนยังเป็นผู้ approve ขั้น response
+แยกเป็น 3 คำ
 
-## Q18 — SIEM มีฟังก์ชันหลักคือ extraction, parsing, normalize, storing, analysis, alert, manage ใช่ไหม
+- **Orchestration** เชื่อมเครื่องมือหลายตัวให้ทำงานต่อกันเป็นสายเดียว เช่น SIEM → threat intel → EDR → firewall → ticket system
+- **Automation** ขั้นตอนที่คนเคยทำซ้ำ ๆ ให้เครื่องทำแทน เช่น ดึง whois/VirusTotal ของ IP, ค้นว่า hash นี้เคยเจอกี่เครื่อง, เปิด ticket, ส่ง Slack
+- **Response** ลงมือจริง เช่น block IP ที่ firewall, isolate host ที่ EDR, disable บัญชี AD, แล้วปิด ticket
 
-ใกล้ แต่ศัพท์มาตรฐานต่างเล็กน้อยและขาด 3 ขั้น: "extraction" ปกติซ้อนกับ parsing ขั้นแรกจึงเรียก collection ส่วน "manage" มักแยกเป็น investigation, reporting และ case management
+สิ่งที่เป็นหัวใจคือ **playbook** ลำดับขั้นตอนแบบ if/then ที่เขียนไว้ก่อน เช่น
 
-| # | ฟังก์ชัน | QRadar | MCP ใน M6.10 |
-| --- | --- | --- | --- |
-| 1 | Collection / Ingestion | Event Collector, Log Source | batch เท่านั้น `hdfs_import_file` / `hdfs_write_text` ไม่มี syslog/agent real-time |
-| 2 | Parsing | DSM | parser skill 12 ตัว (lab 1) จุดแข็ง |
-| 3 | Normalization | QID map | canonical schema จาก parser skill (lab 1, 2) |
-| 4 | Enrichment (ขาดในคำถาม) | Reference set, X-Force, Asset model | Claude Desktop ดึง feed แล้ว import (lab 4 ร่าง) |
-| 5 | Storage / Indexing | Ariel | HDFS + Parquet ไม่มี index ค้นต้องสแกน |
-| 6 | Correlation / Analytics | Custom Rules Engine | `hdfs_correlate_records`, Spark job (lab 3, 2b) |
-| 7 | Alerting | Offense | lab 2b dedupe/score/route แบบ batch ไม่ real-time |
-| 8 | Search / Investigation (ขาดในคำถาม) | AQL, Log Activity | `hdfs_query_records`, `hdfs_pcap_packets` ผ่าน Claude ไม่มี query language ให้คนใช้ตรง |
-| 9 | Reporting / Dashboard (ขาดในคำถาม) | Reports, Dashboard | lab 2, 3b, 5 ผ่าน report contract |
-| 10 | Case / Incident Management | Offense Manager, QRadar SOAR | ไม่มี ticket, assignment, state |
+```
+alert ประเภท phishing เข้ามา
+→ ดึง URL/attachment ไป sandbox
+→ ถ้า malicious: ลบ mail จากทุก mailbox, block sender, เปิด ticket P2
+→ ถ้าไม่: ปิด alert พร้อมเหตุผล
+→ ถ้าไม่แน่ใจ: ส่งให้คนตัดสิน (human approval step)
+```
 
-สรุป: MCP ชุดนี้คือ SIEM แบบ batch ที่ขาดหัว (real-time collection) และขาดท้าย (case management) สอดคล้องกับ gap ใน Q6–Q7
+ผลิตภัณฑ์ที่พบบ่อย: IBM QRadar SOAR (เดิมชื่อ Resilient), Splunk SOAR (เดิม Phantom), Palo Alto Cortex XSOAR, และ open source อย่าง Shuffle, TheHive+Cortex, n8n ที่คนเอามาทำ playbook
+
+**เทียบกับสิ่งที่ทำในแทร็ก M6.10**
+
+| องค์ประกอบ SOAR | ใน lab ของเรา |
+| --- | --- |
+| รับ alert, dedupe, ให้คะแนน | lab 2b ทำแล้ว (fingerprint, risk score, route auto-close/queue/escalate) |
+| Enrichment จาก threat intel | lab 4 (ร่าง) Feodo/KEV/EPSS |
+| สร้างรายงาน/handoff | lab 2, 3b, 5 |
+| Orchestration ข้ามเครื่องมือ | มีแค่ MCP 2 ตัว (Spark/HDFS กับ log-skill) ยังไม่ต่อ EDR, firewall, ticket |
+| Response ลงมือจริง | ไม่มี ไม่มีอะไร block หรือ isolate ได้ |
+| Playbook ที่รันซ้ำได้โดยไม่ต้องมีคน | ไม่มี ทุกรอบคนเป็นผู้สั่ง Claude และตรวจเอง |
+
+จึงเป็นเหตุผลที่ตาราง coverage ใน README ของแทร็กเขียนว่า **M6.1 SOAR ยังไม่บรรลุ** สิ่งที่ lab ทำได้คือส่วน "decision logic" ของ playbook (ตัดสินว่า alert ไหนควร escalate) แต่ยังไม่มีส่วน "action" และยังเป็น human-in-the-loop ทุกขั้น ซึ่งถ้าจะสอน SOAR แนวเดียวกับแทร็กนี้ แนวทางที่ใกล้สุดคือสอนว่า route ที่ lab 2b ผลิตออกมา คือ input ที่ SOAR จะรับไปเลือก playbook ต่อ โดยคนยังเป็นผู้ approve ขั้น response
+
+## Q18 — SIEM มีฟังก์ชั่นหลักๆ คือ extraction, parsing, normalize, storing, analysis, alert, manage หรือป่าว
+
+ใกล้แล้วครับ แต่ศัพท์มาตรฐานใช้ต่างไปนิดและขาดอยู่ 2–3 ขั้น ลำดับที่วงการใช้กันคือ
+
+| # | ฟังก์ชัน | คำที่คุณใช้ | ความหมาย | ใน QRadar |
+| --- | --- | --- | --- | --- |
+| 1 | **Collection / Ingestion** | extraction | รับ log เข้ามาจาก syslog, agent, API, file | Event Collector, Log Source |
+| 2 | **Parsing** | parsing | แยก raw text เป็น field | DSM (Device Support Module) |
+| 3 | **Normalization** | normalize | map field ต่างยี่ห้อให้เป็นชื่อเดียวกัน เช่น src_ip ของทุก vendor เป็น sourceIP | QID map, normalized event |
+| 4 | **Enrichment** | ขาด | เติม context เช่น geo-IP, asset criticality, threat intel, user identity | Reference set, X-Force feed, Asset model |
+| 5 | **Storage / Indexing** | storing | เก็บ, index, retention policy | Ariel database |
+| 6 | **Correlation / Analytics** | analysis | กฎ rule-based ข้ามเหตุการณ์ ข้ามแหล่ง, baseline, UBA/ML | Custom Rules Engine (CRE) |
+| 7 | **Alerting** | alert | ยกเป็น alert/offense จัด severity, dedupe | Offense |
+| 8 | **Search / Investigation** | ขาด | ค้นย้อนหลัง, threat hunting, pivot จาก IP ไป user | AQL, Log Activity |
+| 9 | **Reporting / Dashboard** | ขาด | รายงาน compliance (PCI, ISO), ภาพรวม SOC | Reports, Dashboard |
+| 10 | **Case / Incident Management** | manage | triage, assign, note, ปิด offense, ส่งต่อ SOAR | Offense Manager, QRadar SOAR |
+
+คำว่า "extraction" ปกติหมายถึงดึง field ออกจาก raw ซึ่งซ้อนกับ parsing มากกว่า ขั้นแรกจึงเรียกว่า collection ส่วนที่คุณรวมไว้ใน "manage" มักแยกเป็น 3 อย่างคือ investigation, reporting และ case management
+
+**เทียบกับ MCP ที่ใช้ใน M6.10**
+
+- 1 Collection: ทำได้แค่ `hdfs_import_file` / `hdfs_write_text` เป็น batch ไม่มี syslog/agent รับ real-time
+- 2–3 Parsing/Normalization: log-skill parser skills 12 ตัว ครอบคลุมดี เป็นจุดแข็งของ lab 1
+- 4 Enrichment: ทำได้ถ้า Claude Desktop ดึง feed แล้ว import (lab 4)
+- 5 Storage: HDFS + Parquet แต่ไม่มี index ค้นต้องสแกน
+- 6 Correlation: `hdfs_correlate_records` และ Spark job (lab 3, 2b)
+- 7 Alerting: lab 2b ทำ dedupe/score/route ได้ แต่เป็น batch ไม่ใช่ real-time
+- 8 Investigation: `hdfs_query_records`, `hdfs_pcap_packets` ค้นได้ แต่ไม่มี query language ให้คนใช้ตรง ต้องผ่าน Claude
+- 9 Reporting: lab 2, 3b, 5 ผ่าน report contract
+- 10 Case management: ไม่มี ไม่มี ticket, assignment, state
+
+สรุปคือ MCP ชุดนี้คือ SIEM แบบ batch ที่ขาดหัว (real-time collection) และขาดท้าย (case management) ตรงกับที่บันทึกใน Q&A ข้อ gap ก่อนหน้า
