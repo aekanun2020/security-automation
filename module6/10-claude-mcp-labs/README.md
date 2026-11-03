@@ -62,7 +62,7 @@ flowchart TB
     FGT --> RTR
     RTR --> EXF
     RTR --> WEB
-    SEN -. "เห็นทุก conn ของ lan" .- lan
+    SEN -.->|"เห็นทุก conn ของ lan"| lan
 
     classDef bad fill:#fde8e8,stroke:#c0392b,color:#7b1d1d
     classDef ok fill:#eaf4ea,stroke:#2e7d32,color:#1b4d1e
