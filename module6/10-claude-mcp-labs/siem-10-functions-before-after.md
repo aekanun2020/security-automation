@@ -6,6 +6,8 @@
 
 ## 1. Collection / Ingestion
 
+**Collection คือ** การย้าย log จากที่ที่มันเกิด (sensor, เครื่องผู้ใช้) มาอยู่ในที่เก็บกลางที่เครื่องมือวิเคราะห์เข้าถึงได้ ในที่นี้คือจากไฟล์นอก HDFS มาเป็นไฟล์ใต้ `/mcp/...` เนื้อหาไฟล์ไม่เปลี่ยน เปลี่ยนแค่ที่อยู่และ metadata (owner, replication)
+
 **QRadar:** Event Collector รับ syslog แบบ real-time, auto-discover log source หลัง ~25 event · **MCP:** `hdfs_import_file`, `hdfs_write_text` (batch) · **lab:** 0, 4
 
 | | |
@@ -16,6 +18,8 @@
 **ให้ผู้เรียนสังเกต** ไม่มี tool ไหนรับ UDP 514 ถ้าอยากได้ log ใหม่ต้องมีคนวางไฟล์ก่อน และ `hdfs_import_file` รับเฉพาะ source ฝั่ง server (lab 4 เตือนไว้) นี่คือ "หัวที่ขาด"
 
 ## 2. Parsing
+
+**Parsing คือ** การแยก log 1 บรรทัดที่เป็น text ยาวติดกัน ออกเป็นฟิลด์ที่มีชื่อและชนิดข้อมูล (string, integer, ip) ในที่นี้คือจาก key=value 1 บรรทัด ไปเป็น JSON 24 ฟิลด์ ถ้ารูปแบบไม่ตรงกับที่ parser รู้จัก ผลคือ failed ไม่ใช่ฟิลด์ว่าง
 
 **QRadar:** DSM แยก raw เป็น field · **MCP:** `log_skill_resolve` → `log_skill_test_parser` (log-skill server) · **lab:** 1
 
@@ -45,6 +49,8 @@ date=2026-08-24 time=00:00:00 devname="FGT-LAB-SIM-01" devid="SYNTHETIC0000001" 
 
 ## 3. Normalization
 
+**Normalization คือ** การเปลี่ยนชื่อฟิลด์ที่แต่ละ vendor ตั้งเองให้เป็นชื่อกลางชุดเดียว เพื่อให้ข้อมูลจากต่างแหล่งเทียบหรือ join กันได้ ในที่นี้คือ `srcip`, `id.orig_h`, `source_ip` ที่หมายถึงสิ่งเดียวกัน กลายเป็น `source_ip` ทั้งหมด ส่วนค่าที่ต่างกัน (เช่น `17` กับ `udp`) ขั้นนี้ยังไม่ได้แปลงให้
+
 **QRadar:** QID map, normalized event (sourceIP, destinationIP, ...) · **MCP:** canonical schema ใน skill normalize-security-logs ที่ทุก parser ต้อง map เข้า · **lab:** 1, 3
 
 **before** event เดียวกัน (connection uid `C23Z1U11E2atSWbamf` เวลา 1787529600) ถูกบันทึกโดย 3 แหล่ง ชื่อฟิลด์ต่างกันหมด
@@ -73,6 +79,8 @@ date=2026-08-24 time=00:00:00 devname="FGT-LAB-SIM-01" devid="SYNTHETIC0000001" 
 
 ## 4. Enrichment
 
+**Enrichment คือ** การเติมข้อมูลจากแหล่งภายนอก log เข้าไปใน record เพื่อให้ตัดสินได้ว่า IP หรือ asset นั้นสำคัญหรืออันตรายแค่ไหน ในที่นี้คือเอา IP ไปเทียบกับ threat feed และตารางความสำคัญของ asset ผลลัพธ์อาจเป็น "ไม่พบ" ก็ได้
+
 **QRadar:** Reference set, X-Force feed, Asset model · **MCP:** ไม่มี tool ดึง feed แต่ Claude Desktop ดึงแล้ว `hdfs_write_text` เข้าไป จากนั้น `hdfs_query_records` filter · **lab:** 4 (ร่าง ยังไม่รัน), 2b (asset criticality)
 
 | | |
@@ -85,6 +93,8 @@ date=2026-08-24 time=00:00:00 devname="FGT-LAB-SIM-01" devid="SYNTHETIC0000001" 
 
 ## 5. Storage / Indexing
 
+**Storage คือ** การเก็บ record ที่ parse แล้วในรูปแบบที่อ่านซ้ำได้เร็วและเล็กกว่าต้นฉบับ ในที่นี้คือจาก JSON text 154 KB เป็น Parquet 31 KB ที่มี schema ติดมา ส่วน indexing (ทำให้ค้นได้โดยไม่ต้องอ่านทั้งไฟล์) ชุดนี้ไม่มี
+
 **QRadar:** Ariel database, index ตามฟิลด์ที่เลือก, retention policy · **MCP:** HDFS + Parquet จาก Spark job · **lab:** 2
 
 | | |
@@ -95,6 +105,8 @@ date=2026-08-24 time=00:00:00 devname="FGT-LAB-SIM-01" devid="SYNTHETIC0000001" 
 **ให้ผู้เรียนสังเกต** Parquet มี schema และบีบอัด แต่ **ไม่มี index** ทุก query ใน lab 3 คือ scan ทั้งไฟล์ (`hdfs_correlate_records` รายงาน `scan 100,000 records`) และไม่มี retention policy ลบไม่ได้โดยไม่ตั้งใจ (`errorifexists`) แต่ก็ไม่หมดอายุเอง ผู้เรียนต้องลบ `/m6-10/<ชื่อ>/` เองหลังจบคาบ
 
 ## 6. Correlation / Analytics
+
+**Correlation คือ** การหาว่า record จากคนละไฟล์หรือคนละแหล่ง อันไหนพูดถึงเหตุการณ์เดียวกัน โดยใช้ key ร่วม (5-tuple) และเวลาที่ใกล้กัน ในที่นี้คือ alert 340 กับ conn 100,000 ที่จับคู่กันได้ 340 คู่ และการหาแบบแผนเวลา (stddev 0 = ยิงเป็นจังหวะคงที่) ก็อยู่ในขั้นนี้
 
 **QRadar:** Custom Rules Engine (CRE) ทำงาน streaming · **MCP:** `hdfs_correlate_records` (join สองไฟล์ด้วย key + เวลา), `hdfs_query_records` (สถิติเวลา), Spark workflow correlate-security-evidence-with-spark · **lab:** 3, 3b
 
@@ -122,6 +134,8 @@ date=2026-08-24 time=00:00:00 devname="FGT-LAB-SIM-01" devid="SYNTHETIC0000001" 
 
 ## 7. Alerting
 
+**Alerting คือ** การยุบ event ที่ซ้ำกันเป็นก้อนเดียว ให้คะแนนความรุนแรง และตัดสินว่าก้อนนั้นต้องมีคนดูหรือไม่ ในที่นี้คือ alert 340 บรรทัด กลายเป็น offense 39 รายการ แต่ละรายการมี fingerprint, จำนวน event, score และ route (escalate / queue / auto-close)
+
 **QRadar:** Offense รวม event ที่เกี่ยวกันเป็นก้อนเดียว, magnitude 1–10, dedupe อัตโนมัติ · **MCP:** ไม่มี engine ให้ ต้องเขียน PySpark เอง (lab 2b) · **lab:** 2b
 
 | | |
@@ -134,6 +148,8 @@ date=2026-08-24 time=00:00:00 devname="FGT-LAB-SIM-01" devid="SYNTHETIC0000001" 
 **ให้ผู้เรียนสังเกต** ตัวเลข magnitude 100 ทุกตัวคือบทเรียน: สูตร 7.2 ชนเพดานก่อนคิด burst จึง**ไม่แยกลำดับความสำคัญ** และ report นี้ไม่มี contract ใน skill server (`lab2b-offense-report-v0`) ความน่าเชื่อถือจึงต่ำกว่า lab 2 โดยออกแบบ ใน QRadar offense magnitude มาจาก relevance × severity × credibility ที่ engine คิดให้
 
 ## 8. Search / Investigation
+
+**Investigation คือ** การถามคำถามเฉพาะเจาะจงกับข้อมูลที่เก็บไว้ เพื่อตอบว่าเกิดอะไร ไปไหน เท่าไร ในที่นี้คือ filter ด้วย IP คู่หนึ่ง แล้ว group และ sum byte จากนั้นลงไปดูระดับ packet ใน PCAP เพื่อยืนยันตัวเลขเดียวกัน
 
 **QRadar:** AQL, Log Activity tab, pivot จาก IP ไป user · **MCP:** `hdfs_query_records` (filters, group_by, sum, CIDR), `hdfs_pcap_packets` (TShark display filter), `hdfs_read_lines` · **lab:** 3
 
@@ -152,6 +168,8 @@ date=2026-08-24 time=00:00:00 devname="FGT-LAB-SIM-01" devid="SYNTHETIC0000001" 
 **ให้ผู้เรียนสังเกต** ทำได้เท่า AQL แต่ไม่มี query language ให้คนพิมพ์เอง ทุกคำถามต้องผ่าน Claude แปลงเป็น argument ของ tool และ tool เตือนว่า "packet count is not connection count" QRadar ก็มี flows กับ events แยกตารางด้วยเหตุผลเดียวกัน
 
 ## 9. Reporting / Dashboard
+
+**Reporting คือ** การสรุป record จำนวนมากเป็นตัวเลขไม่กี่ตัวที่คนอ่านได้ (นับ, จัดอันดับ, ช่วงเวลา) ตามรูปแบบที่ตกลงไว้ล่วงหน้า ในที่นี้คือ Parquet 340 แถว กลายเป็น JSON 1 บรรทัดที่มี top_signatures, top_destination_ips, severity_summary และผ่านการตรวจว่าครบตาม contract
 
 **QRadar:** Reports (PCI, ISO template), Dashboard · **MCP:** report contract (`ids-report-v1`) ผ่าน `log_skill_validate_report` แล้ว Claude Desktop ทำ Artifact / PDF · **lab:** 2 (รันจริง), 5 (ร่าง)
 
@@ -178,6 +196,8 @@ date=2026-08-24 time=00:00:00 devname="FGT-LAB-SIM-01" devid="SYNTHETIC0000001" 
 **ให้ผู้เรียนสังเกต** report บอกสถิติ ไม่บอกว่าเกิด incident (`alert_action: allowed` 340 = IDS เห็นแต่ไม่ block) narrative ที่ Claude เขียนต้องใช้คำว่า "rule ตรง" และตัวเลขทุกตัวต้องชี้กลับมาที่ JSON นี้ได้ และไม่มี MTTD/MTTR เพราะไม่มี ticket
 
 ## 10. Case / Incident Management
+
+**Case management คือ** การเปลี่ยนผลวิเคราะห์เป็นงานที่มีเจ้าของ มีสถานะ และมีที่บันทึกการตัดสินใจ ในที่นี้ทำได้ถึงแค่ "ใบส่งต่อ" ที่ระบุ asset, timeline, หลักฐาน และสิ่งที่ analyst ต้องทำ แต่ไม่มี owner, ไม่มี state ที่เปลี่ยนได้ และไม่มีที่บันทึกผลว่า confirm หรือ dismiss
 
 **QRadar:** Offense Manager (assign, note, close), QRadar SOAR · **MCP:** ไม่มี ใกล้ที่สุดคือ handoff document จาก build-security-investigation-handoff-with-spark · **lab:** 3b
 
