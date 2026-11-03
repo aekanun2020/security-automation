@@ -170,3 +170,20 @@
 ## สรุปสองรอบ
 
 ตัวเลขทุกตัวในเฉลยทั้ง 9 lab ตรงกับผลรันทั้งสองรอบ รอบ 2 ไม่พบตัวเลขผิดเพิ่ม พบขีดจำกัดของ tool 2 ข้อที่เฉลยไม่ได้บอก และยืนยันว่าข้อแก้ของรอบ 1 (coalesce(1)) ทำให้ขั้นตอนในเฉลยทำได้จริง
+
+
+---
+
+# รอบ 3 (2026-11-03 14:29 UTC) รัน lab 1 ซ้ำตาม prompt ที่เรียงใหม่ (commit 364d11e)
+
+prompt ใหม่เริ่มที่ alert Suricata ก่อน (ขั้น 1) แล้วจึงถามบรรทัด sshd และทดสอบสองบรรทัดพร้อมกัน (ขั้น 2) ขั้น 3 ไม่ได้รันซ้ำ (draft มีอยู่แล้ว)
+
+| ขั้น | tool ที่เรียก | ผล | เทียบเฉลยที่สลับขั้นแล้ว |
+| --- | --- | --- | --- |
+| 1 | `hdfs_read_lines` limit 3 | 3 บรรทัดแรก C2 DNS ts 1787529600 / 660 / 720 | ✅ |
+| 1 | `log_skill_resolve` บรรทัดแรก | selected suricata-eve-alert-json-v1 score 100 confidence 1.0 parse_success true; candidates netflow ×4 score 30 parse_success false | ✅ ตรงตาราง "ขั้น 1" |
+| 2 | `log_skill_resolve` บรรทัด sshd | selected null, candidates [], unknown_format true | ✅ ตรง "ขั้น 2" |
+| 2 | `log_skill_test_parser` 2 sample | total 2 passed 1 failed 1; index 0 event_time 2026-08-24T00:00:00+00:00 vendor_fields alert_id + pcap_count; index 1 ok false "required content fingerprint did not match" | ✅ |
+| (ขั้น 3) | `log_skill_list_drafts` | count 1 parse-linux-sshd-auth | ✅ |
+
+สรุป: ลำดับ tool และผลเหมือนรอบ 1–2 ทุกค่า การเรียงขั้นใหม่ไม่เปลี่ยนเฉลย
